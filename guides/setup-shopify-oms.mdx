@@ -1,0 +1,87 @@
+---
+title: "Set up Shopify and OMS"
+description: "Create the Shopify and OMS source records used by reconciliation runs and automations."
+---
+
+This tutorial is a scaffold for the Shopify and OMS source setup. It follows the current Darpan surfaces and will be tightened after the final connection flow is confirmed.
+
+<Note>
+Keep access tokens, passwords, customer hostnames, and account-specific values in secure configuration. The docs should describe the sequence, not store credentials.
+</Note>
+
+## Before you start
+
+Confirm:
+
+- You are signed in to the correct company or tenant.
+- Your user can edit connection settings.
+- The Shopify shop or Admin API URL is known.
+- The Shopify API version is known.
+- The Shopify access token can read orders.
+- The OMS base URL is known.
+- The OMS authentication type is known: none, basic, or bearer.
+- The order identifier used for comparison is agreed across Shopify and OMS.
+
+## What this setup creates
+
+| Record | Open from Ask Darpan | Used for |
+| --- | --- | --- |
+| Shopify config | **Open Shopify Settings** | Reading Shopify order data through the Admin API. |
+| OMS REST source | **Open OMS Settings** | Reading OMS order data through a REST endpoint. |
+
+## Steps
+
+<Steps>
+<Step title="Open Shopify settings">
+
+Open **Ask Darpan** with `Cmd/Ctrl+K` or the floating **Ask Darpan** button. Search for **Open Shopify Settings** and open the result.
+
+</Step>
+<Step title="Create the Shopify config">
+
+Choose **Create Shopify Config**. Answer the setup questions:
+
+1. **Shop/API URL**
+2. **API Version**
+3. **Access Token**
+4. **Read Orders**
+5. Shopify label
+
+Save the config. Darpan creates it as active and derives the config ID from the label. If the ID or active state needs to change later, open the saved config from **Open Shopify Settings** and edit it.
+
+</Step>
+<Step title="Open OMS settings">
+
+Open **Ask Darpan** again. Search for **Open OMS Settings** and open the result.
+
+</Step>
+<Step title="Create the OMS source">
+
+Choose **Create OMS Source**. Answer the setup questions:
+
+1. **Base URL**
+2. **Auth Type**
+3. Username and password, or API token, when the auth type requires it
+4. OMS label
+
+Save the source. Darpan creates it as active and derives the config ID from the label. If the ID or active state needs to change later, open the saved source from **Open OMS Settings** and edit it.
+
+</Step>
+<Step title="Confirm both records are reusable">
+
+Return to **Open Shopify Settings** and **Open OMS Settings**. Each saved record should appear on its settings surface.
+
+The saved records are ready when a reconciliation run or automation can select Shopify and OMS as source systems or API sources.
+
+</Step>
+</Steps>
+
+## Validation
+
+Use a small read-only run or automation test once the connection screens expose validation. Confirm that Shopify and OMS return records for the same date range before using the setup for scheduled reconciliation.
+
+## Troubleshooting
+
+- If Shopify fails, check the shop URL, API version, token validity, and **Read Orders** permission.
+- If OMS fails, check the base URL, auth type, credentials, and tenant context.
+- If both systems return data but records do not match, check the order identifier used by the reconciliation run.

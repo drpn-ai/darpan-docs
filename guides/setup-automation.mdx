@@ -1,0 +1,91 @@
+---
+title: "Set up an automation"
+description: "Create a scheduled or manual automation for a saved reconciliation run."
+---
+
+This tutorial is a scaffold for reconciliation automation setup. It reflects the current automation wizard and will be tightened after the final source and schedule flows are confirmed.
+
+## Before you start
+
+Confirm:
+
+- A saved reconciliation run exists, or you are ready to create one.
+- The saved run has the correct source systems, schemas, and primary IDs.
+- Source access is ready: SFTP servers for file inputs, or API sources such as Shopify and OMS for date-range extraction.
+- The schedule is known: manual, hourly, daily, or another schedule supported by your environment.
+- The remote file paths or API date window are known.
+- Your user can edit tenant settings.
+
+## Automation choices
+
+| Choice | Use when |
+| --- | --- |
+| **Automate an existing reconciliation** | The saved run already exists and only needs input and schedule setup. |
+| **Create a new reconciliation and automate it** | The saved run needs to be created before automation can be saved. |
+| **SFTP file inputs** | Each run should read files from SFTP paths. |
+| **API date-range extraction** | Each run should pull source records from API-backed sources such as Shopify or OMS. |
+| **Manual** | The automation should be runnable on demand but not scheduled. |
+| **Every hour** or **Daily at 6:00 UTC** | The automation should run on a recurring schedule. |
+
+## Steps
+
+<Steps>
+<Step title="Open automations">
+
+Open **Ask Darpan** with `Cmd/Ctrl+K` or the floating **Ask Darpan** button. Search for **Open Automations** and open the result.
+
+</Step>
+<Step title="Start the automation wizard">
+
+Choose **Create Automation**. Darpan asks **What is this automation for?**
+
+Choose **Automate an existing reconciliation** when the saved run already exists. Choose **Create a new reconciliation and automate it** when the run setup still needs to be created.
+
+</Step>
+<Step title="Choose the saved run">
+
+When Darpan asks **Which saved run should this automation use?**, select the saved reconciliation run.
+
+If the run is missing, go back to [Set up a reconciliation run](/guides/setup-reconciliation-run) and create it first.
+
+</Step>
+<Step title="Choose the input mode">
+
+When Darpan asks how it should get files for the run, choose one input mode:
+
+- **SFTP file inputs** for two remote file paths.
+- **API date-range extraction** for two API-backed sources and a date window.
+
+</Step>
+<Step title="Configure the sources">
+
+For **SFTP file inputs**, choose the SFTP server for the first file, enter the first remote path, choose the SFTP server for the second file, and enter the second remote path.
+
+For **API date-range extraction**, choose the API source for the first file, choose the API source for the second file, and select the date window.
+
+</Step>
+<Step title="Choose the schedule">
+
+When Darpan asks **When should this automation run?**, choose **Manual**, **Every hour**, or **Daily at 6:00 UTC**.
+
+</Step>
+<Step title="Name and create the automation">
+
+Answer **What should this automation be called?** with a stable name that includes the compared systems and cadence. Choose **Create Automation**.
+
+</Step>
+<Step title="Validate the automation">
+
+Return to **Open Automations**. Confirm the row shows the expected input mode, schedule, state, and next run.
+
+Use the run-now action for a controlled test, then open automation history to confirm the execution status and generated output.
+
+</Step>
+</Steps>
+
+## Troubleshooting
+
+- If no saved runs appear, finish [Set up a reconciliation run](/guides/setup-reconciliation-run) first.
+- If no SFTP source appears, create or reactivate the required SFTP server from **Open SFTP Servers**.
+- If no API source appears, confirm Shopify or OMS setup from [Set up Shopify and OMS](/guides/setup-shopify-oms).
+- If a scheduled automation produces no matches, check source date ranges, remote file paths, schemas, and primary IDs before changing the schedule.

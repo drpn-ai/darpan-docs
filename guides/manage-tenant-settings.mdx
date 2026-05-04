@@ -1,0 +1,74 @@
+---
+title: "Manage tenant settings"
+description: "Update tenant timezone and run-completion notification settings."
+---
+
+Tenant settings control shared behavior for the active tenant. A Tenant Admin can manage the tenant timezone and run-completion notifications for tenants they administer.
+
+<Note>
+Confirm the active tenant before saving. Tenant settings apply to the selected tenant, not every tenant you can access.
+</Note>
+
+## Before you start
+
+Confirm:
+
+- You are signed in as a Tenant Admin for the tenant you want to manage.
+- The active tenant shown in **Open User Settings** is correct.
+- The tenant timezone is known.
+- The Google Chat webhook is available when run-completion notifications should be enabled.
+
+## What Tenant Settings controls
+
+| Setting | Use it for | Tenant Admin access |
+| --- | --- | --- |
+| Timezone | Shared tenant date and time interpretation for workflows and schedules. | View and edit |
+| Notifications | Google Chat run-completion notifications for manual runs and automations. | View and edit |
+| AI configuration | Provider setup for assisted workflows. | Super Admin only |
+
+## Steps
+
+<Steps>
+<Step title="Confirm the tenant context">
+
+Open **Ask Darpan**. Search for **Open User Settings**.
+
+In **Tenant Context**, confirm the active tenant. If the wrong tenant is active, switch before continuing.
+
+</Step>
+<Step title="Open Tenant Settings">
+
+Open **Ask Darpan** again. Search for **Open Tenant Settings** and open the result.
+
+</Step>
+<Step title="Set the timezone">
+
+In **Localization**, choose **Timezone**.
+
+Select the timezone for the tenant and save. Use the timezone that operators expect for schedules, date windows, and review timestamps.
+
+</Step>
+<Step title="Configure notifications">
+
+In **Operations**, choose **Notifications**.
+
+Choose the Google Chat notification action, enter the webhook URL when configuring or replacing the webhook, choose the status, and save.
+
+Darpan shows saved webhook status without exposing the full webhook URL.
+
+</Step>
+<Step title="Verify the change">
+
+Return to **Open Tenant Settings** and confirm the timezone and notification status. For notification changes, run a small saved reconciliation or automation test when the team needs proof that messages are delivered.
+
+</Step>
+</Steps>
+
+## Troubleshooting
+
+| Symptom | What to check |
+| --- | --- |
+| You cannot save tenant settings | Confirm you are a Tenant Admin for the active tenant. Tenant Users can view tenant data and run reconciliation but cannot edit tenant settings. |
+| The wrong tenant changed | Switch to the intended tenant from **Open User Settings**, then review **Open Tenant Settings** again. |
+| Notification status is configured but no message arrives | Confirm the webhook is active, the run completed, and the destination space allows incoming webhooks. |
+| AI configuration is unavailable | AI provider settings are Super Admin only. Tenant Admins manage tenant settings and tenant-owned reconciliation setup. |

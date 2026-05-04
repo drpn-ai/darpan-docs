@@ -35,7 +35,7 @@ Confirm:
 5. Start the run.
 6. Wait for generated output.
 
-If the run setup does not exist yet, start with **Create Reconciliation Flow**.
+If the run setup does not exist yet, start with [Set up a reconciliation run](/guides/setup-reconciliation-run).
 
 ## Expected result
 
@@ -46,6 +46,8 @@ A successful run creates saved output that can be opened from result, history, o
 Use a saved run when the same comparison will happen again. Saved runs keep setup stable so the next execution can focus on fresh source data and reviewable output.
 
 Use **Create Reconciliation Flow** when the setup itself is still being defined. Use **Open Runs Settings** when the setup exists but needs a name, schema, source, or rule update before the next run.
+
+Use [Set up an automation](/guides/setup-automation) when the saved run should execute on demand or on a recurring schedule.
 
 <Warning>
 If a run completes with zero matches, do not assume the data is clean. Check join keys, source identifiers, schema selection, and file encoding.

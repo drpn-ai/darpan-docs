@@ -1,0 +1,72 @@
+---
+title: "Tenant Admin quickstart"
+description: "The operating path for managing one Darpan tenant."
+---
+
+A Tenant Admin manages the setup records and reconciliation workflows for one active tenant. The role can edit tenant-owned settings, connections, schemas, saved runs, automations, and results for the active tenant.
+
+Tenant Admins do not manage Darpan users, tenant membership, permission assignments, AI provider settings, global settings, or platform diagnostics.
+
+## Daily operating path
+
+<Steps>
+<Step title="Confirm the active tenant">
+
+Open **Ask Darpan** with `Cmd/Ctrl+K` or the floating **Ask Darpan** button. Search for **Open User Settings**.
+
+In **Tenant Context**, confirm the active tenant before changing setup records or running reconciliation. If you have access to more than one tenant, select the tenant you want to manage.
+
+</Step>
+<Step title="Review tenant settings">
+
+Search for **Open Tenant Settings**. Confirm the tenant timezone and notification status.
+
+Use [Manage tenant settings](/guides/manage-tenant-settings) when the timezone or Google Chat run-completion webhook needs to change.
+
+</Step>
+<Step title="Confirm reusable connections">
+
+Create or update the connection records the tenant uses:
+
+- **Open SFTP Servers** for file transfer.
+- **Open NetSuite Settings** for NetSuite access.
+- **Open Shopify Settings** and **Open OMS Settings** for API-backed order reconciliation.
+
+Use active records with clear names so runs and automations are easy to recognize later.
+
+</Step>
+<Step title="Maintain schemas and saved runs">
+
+Use **Create Schema** or **Open Schema Library** when source file structure changes.
+
+Use **Create Reconciliation Flow** for a new saved run setup. Use **Open Runs Settings** when an existing saved run needs source, schema, primary ID, or rule changes.
+
+</Step>
+<Step title="Execute and review">
+
+Use **Run Reconciliation** for a controlled manual run. After the run completes, search by run name or output file name and open **Open Result: ...**.
+
+Classify differences as source data, schema selection, rule behavior, or expected business variance before changing the setup.
+
+</Step>
+<Step title="Automate stable runs">
+
+Use **Open Automations** after the saved run and source setup are stable. Create manual or scheduled automations only after a manual run proves the setup returns useful output.
+
+</Step>
+</Steps>
+
+## Tenant Admin checklist
+
+- Active tenant is correct before setup changes.
+- Timezone reflects the tenant's operating context.
+- Run-completion notifications are configured when the team needs alerts.
+- SFTP, NetSuite, Shopify, and OMS records use clear tenant-specific names.
+- Schemas match the current source files or API payloads.
+- Saved run names identify the two systems being compared.
+- Automations have a clear schedule, input mode, and history after testing.
+- Result review produces a next action: fix source data, adjust schema, change rules, rerun, or accept the variance.
+
+## When to ask a Super Admin
+
+Ask a Super Admin to create users, assign tenant access, change role permissions, configure AI providers, change platform settings, or investigate private operational diagnostics.

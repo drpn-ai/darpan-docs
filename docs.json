@@ -18,6 +18,7 @@
             "pages": [
               "index",
               "quickstart",
+              "getting-started/tenant-admin-quickstart",
               "getting-started/overview",
               "getting-started/core-concepts",
               "getting-started/ask-darpan-navigation",
@@ -27,11 +28,15 @@
           {
             "group": "Guides",
             "pages": [
+              "guides/manage-tenant-settings",
               "guides/connect-sftp",
               "guides/connect-netsuite",
+              "guides/setup-shopify-oms",
               "guides/configure-ai",
               "guides/create-schema",
+              "guides/setup-reconciliation-run",
               "guides/run-reconciliation",
+              "guides/setup-automation",
               "guides/review-results"
             ]
           },

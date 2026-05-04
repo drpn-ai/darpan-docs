@@ -1,0 +1,75 @@
+---
+title: "Set up a reconciliation run"
+description: "Create a saved run setup that ties source systems, file types, schemas, and primary IDs together."
+---
+
+This tutorial is a scaffold for saved reconciliation setup. It follows the current create flow and leaves room to add final RuleSet details once the rule-selection flow is finalized.
+
+## Before you start
+
+Confirm:
+
+- The two source systems are known.
+- Each source file type is known: CSV or JSON.
+- Saved schemas exist for JSON sources, or you are ready to create them from the setup flow.
+- Each source has a stable primary ID field or expression.
+- The saved run name is clear enough to recognize later from **Open Runs Settings**, **Run Reconciliation**, and automation setup.
+
+## What Darpan saves
+
+| Setup choice | Why it matters |
+| --- | --- |
+| Run name and description | Identifies the saved setup in run history, automation setup, and result review. |
+| Source systems | Tells Darpan which systems are being compared. |
+| File types | Tells Darpan how to read each input. |
+| Schemas | Gives JSON sources a reusable field contract. |
+| Primary IDs | Defines how records are matched across the two sources. |
+
+## Steps
+
+<Steps>
+<Step title="Open the create flow">
+
+Open **Ask Darpan** with `Cmd/Ctrl+K` or the floating **Ask Darpan** button. Search for **Create Reconciliation Flow** and open the result.
+
+</Step>
+<Step title="Name the saved run">
+
+Answer **What should this run be called?** with a stable, specific name. Add a short description when the flow asks for one.
+
+</Step>
+<Step title="Configure the first source">
+
+Choose the system that provides the first file. Then choose the file type.
+
+If the first source is JSON, select the saved schema that describes it. If the schema does not exist, use **Create New Schema** from the setup flow and return after saving it.
+
+Choose the primary ID field or enter the primary ID expression that identifies each first-source record.
+
+</Step>
+<Step title="Configure the second source">
+
+Choose the system that provides the second file. The second system must be different from the first system.
+
+Choose the file type, select the saved JSON schema when needed, and choose or enter the primary ID field for the second source.
+
+</Step>
+<Step title="Create the saved run">
+
+On the last primary ID step, choose **Create**. Darpan saves the run setup so it can be executed manually or reused by an automation.
+
+</Step>
+<Step title="Confirm the setup">
+
+Open **Ask Darpan**, search for **Open Runs Settings**, and confirm the saved run appears. Use **Run Reconciliation** when you are ready to execute it once with files or connection-backed data.
+
+</Step>
+</Steps>
+
+## Expected result
+
+The saved run can be selected from **Run Reconciliation** and from the automation setup flow. It should clearly show what two systems are compared and which record IDs are used for matching.
+
+## Final-flow placeholder
+
+When the RuleSet setup is finalized, add the rule-selection step between source setup and saved-run creation. Until then, treat this page as the stable source, schema, and primary-ID scaffold.

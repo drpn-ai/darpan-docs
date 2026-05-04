@@ -13,6 +13,16 @@ Some users may belong to more than one company or tenant. When that is enabled, 
 
 Permissions are evaluated for the active context. A user can have different capabilities in different companies or tenants.
 
+## Product roles
+
+| Role | Typical scope |
+| --- | --- |
+| Super Admin | Manages Darpan platform settings, users, tenants, permission assignments, and tenant data. |
+| Tenant Admin | Manages tenant-owned settings, connections, schemas, saved runs, automations, and results for the active tenant. |
+| Tenant User | Views tenant data, uploads files, runs reconciliation, and reviews output without changing tenant setup records. |
+
+Tenant Admins should confirm the active tenant before saving settings, connection records, schemas, saved runs, or automations.
+
 ## Sensitive auth values
 
 Examples use placeholders for usernames, passwords, session cookies, login keys, CSRF tokens, and sensitive auth artifacts.
