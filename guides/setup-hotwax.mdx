@@ -1,0 +1,60 @@
+---
+title: "Set up HotWax"
+description: "Create the HotWax REST source used by API-backed reconciliation runs and automations."
+---
+
+HotWax setup stores the REST connection Darpan uses to read order data for reconciliation runs and automations.
+
+<Note>
+Keep passwords, API tokens, customer hostnames, and account-specific values in secure configuration. The docs should describe the sequence, not store credentials.
+</Note>
+
+## Before you start
+
+Confirm:
+
+- You are signed in to the correct company or tenant.
+- Your user can edit connection settings.
+- The HotWax base URL is known.
+- The HotWax authentication type is known: none, basic, bearer, or API key.
+- The required username, password, API token, or API key is available in secure configuration.
+- The HotWax orders endpoint is available for the tenant.
+
+## Steps
+
+<Steps>
+<Step title="Open HotWax settings">
+
+Open **Ask Darpan** with `Cmd/Ctrl+K` or the floating **Ask Darpan** button. Search for **Open HotWax Settings** and open the result.
+
+</Step>
+<Step title="Create the HotWax source">
+
+Choose **Create HotWax Source**. Answer the setup questions:
+
+1. **Base URL**
+2. **Auth Type**
+3. Username and password for basic auth, or an API token or API key when the auth type requires it
+4. HotWax label
+
+Save the source. Darpan creates it as active and derives the config ID from the label. If the ID, active state, auth details, or endpoint access needs to change later, open the saved source from **Open HotWax Settings** and edit it.
+
+</Step>
+<Step title="Confirm the source is reusable">
+
+Return to **Open HotWax Settings**. The saved source should appear on the settings surface.
+
+The source is ready when a reconciliation run or automation can select HotWax as an API source.
+
+</Step>
+</Steps>
+
+## Validation
+
+Use a small read-only reconciliation run or automation test with a narrow date range. Confirm HotWax returns orders before using the setup for scheduled reconciliation.
+
+## Troubleshooting
+
+- If HotWax fails, check the base URL, auth type, credentials, API key header behavior, and tenant context.
+- If HotWax does not appear as an API source, confirm the source is active and that **Orders API** is enabled on the saved record.
+- If the request succeeds but returns no records, test a wider date range and confirm the tenant has orders for that period.

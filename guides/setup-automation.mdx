@@ -11,7 +11,7 @@ Confirm:
 
 - A saved reconciliation run exists, or you are ready to create one.
 - The saved run has the correct source systems, schemas, and primary IDs.
-- Source access is ready: SFTP servers for file inputs, or API sources such as Shopify and OMS for date-range extraction.
+- Source access is ready: SFTP servers for file inputs, or API sources such as Shopify and HotWax for date-range extraction.
 - The schedule is known: manual, hourly, daily, or another schedule supported by your environment.
 - The remote file paths or API date window are known.
 - Your user can edit tenant settings.
@@ -23,7 +23,7 @@ Confirm:
 | **Automate an existing reconciliation** | The saved run already exists and only needs input and schedule setup. |
 | **Create a new reconciliation and automate it** | The saved run needs to be created before automation can be saved. |
 | **SFTP file inputs** | Each run should read files from SFTP paths. |
-| **API date-range extraction** | Each run should pull source records from API-backed sources such as Shopify or OMS. |
+| **API date-range extraction** | Each run should pull source records from API-backed sources such as Shopify or HotWax. |
 | **Manual** | The automation should be runnable on demand but not scheduled. |
 | **Every hour** or **Daily at 6:00 UTC** | The automation should run on a recurring schedule. |
 
@@ -87,5 +87,5 @@ Use the run-now action for a controlled test, then open automation history to co
 
 - If no saved runs appear, finish [Set up a reconciliation run](/guides/setup-reconciliation-run) first.
 - If no SFTP source appears, create or reactivate the required SFTP server from **Open SFTP Servers**.
-- If no API source appears, confirm Shopify or OMS setup from [Set up Shopify and OMS](/guides/setup-shopify-oms).
+- If no API source appears, confirm the relevant system setup from [Set up Shopify](/guides/setup-shopify) or [Set up HotWax](/guides/setup-hotwax).
 - If a scheduled automation produces no matches, check source date ranges, remote file paths, schemas, and primary IDs before changing the schedule.
