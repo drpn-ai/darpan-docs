@@ -1,18 +1,81 @@
 ---
 title: "Service catalog"
-description: "Primary backend service areas exposed through Darpan JSON-RPC."
+description: "Verified backend facade services exposed through Darpan JSON-RPC."
 ---
 
-Darpan API references focus on verified backend facade contracts exposed through Moqui JSON-RPC.
+Darpan API references focus on verified backend facade contracts exposed through Moqui JSON-RPC. Every method below is defined in the Darpan backend component under `service/facade/*.xml` (or a named integration component) and is called as the JSON-RPC `method` value.
 
-## Service areas
+All methods require an authenticated session unless noted. Login, logout, and session-info methods accept anonymous calls so the UI can establish or end a session.
 
-| Category | Example responsibility |
+## Auth (`facade.AuthFacadeServices`)
+
+| Method | Purpose |
 | --- | --- |
-| Auth | Login, logout, session info, active context. |
-| Settings | AI, SFTP, NetSuite, and saved connection records. |
-| Schemas | Schema library, create, edit, and detail operations. |
-| Reconciliation | Run creation, result retrieval, generated output, and history. |
+| `login#Session` | Create an authenticated session from username/password and return the login-key token. Anonymous. |
+| `logout#Session` | End the current session. Anonymous-safe. |
+| `logout#AllSessions` | Invalidate every session for the current user. |
+| `get#SessionInfo` | Return current session, user, and active-tenant context. Anonymous-safe. |
+| `save#ActiveTenant` | Switch the active tenant for the session. |
+| `save#UserSettings` | Save per-user settings. |
+| `verify#OwnPassword` | Re-verify the current user's password. |
+| `change#OwnPassword` | Change the current user's password. |
+
+## Settings (`facade.SettingsFacadeServices`)
+
+| Method | Purpose |
+| --- | --- |
+| `list#EnumOptions` | List enumeration options for settings surfaces. |
+| `get#LlmSettings` / `save#LlmSettings` | Read and save AI provider settings. |
+| `get#TenantSettings` / `save#TenantSettings` | Read and save tenant-level settings such as timezone. |
+| `get#TenantNotificationSettings` / `save#TenantNotificationSettings` | Read and save run-completion Google Chat notification settings. Webhook URLs are returned masked. |
+| `list#SftpServers` / `save#SftpServer` | List and save SFTP server records. |
+| `list#NsAuthConfigs` / `save#NsAuthConfig` | List and save NetSuite auth configurations. |
+| `list#NsRestletConfigs` / `save#NsRestletConfig` | List and save NetSuite RESTlet endpoint configurations. |
+
+## Schemas (`facade.JsonSchemaFacadeServices`)
+
+| Method | Purpose |
+| --- | --- |
+| `list#JsonSchemas` | List schemas visible in the active tenant. |
+| `get#JsonSchema` | Open one schema record. |
+| `save#JsonSchemaText` | Create or update a schema from schema text. |
+| `save#RefinedSchema` | Save a schema refined through the verification flow. |
+| `infer#JsonSchemaFromText` | Infer a schema from a sample payload. |
+| `validate#JsonTextAgainstSchema` | Validate a JSON payload against a schema. |
+| `flatten#JsonSchema` | Flatten a schema for field selection. |
+| `delete#JsonSchema` | Delete a schema record. |
+
+## Reconciliation (`facade.ReconciliationFacadeServices`)
+
+| Method | Purpose |
+| --- | --- |
+| `create#RuleSetRun` / `save#RuleSetRun` | Create and update RuleSet-backed saved runs. |
+| `create#CsvRun` | Create a CSV-based saved run. |
+| `list#SavedRuns` / `save#SavedRunName` / `delete#SavedRun` | Manage saved runs. |
+| `run#SavedRunDiff` | Execute a saved run. |
+| `run#GenericDiff` | Execute an ad hoc compare from uploaded or text payloads. |
+| `list#Mappings` / `get#Mapping` / `create#Mapping` / `save#Mapping` | Manage legacy reconciliation mappings. |
+| `save#DashboardPinnedMappings` / `save#DashboardPinnedSavedRuns` | Save dashboard pin preferences. |
+| `list#Automations` / `get#Automation` / `save#Automation` / `delete#Automation` | Manage automations. |
+| `pause#Automation` / `resume#Automation` / `run#AutomationNow` | Control automation execution. |
+| `list#AutomationExecutions` | List automation execution history. |
+| `list#AutomationSourceOptions` | List configured source options for automation setup. |
+| `list#GeneratedOutputs` / `get#GeneratedOutput` / `delete#GeneratedOutput` | Manage generated reconciliation outputs. |
+
+## Search (`facade.SearchFacadeServices`)
+
+| Method | Purpose |
+| --- | --- |
+| `search#NavigationTargets` | Power Ask Darpan search over pages, workflows, records, runs, and outputs. |
+
+## Integration components
+
+Source-system facades ship in sibling Moqui components and follow the same JSON-RPC envelope:
+
+| Component | Facade | Methods |
+| --- | --- | --- |
+| `shopify-darpan` | `facade.ShopifyFacadeServices` | `list#ShopifyAuthConfigs`, `get#ShopifyAuthConfig`, `save#ShopifyAuthConfig`, `delete#ShopifyAuthConfig`, `list#ShopifySourceDefinitions`, `get#ShopifySourceDefinition` |
+| `darpan-hotwax` | `facade.HotWaxOmsFacadeServices` | `list#HotWaxOmsRestSourceConfigs`, `save#HotWaxOmsRestSourceConfig`, `delete#HotWaxOmsRestSourceConfig` |
 
 ## Reference shape
 

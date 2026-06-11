@@ -32,6 +32,7 @@ Facade services are the app integration point. The active facade files include:
 
 - `create#CsvRun`
 - `create#RuleSetRun`
+- `save#RuleSetRun`
 - `list#SavedRuns`
 - `save#SavedRunName`
 - `delete#SavedRun`
@@ -41,8 +42,14 @@ Facade services are the app integration point. The active facade files include:
 - `get#GeneratedOutput`
 - `delete#GeneratedOutput`
 - `list#Mappings`
+- `get#Mapping`
 - `create#Mapping`
 - `save#Mapping`
+- `list#Automations`, `get#Automation`, `save#Automation`, `delete#Automation`
+- `pause#Automation`, `resume#Automation`, `run#AutomationNow`
+- `list#AutomationExecutions`, `list#AutomationSourceOptions`
+
+The full verified facade method list is in the [service catalog](/api-reference/service-catalog).
 
 ## Core reconciliation services
 
@@ -51,9 +58,12 @@ Core reconciliation services live under `service/reconciliation/**`.
 | Service file | Purpose |
 | --- | --- |
 | `ReconciliationCoreServices.xml` | Spark-backed core compare services, RuleSet compare-scope preparation, base diff generation, and legacy mapping execution. |
-| `ReconciliationGenericServices.xml` | Generic reconciliation entrypoints that accept uploaded or text payloads and route to RuleSet or mapping execution. |
+| `ReconciliationGenericServices.xml` | Generic reconciliation entrypoints that accept uploaded or text payloads and route to RuleSet or mapping execution, plus generated-output file cleanup. |
 | `ReconciliationRuleEngineServices.xml` | RuleSet, Rule, Drools compile, execution, and cache operations. |
-| `ReconciliationInventoryServices.xml` | Inventory-specific reconciliation support. |
+| `ReconciliationAutomationServices.xml` | Scheduled automation scanning and execution, SFTP polling, and the stuck-run reaper (`sweep#StuckReconciliationRuns`). |
+| `ReconciliationNotificationServices.xml` | Run-completion notification payload building (`build#RunCompletedPayload`) for tenant Google Chat alerts. |
+| `ReconciliationJsonServices.xml` | JSON file reconciliation entrypoints. |
+| `ReconciliationMixedServices.xml` | Mixed-format file reconciliation support. |
 
 ## XML-first rule
 

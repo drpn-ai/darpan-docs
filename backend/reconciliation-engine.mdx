@@ -103,3 +103,32 @@ facade.ReconciliationFacadeServices.list#GeneratedOutputs
 facade.ReconciliationFacadeServices.get#GeneratedOutput
 facade.ReconciliationFacadeServices.delete#GeneratedOutput
 ```
+
+## Run-completion notifications
+
+Completed runs can alert the owning tenant so sync issues surface without anyone watching the run history page. The flow is:
+
+1. A run completes through one of three paths: a manual saved-run diff (`facade.ReconciliationFacadeServices.run#SavedRunDiff`), a scheduled automation execution, or SFTP polling.
+2. The completion path calls the tenant notification helper (`darpan.reconciliation.notification.TenantNotificationSupport`), which loads the tenant's `darpan.reconciliation.TenantNotificationSetting` record.
+3. If the setting is active and a Google Chat webhook URL is configured, the helper builds the message through `reconciliation.ReconciliationNotificationServices.build#RunCompletedPayload` and posts it to the webhook.
+
+The payload includes the run name, tenant label, result ID, a link back to the run result, the difference count, and the only-in-source counts. The run-result link base URL comes from the `DARPAN_APP_BASE_URL` environment variable or the `darpan.app.baseUrl` property, falling back to the first allowed origin.
+
+Tenants configure notifications through:
+
+```text
+facade.SettingsFacadeServices.get#TenantNotificationSettings
+facade.SettingsFacadeServices.save#TenantNotificationSettings
+```
+
+The webhook URL must be an `https` Google Chat space-messages endpoint on `chat.googleapis.com` with `key` and `token` query parameters. It is stored encrypted and returned only in masked form. The product-side setup flow is described in [Manage tenant settings](/guides/manage-tenant-settings).
+
+## Stuck-run recovery
+
+If a JVM crash or container restart kills a run mid-flight, its run-result row can be left in a running state forever, which blocks re-triggering. An internal scheduled reaper handles this:
+
+```text
+reconciliation.ReconciliationAutomationServices.sweep#StuckReconciliationRuns
+```
+
+It flips `ReconciliationRunResult` and `ReconciliationAutomationExecution` rows still in running or pending state, whose last update is older than a threshold (default 120 minutes), to failed with an explanatory status message. The service is internal only (`allow-remote="false"`) and is not part of the JSON-RPC surface.

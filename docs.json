@@ -18,6 +18,7 @@
             "pages": [
               "index",
               "quickstart",
+              "getting-started/set-up-darpan-independently",
               "getting-started/tenant-admin-quickstart",
               "getting-started/overview",
               "getting-started/core-concepts",
@@ -36,8 +37,10 @@
               "guides/configure-ai",
               "guides/create-schema",
               "guides/setup-reconciliation-run",
+              "guides/author-rules",
               "guides/run-reconciliation",
               "guides/setup-automation",
+              "guides/run-completion-alerts",
               "guides/review-results"
             ]
           },
@@ -133,12 +136,12 @@
       "anchors": [
         {
           "anchor": "Darpan UI",
-          "href": "https://github.com/toaditi/darpan-ui",
+          "href": "https://github.com/drpn-ai/darpan-ui",
           "icon": "github"
         },
         {
           "anchor": "Darpan backend",
-          "href": "https://github.com/toaditi/darpan",
+          "href": "https://github.com/drpn-ai/darpan",
           "icon": "github"
         }
       ]
@@ -149,11 +152,16 @@
     "dark": "/logo/dark-app-wordmark-v2.svg"
   },
   "navbar": {
-    "links": [],
+    "links": [
+      {
+        "label": "Back to website",
+        "href": "https://drpn.ai"
+      }
+    ],
     "primary": {
       "type": "button",
       "label": "Open Darpan",
-      "href": "https://hotwax-darpan-dev.web.app/login"
+      "href": "https://darpan-app.hotwax.io"
     }
   },
   "contextual": {

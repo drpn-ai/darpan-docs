@@ -24,7 +24,9 @@ Rule execution is owned by:
 
 ```text
 service/reconciliation/ReconciliationRuleEngineServices.xml
-src/main/groovy/darpan/reconciliation/rule/RuleEngineServices.groovy
+src/main/groovy/darpan/reconciliation/rule/RuleEngineSupport.groovy
+src/main/groovy/darpan/reconciliation/rule/RuleConditionParser.groovy
+src/main/groovy/darpan/reconciliation/rule/RuleDiffSupport.groovy
 ```
 
 Key service responsibilities:
@@ -35,14 +37,20 @@ Key service responsibilities:
 - Execute rules against matched pairs from the Spark base diff
 - Clear the RuleSet cache after rule changes
 
-Rule services include:
+The rule engine service file defines:
 
 ```text
 reconciliation.ReconciliationRuleEngineServices.compile#RuleSet
 reconciliation.ReconciliationRuleEngineServices.execute#RuleSet
 reconciliation.ReconciliationRuleEngineServices.execute#RuleSetMatchedPairs
+reconciliation.ReconciliationRuleEngineServices.save#RuleSet
+reconciliation.ReconciliationRuleEngineServices.save#Rule
+reconciliation.ReconciliationRuleEngineServices.delete#Rule
+reconciliation.ReconciliationRuleEngineServices.delete#RuleSet
 reconciliation.ReconciliationRuleEngineServices.clear#RuleSetCache
 ```
+
+`save#Rule` accepts either structured `ruleLogic` or plain-text `ruleText`; plain text is parsed by `RuleConditionParser` and rejected when it cannot be parsed into an explicit operator expression. Saving or deleting a Rule or RuleSet invalidates the compiled Drools cache for that RuleSet.
 
 Execution services are file type agnostic. Callers parse CSV, JSON, or other source payloads into compare-ready data facts before invoking the RuleSet engine.
 
@@ -53,8 +61,10 @@ Schemas describe source data shape and parsing expectations. The backend stores 
 The main schema entity is:
 
 ```text
-darpan.jsonschema.JsonSchema
+darpan.reconciliation.JsonSchema
 ```
+
+It is defined in `entity/JsonSchemaEntities.xml` with a tenant-scoped unique name index on `(companyUserGroupId, schemaName)`, so each tenant has its own schema namespace.
 
 Schema records include fields such as:
 

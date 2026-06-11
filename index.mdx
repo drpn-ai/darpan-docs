@@ -11,6 +11,10 @@ The docs are organized around the path of a run: setup records, comparison, gene
   One complete path from environment selection to result review.
 </Card>
 
+<Card title="Set up Darpan independently" icon="route" href="/getting-started/set-up-darpan-independently" horizontal>
+  Clone the backend and UI repositories, load local data, and start the development stack.
+</Card>
+
 <Card title="Tenant Admin quickstart" icon="user-gear" href="/getting-started/tenant-admin-quickstart" horizontal>
   Manage one tenant's settings, connections, saved runs, automations, and results.
 </Card>
@@ -20,6 +24,9 @@ The docs are organized around the path of a run: setup records, comparison, gene
 <Columns cols={2}>
   <Card title="Ask Darpan navigation" icon="sparkles" href="/getting-started/ask-darpan-navigation">
     Open pages, workflows, setup records, saved runs, and generated outputs from one search surface.
+  </Card>
+  <Card title="Independent setup" icon="route" href="/getting-started/set-up-darpan-independently">
+    Clone repositories, install dependencies, start the local stack, and verify sign-in.
   </Card>
   <Card title="Tenant settings" icon="sliders" href="/guides/manage-tenant-settings">
     Set tenant timezone and run-completion notifications.
@@ -39,11 +46,17 @@ The docs are organized around the path of a run: setup records, comparison, gene
   <Card title="Reconciliation setup" icon="settings" href="/guides/setup-reconciliation-run">
     Save the source, schema, and primary-ID setup for repeated runs.
   </Card>
+  <Card title="Author rules" icon="scale-balanced" href="/guides/author-rules">
+    Build the field comparisons that decide when systems line up.
+  </Card>
   <Card title="Run reconciliation" icon="shuffle" href="/guides/run-reconciliation">
     Execute a saved or newly configured comparison.
   </Card>
   <Card title="Automation setup" icon="clock" href="/guides/setup-automation">
     Schedule or manually trigger a saved reconciliation run.
+  </Card>
+  <Card title="Run-completion alerts" icon="bell" href="/guides/run-completion-alerts">
+    Get a Google Chat message when a run finishes flagging differences.
   </Card>
   <Card title="Review results" icon="table" href="/guides/review-results">
     Interpret generated differences and choose the next action.

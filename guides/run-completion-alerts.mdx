@@ -1,0 +1,82 @@
+---
+title: "Run-completion alerts"
+description: "Get a Google Chat message whenever a reconciliation run finishes, so sync differences surface without manual checking."
+---
+
+Run-completion alerts close the loop between authoring rules and acting on what they find. When a reconciliation run finishes, Darpan posts a summary of the result to your tenant's Google Chat space. The message includes the difference counts and a link straight to the run result, so a failed comparison surfaces in chat instead of waiting for someone to open the app.
+
+Alerts fire for both manual runs and automations, so a scheduled comparison can flag a sync break the moment it happens.
+
+## How the flow works
+
+1. A reconciliation run finishes. This happens for a run started manually and for a run started by an [automation](/guides/setup-automation).
+2. Darpan checks the active tenant's notification setting. If a Google Chat webhook is configured and active, it continues. If not, the run completes normally with no alert.
+3. Darpan builds a run-completed summary from the result: the run name, tenant, result ID, difference count, the "only in" counts for each side, and a link to open the run result.
+4. Darpan posts that summary to the tenant's Google Chat webhook.
+
+Notification delivery is best-effort. A run never fails because an alert could not be sent. If the webhook is unreachable, the run result is still saved and viewable in the app.
+
+## What the alert contains
+
+| Field | Meaning |
+| --- | --- |
+| Run name | The saved run, or its identifier when no name is set. |
+| Tenant | The tenant the run belongs to. |
+| Result ID | The reconciliation run result identifier. |
+| Run result link | A deep link to open the result in the Darpan app. |
+| Differences | Count of matched pairs that failed a rule. |
+| Only in (each side) | Count of records present on only one source. |
+
+## Before you start
+
+Confirm:
+
+- You are a Tenant Admin for the tenant you want alerts on.
+- The correct tenant is active.
+- You can create or read a Google Chat incoming webhook for the destination space. The webhook URL must be an `https` URL on `chat.googleapis.com` that targets a space messages endpoint and includes its `key` and `token` query parameters.
+
+## Steps
+
+<Steps>
+<Step title="Create the Google Chat webhook">
+
+In the Google Chat space that should receive alerts, create an incoming webhook and copy its URL. Keep the URL secret; treat it like a credential.
+
+</Step>
+<Step title="Open Tenant Settings">
+
+Open **Ask Darpan**, search for **Open Tenant Settings**, and open the result. Confirm the active tenant is the one you want alerts on.
+
+</Step>
+<Step title="Save the webhook">
+
+In **Operations**, choose **Notifications**. Choose the Google Chat notification action, paste the webhook URL, set the status to active, and save.
+
+Darpan validates the webhook URL on save and stores it encrypted. Saved settings show the webhook status without exposing the full URL.
+
+</Step>
+<Step title="Verify delivery">
+
+Run a small saved reconciliation, or wait for the next automation, and confirm a run-completed message arrives in the Google Chat space. Open the run result link from the message to confirm it points at the right result.
+
+</Step>
+</Steps>
+
+## Expected result
+
+Every completed run for the tenant posts a summary to Google Chat while the webhook is active. A run with differences is visible in chat with a one-click path to the result, so authored rules turn directly into alerts.
+
+## Turning alerts off
+
+Set the notification status to inactive in **Tenant Settings**. The webhook stays stored but no messages are sent until it is reactivated.
+
+## Troubleshooting
+
+| Symptom | What to check |
+| --- | --- |
+| No message arrives after a run | Confirm the webhook status is active for the correct tenant, the run actually completed, and the Google Chat space allows incoming webhooks. |
+| Save is rejected | The webhook URL must be `https` on `chat.googleapis.com`, target a space messages endpoint, and include `key` and `token` query parameters. |
+| Message arrives but the link does not open the result | Confirm the run produced a saved result and that the app base URL for the environment is reachable. |
+| Alerts stopped after a tenant switch | Notification settings are per tenant. Confirm the active tenant matches the runs you expect alerts for. |
+
+See [Manage tenant settings](/guides/manage-tenant-settings) for the full tenant settings surface and [Author reconciliation rules](/guides/author-rules) for the rules that produce the differences these alerts report.

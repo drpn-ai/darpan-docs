@@ -6,7 +6,7 @@ description: "Create the HotWax REST source used by API-backed reconciliation ru
 HotWax setup stores the REST connection Darpan uses to read order data for reconciliation runs and automations.
 
 <Note>
-Keep passwords, API tokens, customer hostnames, and account-specific values in secure configuration. The docs should describe the sequence, not store credentials.
+Keep passwords, JWT bearer tokens, API keys, customer hostnames, and account-specific values in secure configuration. The docs should describe the sequence, not store credentials.
 </Note>
 
 ## Before you start
@@ -15,9 +15,9 @@ Confirm:
 
 - You are signed in to the correct company or tenant.
 - Your user can edit connection settings.
-- The HotWax base URL is known.
+- The HotWax Moqui API URL is known.
 - The HotWax authentication type is known: none, basic, bearer, or API key.
-- The required username, password, API token, or API key is available in secure configuration.
+- The required username, password, JWT bearer token, or API key is available in secure configuration.
 - The HotWax orders endpoint is available for the tenant.
 
 ## Steps
@@ -32,10 +32,12 @@ Open **Ask Darpan** with `Cmd/Ctrl+K` or the floating **Ask Darpan** button. Sea
 
 Choose **Create HotWax Source**. Answer the setup questions:
 
-1. **Base URL**
+1. **Base URL**: use the HotWax Moqui API URL, not the storefront, admin app, or another system URL
 2. **Auth Type**
-3. Username and password for basic auth, or an API token or API key when the auth type requires it
+3. Username and password for basic auth, a JWT token retrieved from HotWax when **Bearer** is selected, or an API key when the auth type requires it
 4. HotWax label
+
+For bearer authentication, use the JWT token value from HotWax. Darpan sends it as the HTTP `Authorization: Bearer <jwt-token>` header.
 
 Save the source. Darpan creates it as active and derives the config ID from the label. If the ID, active state, auth details, or endpoint access needs to change later, open the saved source from **Open HotWax Settings** and edit it.
 
@@ -55,6 +57,6 @@ Use a small read-only reconciliation run or automation test with a narrow date r
 
 ## Troubleshooting
 
-- If HotWax fails, check the base URL, auth type, credentials, API key header behavior, and tenant context.
+- If HotWax fails, check the Moqui API URL, auth type, bearer token validity, API key header behavior, and tenant context.
 - If HotWax does not appear as an API source, confirm the source is active and that **Orders API** is enabled on the saved record.
 - If the request succeeds but returns no records, test a wider date range and confirm the tenant has orders for that period.

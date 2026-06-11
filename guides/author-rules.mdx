@@ -1,0 +1,113 @@
+---
+title: "Author reconciliation rules"
+description: "Build the field comparison rules that decide when two systems line up and when Darpan flags a difference."
+---
+
+A RuleSet is the comparison logic Darpan applies after it matches records across two sources. Each rule compares one field from the first source against one field from the second source. When a matched pair fails a rule, Darpan records a difference, which is what surfaces a sync issue for review and notifications.
+
+Rules live with the saved run setup, so a run and its RuleSet are managed together. You author and edit rules in the **Ruleset Manager**.
+
+## Before you start
+
+Confirm:
+
+- The saved run setup exists, with both source systems and primary ID fields chosen. If it does not, start with [Set up a reconciliation run](/guides/setup-reconciliation-run).
+- Saved schemas exist for JSON sources, so the field paths you compare are known.
+- You know which fields must line up between the two systems (for example price, quantity, or status).
+- You are a Tenant Admin for the active tenant. Editing rules requires tenant edit access.
+
+## How a rule reads
+
+A rule is a single field-to-field comparison:
+
+```text
+file1.<field>  <operator>  file2.<field>
+```
+
+| Part | What it means |
+| --- | --- |
+| File 1 field | The field path selected from the first source. |
+| Operator | The comparison applied between the two values. |
+| File 2 field | The field path selected from the second source. |
+| Pre-actions | Optional value conversions applied before comparison, per field side. |
+
+A matched pair passes the RuleSet when every active rule holds. If any rule fails, the pair is recorded as a difference.
+
+### Operators
+
+The Ruleset Manager offers these comparison operators:
+
+| Operator | Passes when |
+| --- | --- |
+| `=` | The two field values are equal. |
+| `!=` | The two field values are not equal. |
+| `>` | The file 1 value is greater than the file 2 value. |
+| `<` | The file 1 value is less than the file 2 value. |
+| `>=` | The file 1 value is greater than or equal to the file 2 value. |
+| `<=` | The file 1 value is less than or equal to the file 2 value. |
+
+### Pre-actions
+
+Pre-actions normalize a field value before the operator runs, so a comparison is not defeated by source formatting. Each pre-action applies to one field side.
+
+| Pre-action | Use it for |
+| --- | --- |
+| String to int | Comparing whole-number fields stored as text. |
+| String to number | Comparing decimal fields stored as text. |
+
+## Steps
+
+<Steps>
+<Step title="Open the Ruleset Manager">
+
+Open **Ask Darpan** with `Cmd/Ctrl+K` or the floating **Ask Darpan** button. Search for **Ruleset Manager** and open the result for the saved run you are configuring.
+
+The Ruleset Manager shows the two compared sources, their schemas, and the current list of rules.
+
+</Step>
+<Step title="Open the rule editor">
+
+In the **Rules** section, choose **Edit Rules**. This opens the rule editor, where each rule appears in sequence as a file 1 field, an operator, and a file 2 field.
+
+</Step>
+<Step title="Add or edit a rule">
+
+Select an operator box to edit that rule, or add a new rule.
+
+- Choose the **Field** from the first source.
+- Choose the **Operator**.
+- Choose the matching field from the second source.
+
+Pick fields that should always line up when the two systems are in sync. A price field on one side maps to the price field on the other; a quantity to a quantity.
+
+</Step>
+<Step title="Add pre-actions when formats differ">
+
+When one side stores a value as text and the other as a number, add a **Pre Action** on the affected field side so the values compare correctly. Use **String to int** for whole numbers and **String to number** for decimals.
+
+</Step>
+<Step title="Save the rule">
+
+Choose **Save rule**. The rule joins the active comparison and is included in the next run.
+
+</Step>
+<Step title="Confirm the RuleSet">
+
+Return to the Ruleset Manager and confirm the rule list reflects every comparison you expect. The order is shown by sequence number.
+
+</Step>
+</Steps>
+
+## Expected result
+
+The saved run now carries an explicit RuleSet. The next time the run executes, Darpan matches records by primary ID, applies the RuleSet to each matched pair, and records a difference whenever a rule fails. Those differences are what you review and what drives run-completion alerts.
+
+## After authoring
+
+- Run the saved setup once and review the output to confirm rules flag the right differences. See [Run reconciliation](/guides/run-reconciliation) and [Review results](/guides/review-results).
+- Turn on run-completion alerts so failures surface without manual checking. See [Run-completion alerts](/guides/run-completion-alerts).
+- Schedule the run when the same comparison should repeat. See [Set up an automation](/guides/setup-automation).
+
+<Warning>
+A rule only runs against matched pairs. Records that exist on only one side are reported as "only in" differences regardless of the RuleSet. If too few pairs match, recheck primary ID fields and schema selection before tuning rules.
+</Warning>

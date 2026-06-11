@@ -5,6 +5,141 @@ description: "Major Darpan updates grouped by release tag."
 
 This page lists tagged Darpan releases from newest to oldest, with product and operator changes that affect upgrade, validation, or rollback decisions.
 
+Backend and UI tags are coordinated for major and minor releases (`v2.0.0`, `v2.1.0`). Patch tags between them are backend-only; the UI stays on the previous coordinated tag.
+
+## v2.1.2
+
+Release date: `2026-05-06` (backend hotfix)
+
+Changes in this tag:
+
+- API-backed source artifacts become downloadable from run results (DAR-259).
+- Tenant order API extraction windows are corrected for API sources (DAR-259).
+
+Validation and rollout notes:
+
+- Backend-only tag; the UI remains on `v2.1.0`.
+- Rollback target: `v2.1.1`.
+
+Public links:
+
+- Backend compare: `https://github.com/drpn-ai/darpan/compare/v2.1.1...v2.1.2`
+
+## v2.1.1
+
+Release date: `2026-05-05` (backend hotfix)
+
+Changes in this tag:
+
+- Run-result source details are recovered from stored artifacts when older result records are missing them (DAR-266).
+- The production Docker image reference is moved to `2.1.1`.
+
+Validation and rollout notes:
+
+- Backend-only tag; the UI remains on `v2.1.0`.
+- A follow-up hardening pass added a `data/releases/2.1.1/` upgrade pack with tenant-scoped unique indexes and performance indexes. Existing production databases need the DDL in `data/releases/2.1.1/MIGRATION.md`; fresh installs get the schema automatically.
+- Rollback target: `v2.1.0`.
+
+Public links:
+
+- Backend compare: `https://github.com/drpn-ai/darpan/compare/v2.1.0...v2.1.1`
+
+## v2.1.0
+
+Release date: `2026-05-05`
+
+Changes in this tag:
+
+- Run history and run-result views are easier to inspect, with result-row links, more resilient missing-output states, and collapsible JSON detail rendering.
+- Reconciliation create and diff flows use the canonical Darpan system-source values consistently across saved-run and API-backed workflows.
+- API source system cards in Run Details link back to the relevant HotWax or Shopify source configuration.
+- Shopify order extraction adds a bulk-operation client path; HotWax OMS REST order extraction adds pagination and window handling.
+- Security seed data adds the `DARPAN_ADMIN` permission group and clarifies `DARPAN_SUPER_ADMIN`.
+- Inventory adjustment retrieval code is removed from the core Darpan component and remains in the NetSuite integration boundary.
+- Public setup docs separate HotWax setup from Shopify setup.
+
+Validation and rollout notes:
+
+- Backend and UI ship together on `v2.1.0`. Integration components are tagged `shopify-darpan@v0.2.0`, `darpan-hotwax@v0.2.0`, and `netsuite-darpan@v0.1.0`.
+- Operator upgrade-data load: `./gradlew -b runtime/component/darpan/build.gradle loadDarpanUpgradeData`.
+- Rollback target: `v2.0.3` (backend) and `v2.0.0` (UI).
+
+Public links:
+
+- Backend compare: `https://github.com/drpn-ai/darpan/compare/v2.0.3...v2.1.0`
+- UI compare: `https://github.com/drpn-ai/darpan-ui/compare/v2.0.0...v2.1.0`
+
+## v2.0.3
+
+Release date: `2026-05-05` (backend hotfix)
+
+Changes in this tag:
+
+- Legacy saved-run system mappings are canonicalized and saved-run system-source aliases are fixed (DAR-271).
+- API source type data is validated before compare-source insert (DAR-271).
+- Startup table creation is enabled in production (DAR-269).
+- `NsRestletConfig` table bootstrap data is added.
+- The Docker base image is updated.
+
+Validation and rollout notes:
+
+- Backend-only tag; the UI remains on `v2.0.0`.
+- Rollback target: `v2.0.2`.
+
+Public links:
+
+- Backend compare: `https://github.com/drpn-ai/darpan/compare/v2.0.2...v2.0.3`
+
+## v2.0.2
+
+Release date: `2026-05-04` (backend patch)
+
+Changes in this tag:
+
+- Custom domains are allowed for the Darpan app (DAR-268).
+- New Firebase origins are allowed in the Docker defaults (DAR-268).
+
+Public links:
+
+- Backend compare: `https://github.com/drpn-ai/darpan/compare/v2.0.1...v2.0.2`
+
+## v2.0.1
+
+Release date: `2026-05-04` (backend patch)
+
+Changes in this tag:
+
+- Deployment references and the `DB_LOAD` variable are updated for the 2.0.x Docker rollout.
+
+Public links:
+
+- Backend compare: `https://github.com/drpn-ai/darpan/compare/v2.0.0...v2.0.1`
+
+## v2.0.0
+
+Release date: `2026-05-04`
+
+Changes in this tag:
+
+- Reconciliation moves onto saved-run and RuleSet-backed execution paths, with result pages handling missing records, field mismatches, and generated output rows more cleanly.
+- Automation management ships with automation dashboards and workflows, pending-run helpers, execution-state copy, and SFTP/API source modes.
+- Tenant/user settings, Shopify settings, OMS REST settings, and SFTP settings become first-class UI surfaces aligned with the shared workflow patterns.
+- Active tenant switching is part of the authenticated session and drives settings, schemas, RuleSets, saved runs, generated outputs, and tenant-scoped navigation.
+- Workflow controls are more keyboard-friendly, including Enter handling for shared dropdowns and progression controls.
+- The old LLM settings pages are removed from the UI.
+
+Validation and rollout notes:
+
+- Backend and UI must ship together. The UI assumes backend active-tenant, automation, settings, saved-run, and RuleSet result contracts introduced after `v1.1.1`.
+- Docker startup runs the component-owned `loadDarpanUpgradeData` task before Moqui starts unless `DARPAN_LOAD_UPGRADE_DATA=N`.
+- The production upgrade load contains automation enums, the automation scanner job, the `OMS` system-source update to HotWax, facade/entity-filter security records, SFTP scope enums, and Shopify/HotWax system-message remotes.
+- Rollback target: `v1.1.1` for active-tenant scoping, saved-run result viewing, automation execution, or settings visibility regressions.
+
+Public links:
+
+- Backend compare: `https://github.com/drpn-ai/darpan/compare/v1.1.1...v2.0.0`
+- UI compare: `https://github.com/drpn-ai/darpan-ui/compare/v1.1.1...v2.0.0`
+
 ## v1.1.1
 
 Release date: `2026-04-09`
@@ -25,8 +160,8 @@ Validation and rollout notes:
 
 Public links:
 
-- Backend compare: `https://github.com/hotwax/darpan/compare/v1.1.0...v1.1.1`
-- UI compare: `https://github.com/toaditi/darpan-ui/compare/v1.1.0...v1.1.1`
+- Backend compare: `https://github.com/drpn-ai/darpan/compare/v1.1.0...v1.1.1`
+- UI compare: `https://github.com/drpn-ai/darpan-ui/compare/v1.1.0...v1.1.1`
 
 ## v1.1.0
 
@@ -48,8 +183,8 @@ Validation and rollout notes:
 
 Public links:
 
-- Backend compare: `https://github.com/hotwax/darpan/compare/v1.0.0...v1.1.0`
-- UI compare: `https://github.com/toaditi/darpan-ui/compare/v1.0.0...v1.1.0`
+- Backend compare: `https://github.com/drpn-ai/darpan/compare/v1.0.0...v1.1.0`
+- UI compare: `https://github.com/drpn-ai/darpan-ui/compare/v1.0.0...v1.1.0`
 
 ## v1.0.0
 
@@ -68,5 +203,5 @@ Validation and rollout notes:
 
 Public links:
 
-- Backend release: `https://github.com/hotwax/darpan/releases/tag/v1.0.0`
-- UI release: `https://github.com/toaditi/darpan-ui/releases/tag/v1.0.0`
+- Backend release: `https://github.com/drpn-ai/darpan/releases/tag/v1.0.0`
+- UI release: `https://github.com/drpn-ai/darpan-ui/releases/tag/v1.0.0`

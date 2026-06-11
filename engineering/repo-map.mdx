@@ -9,8 +9,8 @@ Darpan engineering work is split across the frontend app and backend engine.
 
 | Repository | Stack | Owns | Repository root |
 | --- | --- | --- | --- |
-| [`toaditi/darpan-ui`](https://github.com/toaditi/darpan-ui) | Vue 3, TypeScript, Vite | Darpan frontend app, routes, Ask Darpan shell, browser workflows, frontend API clients | Repository root |
-| [`toaditi/darpan`](https://github.com/toaditi/darpan) | Moqui runtime component with XML services and Groovy helpers | Backend service contracts, entities, reconciliation engine, RuleSet processing, generated outputs | Component root |
+| [`drpn-ai/darpan-ui`](https://github.com/drpn-ai/darpan-ui) | Vue 3, TypeScript, Vite | Darpan frontend app, routes, Ask Darpan shell, browser workflows, frontend API clients | Repository root |
+| [`drpn-ai/darpan`](https://github.com/drpn-ai/darpan) | Moqui runtime component with XML services and Groovy helpers | Backend service contracts, entities, reconciliation engine, RuleSet processing, generated outputs | Component root |
 
 ## High-signal paths
 
@@ -26,4 +26,4 @@ Darpan engineering work is split across the frontend app and backend engine.
 
 ## Boundary rule
 
-Custom Darpan UI belongs in `toaditi/darpan-ui`, not backend `screen/**`, `template/**`, or `theme-library/**`. Backend service contracts belong in `toaditi/darpan` and are consumed from the Vue app.
+Custom Darpan UI belongs in `drpn-ai/darpan-ui`, not backend `screen/**`, `template/**`, or `theme-library/**`. Backend service contracts belong in `drpn-ai/darpan` and are consumed from the Vue app.
