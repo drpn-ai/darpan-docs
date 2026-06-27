@@ -3,9 +3,9 @@ title: "Author reconciliation rules"
 description: "Build the field comparison rules that decide when two systems line up and when Darpan flags a difference."
 ---
 
-A RuleSet is the comparison logic Darpan applies after it matches records across two sources. Each rule compares one field from the first source against one field from the second source. When a matched pair fails a rule, Darpan records a difference, which is what surfaces a sync issue for review and notifications.
+Rules are what turn a match into a business check — each one compares a field from the first source against the same-meaning field from the second. Any matched pair that fails a rule shows up as a difference, which is the output that drives alerts and review. Getting the rules right before you run means the output is useful the first time.
 
-Rules live with the saved run setup, so a run and its RuleSet are managed together. You author and edit rules in the **Ruleset Manager**.
+A RuleSet is the full set of comparison rules Darpan applies after it matches records across two sources. Rules live with the saved run setup, so a run and its RuleSet are managed together. You author and edit rules in the **Ruleset Manager**.
 
 ## Before you start
 
@@ -35,7 +35,7 @@ A matched pair passes the RuleSet when every active rule holds. If any rule fail
 
 ### Operators
 
-The Ruleset Manager offers these comparison operators:
+The **Ruleset Manager** offers these comparison operators:
 
 | Operator | Passes when |
 | --- | --- |
@@ -62,7 +62,7 @@ Pre-actions normalize a field value before the operator runs, so a comparison is
 
 Open **Ask Darpan** with `Cmd/Ctrl+K` or the floating **Ask Darpan** button. Search for **Ruleset Manager** and open the result for the saved run you are configuring.
 
-The Ruleset Manager shows the two compared sources, their schemas, and the current list of rules.
+The **Ruleset Manager** shows the two compared sources, their schemas, and the current list of rules.
 
 </Step>
 <Step title="Open the rule editor">
@@ -93,7 +93,7 @@ Choose **Save rule**. The rule joins the active comparison and is included in th
 </Step>
 <Step title="Confirm the RuleSet">
 
-Return to the Ruleset Manager and confirm the rule list reflects every comparison you expect. The order is shown by sequence number.
+Return to the **Ruleset Manager** and confirm the rule list reflects every comparison you expect. The order is shown by sequence number.
 
 </Step>
 </Steps>
