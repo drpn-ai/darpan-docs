@@ -30,6 +30,7 @@
 
 ## Style preferences
 
+- Voice and register: follow `VOICE.md` (the documentation calibration of `VOICE_GUIDE.md`). It is internal and must never be added to `docs.json`.
 - Use active voice and second person ("you").
 - Keep sentences concise.
 - Use sentence case for headings.
