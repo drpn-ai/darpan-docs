@@ -3,6 +3,8 @@ title: "Service layer"
 description: "How Darpan exposes and organizes backend services."
 ---
 
+Understanding the service layers clarifies where to add validation, change behavior, or trace a bug.
+
 Darpan backend calls use Moqui JSON-RPC through `/rpc/json`. The method name is a Moqui service name, for example:
 
 ```text
@@ -28,28 +30,7 @@ Facade services are the app integration point. The active facade files include:
 - `service/facade/ReconciliationFacadeServices.xml`
 - `service/facade/SearchFacadeServices.xml`
 
-`ReconciliationFacadeServices.xml` includes product-level operations such as:
-
-- `create#CsvRun`
-- `create#RuleSetRun`
-- `save#RuleSetRun`
-- `list#SavedRuns`
-- `save#SavedRunName`
-- `delete#SavedRun`
-- `run#SavedRunDiff`
-- `run#GenericDiff`
-- `list#GeneratedOutputs`
-- `get#GeneratedOutput`
-- `delete#GeneratedOutput`
-- `list#Mappings`
-- `get#Mapping`
-- `create#Mapping`
-- `save#Mapping`
-- `list#Automations`, `get#Automation`, `save#Automation`, `delete#Automation`
-- `pause#Automation`, `resume#Automation`, `run#AutomationNow`
-- `list#AutomationExecutions`, `list#AutomationSourceOptions`
-
-The full verified facade method list is in the [service catalog](/api-reference/service-catalog).
+The full verified facade method inventory is in the [service catalog](/api-reference/service-catalog).
 
 ## Core reconciliation services
 
