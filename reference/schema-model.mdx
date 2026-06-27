@@ -1,6 +1,6 @@
 ---
 title: "Schema model"
-description: "How to think about Darpan schemas."
+description: "Schema structure, lifecycle stages, and change control."
 ---
 
 A schema is a reusable contract for source data shape.
@@ -19,9 +19,13 @@ A schema is a reusable contract for source data shape.
 | --- | --- |
 | Draft | Create the initial schema from a known source sample. |
 | Validate | Run a small reconciliation or parse test. |
-| Adopt | Use the schema for repeated workflows. |
+| Adopt | Use the schema for recurring reconciliation runs. |
 | Revise | Update only when the source shape or business contract changes. |
 
 ## Change control
 
-Changing a schema can change future run output. When a schema change affects comparison behavior, record why it changed and which workflows use the revised schema.
+Changing a schema can change future run output. When a schema change affects comparison behavior, record why it changed and which reconciliation runs use the revised schema.
+
+---
+
+To create a schema in Darpan, see [Create a schema](/guides/create-schema).
