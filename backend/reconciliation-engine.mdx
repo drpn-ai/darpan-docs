@@ -3,6 +3,8 @@ title: "Reconciliation engine"
 description: "How Darpan turns source data into generated reconciliation output."
 ---
 
+This is where a run actually spends its time, so the two passes — base diff and rule evaluation — are worth understanding before making engine changes.
+
 The reconciliation engine is the run pipeline. It stages source data, normalizes records, compares matching keys, applies rules, and writes generated output for review.
 
 ## High-level flow
