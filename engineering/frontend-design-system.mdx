@@ -3,9 +3,9 @@ title: "Frontend design system"
 description: "The shared UI structure used to build Darpan frontend surfaces."
 ---
 
-Darpan's design system is a set of frontend contracts, not a separate component library. It lives in the Vue app through CSS variables, shared components, route metadata, and page-surface rules.
+Darpan's design system is a set of frontend contracts, not a separate component library; when a pattern is missing here, extend one of the sources below rather than adding page-local structure.
 
-The system keeps setup, reconciliation, and review screens consistent while letting backend contracts remain the source of truth for data, permissions, and generated output.
+It lives in the Vue app through CSS variables, shared components, route metadata, and page-surface rules. The system keeps setup, reconciliation, and review screens consistent while letting backend contracts remain the source of truth for data, permissions, and generated output.
 
 ## Sources of truth
 
@@ -76,7 +76,7 @@ This composition keeps saved state and user decisions separate. Static pages ans
 - Reuse shared UI and workflow components before creating a new component.
 - Add recurring layout classes to `src/style.css` instead of repeating scoped page CSS.
 - Keep route metadata current when adding or moving pages.
-- Use shared save, cancel, select, validation, and empty-state primitives for common interactions.
+- Use the surface primitives above for common save, cancel, select, validation, and empty-state interactions.
 - Keep custom Darpan UI in `darpan-ui`, not in backend `screen/**`, `template/**`, or `theme-library/**`.
 - Let backend services own tenant filtering, validation, reconciliation rules, and generated-output paths.
 
@@ -85,9 +85,7 @@ When a pattern appears on more than one page, it belongs in a shared contract. W
 ## Migration rules
 
 - Settings pages split into static saved-record surfaces and workflow create/edit surfaces when one page is doing both jobs.
-- Repeated layout patterns belong in shared utility classes in `src/style.css`, not page-local scoped CSS.
 - Static pages preserve route behavior and workflow-origin state when they launch workflows.
-- Custom page behavior stays in `darpan-ui`.
 
 Page tests cover shared contract classes. Focused UI tests run before broader UI checks.
 
