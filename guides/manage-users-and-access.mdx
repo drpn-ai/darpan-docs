@@ -3,4 +3,53 @@ title: "Manage users and access"
 description: "Create users, grant active-company or active-tenant access, and assign roles."
 ---
 
-This guide covers creating users, granting active-company or active-tenant access, and assigning roles.
+User management is a Super Admin task — it sits outside the Tenant Admin scope entirely. Knowing where that line is saves time when a Tenant Admin asks why they cannot add someone to their tenant, or when a new team member cannot see the right data after signing in.
+
+If you are a Tenant Admin who needs a user added or a role changed, ask a Super Admin. See [When to ask a Super Admin](/getting-started/tenant-admin-quickstart#when-to-ask-a-super-admin).
+
+## Access model
+
+Darpan access is session-based. Users sign in, receive a session, and operate within the active company or active tenant available to them. Permissions are evaluated per active context, so a user can have different capabilities in different companies or tenants.
+
+Tenant permission membership is separate from tenant identity. A user's permission level for a given tenant comes from membership records, not from a single global role applied everywhere.
+
+## Roles
+
+| Role | Typical scope |
+| --- | --- |
+| Super Admin | Manages Darpan platform settings, users, tenants, permission assignments, and tenant data. |
+| Tenant Admin | Manages tenant-owned settings, connections, schemas, saved runs, automations, and results for the active tenant. |
+| Tenant User | Views tenant data, uploads files, runs reconciliation, and reviews output without changing tenant setup records. |
+
+## Before you start
+
+Confirm:
+
+- You are signed in as a Super Admin.
+- The user's identifier is known.
+- You know which active company or active tenant the user should access.
+- You know the role to assign: Super Admin, Tenant Admin, or Tenant User.
+
+## Steps
+
+<Note>
+The exact Ask Darpan search destination for user management is not yet documented on this page. Confirm the search term in-app before following the steps below. The sequence reflects what a Super Admin does: create the user, grant access, assign the role.
+</Note>
+
+1. Open **Ask Darpan** with `Cmd/Ctrl+K` or the floating **Ask Darpan** button. Search for user management. (Confirm the exact search destination in-app.)
+2. Create the user record and set the user's identifier.
+3. Grant access to the intended active company or active tenant.
+4. Assign the role: Super Admin, Tenant Admin, or Tenant User.
+5. Confirm the user can sign in and that the active tenant context is correct after first sign-in.
+
+## Expected result
+
+The user can sign in and operate within the active company or active tenant you granted. A Tenant Admin can manage that tenant's connections, schemas, saved runs, automations, and results. A Tenant User can view data, upload files, run reconciliation, and review output — but cannot edit tenant setup records.
+
+## Changing access
+
+To change a user's role or remove access, follow the same Super Admin path. Permissions are evaluated per active context, so removing access from one tenant does not affect the user's access to other tenants they belong to.
+
+## Next step
+
+See [Auth and access](/reference/auth-and-access) for the full session and permission model, and [Manage tenant settings](/guides/manage-tenant-settings) for the tenant-level settings a Tenant Admin controls after access is granted.
