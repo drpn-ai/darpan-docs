@@ -3,6 +3,8 @@ title: "JSON-RPC"
 description: "Request and response shape for Darpan JSON-RPC calls."
 ---
 
+All Darpan backend calls use `POST /rpc/json` with a JSON-RPC 2.0 envelope.
+
 ## Request shape
 
 ```json
@@ -49,3 +51,5 @@ Authenticated calls also need the session cookie established by the login flow.
 ```
 
 Service-specific fields vary by method. They are documented from backend facade definitions and verified runtime responses.
+
+For a catalog of available methods, see [Service catalog](/api-reference/service-catalog).
