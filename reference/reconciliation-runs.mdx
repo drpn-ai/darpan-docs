@@ -1,14 +1,14 @@
 ---
 title: "Reconciliation runs"
-description: "Stable concepts for saved reconciliation execution."
+description: "Reconciliation run data model, status values, and preservation guidelines."
 ---
 
-A reconciliation run captures one execution of a compare workflow.
+A reconciliation run is one execution of a reconciliation.
 
 ## Run data to preserve
 
 - Who started the run
-- Active company or tenant context
+- Active company or active tenant
 - Selected schemas for source shape
 - RuleSet or rules used for comparison logic
 - Source inputs
@@ -28,3 +28,7 @@ A reconciliation run captures one execution of a compare workflow.
 ## Review principle
 
 Treat the run as evidence. If you change schema, mapping, source files, or rules, create a new run instead of overwriting the old result.
+
+---
+
+To start a run, see [Run a reconciliation](/guides/run-reconciliation).
