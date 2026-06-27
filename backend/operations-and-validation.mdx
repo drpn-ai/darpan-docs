@@ -42,3 +42,18 @@ Backend engine changes are ready to merge when:
 - Groovy helpers do not hide normal service orchestration.
 - Generated outputs include both descriptor metadata and scoped file handling.
 - Tests cover the changed contract or processing path.
+
+## Expected service documentation
+
+Backend service documentation includes:
+
+- Service name
+- Owning file
+- Inputs and outputs
+- Authentication and authorization expectations
+- Runtime side effects
+- Verification path
+
+## Troubleshooting
+
+For backend failures, read the earliest meaningful backend log entry for the request. The final exception often hides the first contract or data-shape problem.

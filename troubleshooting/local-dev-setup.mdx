@@ -1,0 +1,20 @@
+---
+title: "Local development setup"
+description: "Recover from common local Darpan setup, JDK 21, and Spark startup failures."
+---
+
+## Common fixes
+
+| Problem | Fix |
+| --- | --- |
+| Backend fails to start with a `JVM version 21` or class-version error | Make JDK 21 the active Java: `export JAVA_HOME=$(/usr/libexec/java_home -v 21)`. The backend does not run on Java 17. |
+| Backend boots but reconciliation/Spark fails on `sun.nio.ch.DirectBuffer` | Export `JAVA_TOOL_OPTIONS` with the `--add-opens` set before starting the backend. |
+| `Repository not found` while cloning a `drpn-ai` repo | Confirm GitHub access or switch to the SSH clone URL your account can use. |
+| `runtime directory not found` | Run `./gradlew getRuntime` from `darpan-backend` before loading data. |
+| Gradle cannot find `:runtime:component:moqui-sftp` | Clone `moqui-sftp` into `runtime/component`. |
+| `Task 'loadDarpanSetup' not found` | Use `./gradlew load` for a fresh setup. `loadDarpanSetup` was removed. |
+| `npm install` or Vite fails on Node version | Use Node.js 20 or newer. |
+| Backend starts but UI API calls fail | Wait for Moqui boot to finish, then refresh the UI. |
+| Login shows no active session | Create the initial admin user from `http://localhost:8080/Login`, then sign in through the UI. |
+| Data load fails with a database lock | Stop `npm run dev:stack` or any running backend process before rerunning the load. |
+| Ports keep changing or Vite starts on a different port | Use `npm run dev:stack`; it targets `8080` and `5173` and clears old listeners. |

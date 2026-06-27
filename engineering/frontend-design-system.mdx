@@ -82,6 +82,15 @@ This composition keeps saved state and user decisions separate. Static pages ans
 
 When a pattern appears on more than one page, it belongs in a shared contract. When a pattern is unique to one page, local CSS stays small and the code shape explains the reason.
 
+## Migration rules
+
+- Settings pages split into static saved-record surfaces and workflow create/edit surfaces when one page is doing both jobs.
+- Repeated layout patterns belong in shared utility classes in `src/style.css`, not page-local scoped CSS.
+- Static pages preserve route behavior and workflow-origin state when they launch workflows.
+- Custom page behavior stays in `darpan-ui`.
+
+Page tests cover shared contract classes. Focused UI tests run before broader UI checks.
+
 ## Verification
 
 Design-system changes are checked at the contract level.

@@ -30,6 +30,7 @@
             "group": "Guides",
             "pages": [
               "guides/manage-tenant-settings",
+              "guides/manage-users-and-access",
               "guides/connect-sftp",
               "guides/connect-netsuite",
               "guides/setup-shopify",
@@ -39,9 +40,9 @@
               "guides/setup-reconciliation-run",
               "guides/author-rules",
               "guides/run-reconciliation",
+              "guides/review-results",
               "guides/setup-automation",
-              "guides/run-completion-alerts",
-              "guides/review-results"
+              "guides/run-completion-alerts"
             ]
           },
           {
@@ -60,7 +61,9 @@
               "troubleshooting/login-and-session",
               "troubleshooting/file-upload",
               "troubleshooting/connections",
-              "troubleshooting/reconciliation-runs"
+              "troubleshooting/reconciliation-runs",
+              "troubleshooting/automations-and-alerts",
+              "troubleshooting/local-dev-setup"
             ]
           }
         ]
@@ -104,8 +107,7 @@
             "group": "Frontend app",
             "pages": [
               "engineering/frontend-pwa-philosophy",
-              "engineering/frontend-design-system",
-              "engineering/ui-page-surface-contracts"
+              "engineering/frontend-design-system"
             ]
           },
           {
@@ -114,7 +116,6 @@
               "engineering/overview",
               "engineering/process",
               "engineering/repo-map",
-              "engineering/backend-reconciliation-notes",
               "engineering/release-discipline"
             ]
           }
