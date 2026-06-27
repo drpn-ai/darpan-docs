@@ -1,9 +1,9 @@
 ---
 title: "Set up HotWax"
-description: "Create the HotWax REST source used by API-backed reconciliation runs and automations."
+description: "Create the HotWax connection used by API-backed reconciliation runs and automations."
 ---
 
-HotWax setup stores the REST connection Darpan uses to read order data for reconciliation runs and automations.
+HotWax setup is a one-time task — save the connection once and every reconciliation run or automation that reads HotWax order data can use it from then on.
 
 <Note>
 Keep passwords, JWT bearer tokens, API keys, customer hostnames, and account-specific values in secure configuration. The docs should describe the sequence, not store credentials.
@@ -13,7 +13,7 @@ Keep passwords, JWT bearer tokens, API keys, customer hostnames, and account-spe
 
 Confirm:
 
-- You are signed in to the correct company or tenant.
+- You are signed in to the correct active company or active tenant.
 - Your user can edit connection settings.
 - The HotWax Moqui API URL is known.
 - The HotWax authentication type is known: none, basic, bearer, or API key.
@@ -28,7 +28,7 @@ Confirm:
 Open **Ask Darpan** with `Cmd/Ctrl+K` or the floating **Ask Darpan** button. Search for **Open HotWax Settings** and open the result.
 
 </Step>
-<Step title="Create the HotWax source">
+<Step title="Create the HotWax connection">
 
 Choose **Create HotWax Source**. Answer the setup questions:
 
@@ -39,14 +39,14 @@ Choose **Create HotWax Source**. Answer the setup questions:
 
 For bearer authentication, use the JWT token value from HotWax. Darpan sends it as the HTTP `Authorization: Bearer <jwt-token>` header.
 
-Save the source. Darpan creates it as active and derives the config ID from the label. If the ID, active state, auth details, or endpoint access needs to change later, open the saved source from **Open HotWax Settings** and edit it.
+Save the connection. Darpan creates it as active and derives the connection ID from the label. If the ID, active state, auth details, or endpoint access needs to change later, open the saved connection from **Open HotWax Settings** and edit it.
 
 </Step>
-<Step title="Confirm the source is reusable">
+<Step title="Confirm the connection is reusable">
 
-Return to **Open HotWax Settings**. The saved source should appear on the settings surface.
+Return to **Open HotWax Settings**. The saved connection should appear on the settings surface.
 
-The source is ready when a reconciliation run or automation can select HotWax as an API source.
+The connection is ready when a reconciliation run or automation can select HotWax as an API source.
 
 </Step>
 </Steps>
@@ -58,5 +58,5 @@ Use a small read-only reconciliation run or automation test with a narrow date r
 ## Troubleshooting
 
 - If HotWax fails, check the Moqui API URL, auth type, bearer token validity, API key header behavior, and tenant context.
-- If HotWax does not appear as an API source, confirm the source is active and that **Orders API** is enabled on the saved record.
+- If HotWax does not appear as an API source, confirm the connection is active and that **Orders API** is enabled on the saved record.
 - If the request succeeds but returns no records, test a wider date range and confirm the tenant has orders for that period.
