@@ -3,6 +3,8 @@ title: "Data access and tenancy"
 description: "How backend services scope users, companies, tenants, and generated files."
 ---
 
+Access and scope failures are the most common source of unexpected data gaps, so this is where to look first when records appear missing or return empty.
+
 Darpan services resolve who is acting and which tenant or company scope is active before returning or mutating data.
 
 ## Active scope
@@ -58,3 +60,5 @@ Generated output behavior includes both sides:
 ## Backend contract
 
 Data visibility, mutation access, and output isolation are backend contracts. The UI can guide a workflow, but backend services enforce the access model before returning or changing scoped data.
+
+For the product-facing auth and access model, see [Auth and access](/reference/auth-and-access).
