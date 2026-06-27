@@ -3,9 +3,7 @@ title: "Product overview"
 description: "How Darpan turns setup records into reviewable reconciliation output."
 ---
 
-Darpan is built around the saved reconciliation run. A run records the source systems, schemas, matching keys, rules, and execution history needed to repeat a comparison without rebuilding the setup each time.
-
-The product works best when each setup record has a clear job: connections provide access, schemas describe source data, RuleSets classify differences, and generated outputs preserve evidence.
+Most of Darpan's work is front-loaded: you build connections, schemas, and rules once, then attach them to a saved run. After that, running and reviewing is the repeatable part. This page maps the product objects and how they connect — [Core concepts](/getting-started/core-concepts) has the vocabulary definitions if you need them.
 
 ## Story of a run
 
@@ -27,7 +25,7 @@ The product works best when each setup record has a clear job: connections provi
 | Connection | Saved access details for systems such as SFTP, NetSuite, and AI providers. |
 | Schema | Field and type contract for a source file or record payload. |
 | RuleSet | Rules-backed classification and decision model for matched records. |
-| Saved run | Reusable compare setup with source, schema, key, and rule configuration. |
+| Saved run | Saved configuration for a reconciliation run: source, schema, key, and rules. |
 | Generated output | Persisted result metadata and files from a completed run. |
 
 ## Related docs
