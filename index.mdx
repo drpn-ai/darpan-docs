@@ -5,41 +5,39 @@ description: "Product, API, backend, release, and engineering docs for Darpan."
 
 Darpan is a reconciliation workspace. It connects source systems, describes source data with schemas, executes reconciliation runs, applies RuleSets, and preserves the output needed to explain each difference.
 
-Most of the work in Darpan is front-loaded: connections, schemas, and a saved run are set up once and reused. The docs follow that shape — setup records first, then execution, then output and follow-up. If this is your first time, the quickstart below walks the full path end to end.
+Most of the work in Darpan is front-loaded: connections, schemas, and a saved run are set up once and reused. The docs follow that shape — set up your sources, build a run, then review output and handle the admin around it. If this is your first time, the quickstart walks the full path end to end.
 
 <Card title="Start with the quickstart" icon="play" href="/quickstart" horizontal>
   One complete path from environment selection to result review.
-</Card>
-
-<Card title="Set up Darpan independently" icon="route" href="/getting-started/set-up-darpan-independently" horizontal>
-  Clone the backend and UI repositories, load local data, and start the development stack.
 </Card>
 
 <Card title="Tenant Admin quickstart" icon="user-gear" href="/getting-started/tenant-admin-quickstart" horizontal>
   Manage one tenant's settings, connections, saved runs, automations, and results.
 </Card>
 
-## Product path
+## Set up sources
 
 <Columns cols={2}>
-  <Card title="Ask Darpan navigation" icon="sparkles" href="/getting-started/ask-darpan-navigation">
-    Open pages, workflows, setup records, saved runs, and generated outputs from one search surface.
+  <Card title="SFTP servers" icon="folder-tree" href="/guides/connect-sftp">
+    Store the SFTP file-access connection that runs reuse.
   </Card>
-  <Card title="Independent setup" icon="route" href="/getting-started/set-up-darpan-independently">
-    Clone repositories, install dependencies, start the local stack, and verify sign-in.
+  <Card title="NetSuite" icon="plug" href="/guides/connect-netsuite">
+    Save the NetSuite connection used to pull source records.
   </Card>
-  <Card title="Tenant settings" icon="sliders" href="/guides/manage-tenant-settings">
-    Set tenant timezone and run-completion notifications.
-  </Card>
-  <Card title="Connections" icon="plug" href="/guides/connect-sftp">
-    Store SFTP, NetSuite, Shopify, HotWax, and provider configuration that runs can reuse.
-  </Card>
-  <Card title="Shopify setup" icon="shop" href="/guides/setup-shopify">
+  <Card title="Shopify" icon="shop" href="/guides/setup-shopify">
     Store the Shopify Admin API connection used by runs and automations.
   </Card>
-  <Card title="HotWax setup" icon="server" href="/guides/setup-hotwax">
+  <Card title="HotWax" icon="server" href="/guides/setup-hotwax">
     Store the HotWax connection used by runs and automations.
   </Card>
+  <Card title="AI provider" icon="sparkles" href="/guides/configure-ai">
+    Configure the AI provider — a Darpan admin task you do once per provider.
+  </Card>
+</Columns>
+
+## Build a run
+
+<Columns cols={2}>
   <Card title="Schemas" icon="brackets-curly" href="/guides/create-schema">
     Define source data shapes before a run depends on the fields.
   </Card>
@@ -52,17 +50,50 @@ Most of the work in Darpan is front-loaded: connections, schemas, and a saved ru
   <Card title="Run reconciliation" icon="shuffle" href="/guides/run-reconciliation">
     Execute a saved or newly configured comparison.
   </Card>
-  <Card title="Automation setup" icon="clock" href="/guides/setup-automation">
-    Schedule or manually trigger a saved reconciliation run.
+  <Card title="Review results" icon="table" href="/guides/review-results">
+    Interpret generated differences and choose the next action.
+  </Card>
+</Columns>
+
+## Admin & alerts
+
+<Columns cols={2}>
+  <Card title="Tenant settings" icon="sliders" href="/guides/manage-tenant-settings">
+    Set tenant timezone and run-completion notifications.
+  </Card>
+  <Card title="Users & access" icon="users" href="/guides/manage-users-and-access">
+    Grant tenant access and assign roles.
+  </Card>
+  <Card title="Automation" icon="clock" href="/guides/setup-automation">
+    Schedule a saved reconciliation run, or run it on demand.
   </Card>
   <Card title="Run-completion alerts" icon="bell" href="/guides/run-completion-alerts">
     Get a Google Chat message when a run finishes flagging differences.
   </Card>
-  <Card title="Review results" icon="table" href="/guides/review-results">
-    Interpret generated differences and choose the next action.
+</Columns>
+
+## Find your way around
+
+<Columns cols={2}>
+  <Card title="Core concepts" icon="book" href="/getting-started/core-concepts">
+    The handful of terms every Darpan screen assumes you know.
   </Card>
-  <Card title="API reference" icon="terminal" href="/api-reference/overview">
-    Call the JSON-RPC services behind setup, execution, and review.
+  <Card title="Ask Darpan navigation" icon="magnifying-glass" href="/getting-started/ask-darpan-navigation">
+    Open pages, setup records, saved runs, and generated outputs from one search surface.
+  </Card>
+</Columns>
+
+## Run Darpan yourself
+
+<Columns cols={2}>
+  <Card title="Independent setup" icon="route" href="/getting-started/set-up-darpan-independently">
+    Clone repositories, install dependencies, start the local stack, and verify sign-in.
+  </Card>
+  <Card title="Environments" icon="layer-group" href="/getting-started/environments">
+    The contexts Darpan runs in, from local development to the hosted app.
+  </Card>
+  <Card title="Local dev troubleshooting" icon="wrench" href="/troubleshooting/local-dev-setup">
+    Recover from common JDK 21, Spark, and clone failures.
   </Card>
 </Columns>
 
@@ -76,6 +107,9 @@ The engineering docs explain how the product surface maps to the backend engine:
   </Card>
   <Card title="Engineering workflow" icon="code" href="/engineering/overview">
     Repo boundaries and verification model used for Darpan development.
+  </Card>
+  <Card title="API reference" icon="terminal" href="/api-reference/overview">
+    Call the JSON-RPC services behind setup, execution, and review.
   </Card>
   <Card title="Release updates" icon="tag" href="/releases/updates">
     Shipped tags and their major changes.

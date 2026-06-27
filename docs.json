@@ -18,29 +18,37 @@
             "pages": [
               "index",
               "quickstart",
-              "getting-started/set-up-darpan-independently",
-              "getting-started/tenant-admin-quickstart",
               "getting-started/overview",
               "getting-started/core-concepts",
               "getting-started/ask-darpan-navigation",
-              "getting-started/environments"
+              "getting-started/tenant-admin-quickstart"
             ]
           },
           {
-            "group": "Guides",
+            "group": "Set up sources",
             "pages": [
-              "guides/manage-tenant-settings",
-              "guides/manage-users-and-access",
               "guides/connect-sftp",
               "guides/connect-netsuite",
               "guides/setup-shopify",
               "guides/setup-hotwax",
-              "guides/configure-ai",
+              "guides/configure-ai"
+            ]
+          },
+          {
+            "group": "Build a run",
+            "pages": [
               "guides/create-schema",
               "guides/setup-reconciliation-run",
               "guides/author-rules",
               "guides/run-reconciliation",
-              "guides/review-results",
+              "guides/review-results"
+            ]
+          },
+          {
+            "group": "Admin & alerts",
+            "pages": [
+              "guides/manage-tenant-settings",
+              "guides/manage-users-and-access",
               "guides/setup-automation",
               "guides/run-completion-alerts"
             ]
@@ -51,7 +59,6 @@
               "reference/file-formats",
               "reference/schema-model",
               "reference/reconciliation-runs",
-              "reference/auth-and-access",
               "reference/glossary"
             ]
           },
@@ -62,7 +69,19 @@
               "troubleshooting/file-upload",
               "troubleshooting/connections",
               "troubleshooting/reconciliation-runs",
-              "troubleshooting/automations-and-alerts",
+              "troubleshooting/automations-and-alerts"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Run it yourself",
+        "groups": [
+          {
+            "group": "Local & self-host",
+            "pages": [
+              "getting-started/set-up-darpan-independently",
+              "getting-started/environments",
               "troubleshooting/local-dev-setup"
             ]
           }
@@ -76,7 +95,8 @@
             "pages": [
               "api-reference/overview",
               "api-reference/json-rpc",
-              "api-reference/service-catalog"
+              "api-reference/service-catalog",
+              "reference/auth-and-access"
             ]
           },
           {
