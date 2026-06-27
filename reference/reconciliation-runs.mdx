@@ -20,10 +20,12 @@ A reconciliation run is one execution of a reconciliation.
 
 | Status | Meaning |
 | --- | --- |
-| Created | The run record exists but processing has not completed. |
+| Pending | The run record exists but processing has not started or completed. |
 | Running | Darpan is processing inputs. |
-| Completed | Processing finished and output is ready to review. |
+| Succeeded | Processing finished and output is ready to review. |
+| No data | Processing finished but no input data was available. |
 | Failed | Processing stopped before producing expected output. |
+| Skipped duplicate | The run matched an existing run and was skipped as a duplicate. |
 
 ## Review principle
 
