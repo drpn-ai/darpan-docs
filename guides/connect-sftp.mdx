@@ -3,7 +3,7 @@ title: "Connect SFTP"
 description: "Create or maintain an SFTP connection record."
 ---
 
-Use an SFTP connection when a run reads input files from, or writes output files to, an external server.
+An SFTP connection is a one-time record — set it up once and every run or automation that needs files from that server can use it without re-entering credentials.
 
 ## Before you start
 
@@ -36,3 +36,11 @@ After saving, run a small workflow that verifies the server path and credentials
 <Warning>
 Private keys, passwords, and customer hostnames belong in secure configuration, not public docs.
 </Warning>
+
+## Expected result
+
+The connection appears in **Open SFTP Servers** and can be selected by any reconciliation run or automation that reads from or writes to that server.
+
+## Next step
+
+Use the connection in [Set up a reconciliation run](/guides/setup-reconciliation-run) or [Set up an automation](/guides/setup-automation).
