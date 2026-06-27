@@ -3,12 +3,14 @@ title: "File upload"
 description: "Troubleshoot source file upload and parsing issues."
 ---
 
+Upload problems are usually about the file, not the app. Format mismatch, a schema that's out of date with the source, or an encoding issue that slipped through — these checks cover the most common causes. Work through them before re-exporting or changing the schema.
+
 ## Symptoms
 
 - Upload does not start.
 - Upload completes but parsing fails.
 - Fields appear shifted or missing.
-- A run completes with unexpected zero matches.
+- A run completes with unexpected zero matches. (If the file uploaded cleanly but the run shows zero matches, see [Reconciliation runs](/troubleshooting/reconciliation-runs) for join-key and business-period checks.)
 
 ## Checks
 
