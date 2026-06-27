@@ -3,7 +3,7 @@ title: "Service catalog"
 description: "Verified backend facade services exposed through Darpan JSON-RPC."
 ---
 
-Darpan API references focus on verified backend facade contracts exposed through Moqui JSON-RPC. Every method below is defined in the Darpan backend component under `service/facade/*.xml` (or a named integration component) and is called as the JSON-RPC `method` value.
+Every method below is a verified backend facade service defined in `service/facade/*.xml` in the Darpan backend component (or a named integration component) and called as the JSON-RPC `method` value.
 
 All methods require an authenticated session unless noted. Login, logout, and session-info methods accept anonymous calls so the UI can establish or end a session.
 
@@ -90,3 +90,5 @@ Dedicated service references describe:
 - Error behavior
 - Example request
 - Related facade contract
+
+For the transport contract used by all methods above, see [JSON-RPC transport](/api-reference/json-rpc).
