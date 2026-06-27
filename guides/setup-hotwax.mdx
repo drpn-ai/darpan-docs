@@ -30,12 +30,13 @@ Open **Ask Darpan** with `Cmd/Ctrl+K` or the floating **Ask Darpan** button. Sea
 </Step>
 <Step title="Create the HotWax connection">
 
-Choose **Create HotWax Source**. Answer the setup questions:
+Choose **Create Auth Profile**. Answer the setup questions:
 
 1. **Base URL**: use the HotWax Moqui API URL, not the storefront, admin app, or another system URL
-2. **Auth Type**
-3. Username and password for basic auth, a JWT token retrieved from HotWax when **Bearer** is selected, or an API key when the auth type requires it
-4. HotWax label
+2. **Timezone**: which timezone Darpan should use for HotWax date windows
+3. **Auth Type**
+4. Username and password for basic auth, a JWT token retrieved from HotWax when **Bearer** is selected, or an API key when the auth type requires it
+5. HotWax label
 
 For bearer authentication, use the JWT token value from HotWax. Darpan sends it as the HTTP `Authorization: Bearer <jwt-token>` header.
 
