@@ -11,7 +11,7 @@ The app is implemented in [`drpn-ai/darpan-ui`](https://github.com/drpn-ai/darpa
 
 | Area | Current behavior |
 | --- | --- |
-| App shell | `src/App.vue` owns the shared shell, floating actions, user menu, tenant switcher, theme toggle, and command palette. |
+| App shell | `src/App.vue` owns the shared shell, floating actions, user menu, read-only active-tenant indicator, theme toggle, and command palette. The actual tenant switch control lives on the **User Settings** page (`src/pages/settings/UserSettingsPage.vue`). |
 | Routing | `src/router/index.ts` is the route registry and auth gate. Route metadata tells the shell whether the page is static, workflow, authenticated, or public. |
 | Navigation | **Ask Darpan** is the primary global navigation model. The command palette combines static destinations with limited record-backed actions such as saved outputs and SFTP records. |
 | Workflow continuity | Static pages launch workflows with origin state. Workflow pages can return to the originating static page instead of forcing users back through the dashboard. |
