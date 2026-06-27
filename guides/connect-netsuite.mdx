@@ -3,7 +3,7 @@ title: "Connect NetSuite"
 description: "Capture the NetSuite setup Darpan needs for reconciliation workflows."
 ---
 
-NetSuite setup links Darpan to ERP data used in reconciliation workflows. Clear authentication, endpoint, RESTlet, and SuiteQL details make failures easier to trace.
+NetSuite involves more moving parts than most connections — account IDs, role permissions, integration records, script deployment status, RESTlet details. Confirming these before you start in Darpan means any connection failure gives you a useful error code instead of a dead end.
 
 ## Before you start
 
@@ -24,3 +24,11 @@ If the connection fails, capture the exact NetSuite error code and message. Most
 <Note>
 The API reference and engineering docs cover request shape. Secrets and account-specific values belong in secure configuration, not documentation.
 </Note>
+
+## Expected result
+
+The connection is tested read-only and attached to the workflow that needs it.
+
+## Next step
+
+Use the connection in [Set up a reconciliation run](/guides/setup-reconciliation-run) or [Set up an automation](/guides/setup-automation).
