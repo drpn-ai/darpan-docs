@@ -16,6 +16,17 @@ All Darpan backend calls use `POST /rpc/json` with a JSON-RPC 2.0 envelope.
 }
 ```
 
+The following calls `get#SessionInfo` from the Auth facade:
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "facade.AuthFacadeServices.get#SessionInfo",
+  "params": {}
+}
+```
+
 ## Required headers
 
 ```http
