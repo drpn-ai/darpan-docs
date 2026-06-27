@@ -1,9 +1,9 @@
 ---
 title: "File formats"
-description: "Reference guidance for files used by Darpan."
+description: "Format requirements for CSV and JSON source files used in Darpan."
 ---
 
-Darpan workflows commonly use structured tabular or JSON-like source data.
+These requirements apply to CSV and JSON source files used in Darpan reconciliation runs.
 
 ## General requirements
 
@@ -24,3 +24,7 @@ Use predictable object keys and arrays. Avoid changing object nesting between ru
 ## Troubleshooting
 
 If upload or parse behavior is unexpected, check encoding, delimiters, header names, blank lines, duplicate columns, and field type assumptions first.
+
+---
+
+To define how source file fields map into Darpan, see [Schema model](/reference/schema-model).
