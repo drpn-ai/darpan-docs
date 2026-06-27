@@ -57,3 +57,13 @@ A 2026-06-27 accuracy audit found that most factual errors were UI-facing claims
 - Any claim about a **UI label, Ask Darpan destination, button text, wizard prompt or question, schedule preset, on-screen status, or screen flow** must be grep-confirmed against `darpan-ui/src` before publishing. Keep literal in-app labels verbatim.
 - A backend-only review is structurally blind to these. Treat `darpan-ui/src` as a first-class source of truth alongside the Moqui `darpan` component, not an afterthought.
 - When in doubt about an in-app step that the PWA does not expose, state that honestly rather than inventing a destination or control.
+
+### Verify repo / location / URL claims against the live source, not the local clone
+
+A repository name, owner, or GitHub URL must be confirmed against the **live GitHub API**, not the local clone's git remote. A local remote is whatever the clone was configured to point at and keeps resolving through redirects after a repo is transferred or renamed — so a stale doc and a stale remote agree and pass a naive check. Confirm the canonical name:
+
+```
+gh api repos/<owner>/<repo> --jq '.full_name'   # returns the CURRENT canonical owner/repo; if it differs from what you queried, the name you have is a redirect
+```
+
+The canonical Darpan repos are under the `drpn-ai` org (`drpn-ai/darpan`, `drpn-ai/darpan-ui`, `drpn-ai/darpan-docs`, `drpn-ai/darpan-hotwax`, `drpn-ai/netsuite-darpan`, `drpn-ai/shopify-darpan`) plus upstream `moqui/moqui-framework` and `moqui/moqui-sftp`. The personal-account name `toaditi/darpan` is an old alias that redirects to `drpn-ai/darpan` — do not use it in docs.
