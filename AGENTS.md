@@ -49,3 +49,11 @@
 - For feature or bug work in the Darpan code repos, Linear remains the source of truth.
 - For pure docs setup and maintenance in this repo, no Linear issue is required unless the user asks for one.
 - Keep `docs.json` navigation in sync with moved or renamed pages.
+
+## Verify UI claims against `darpan-ui` (drift guardrail)
+
+A 2026-06-27 accuracy audit found that most factual errors were UI-facing claims that a backend-only review could not catch (a prior "refresh to current backend" verified Moqui services but never re-checked the UI). To prevent recurrence:
+
+- Any claim about a **UI label, Ask Darpan destination, button text, wizard prompt or question, schedule preset, on-screen status, or screen flow** must be grep-confirmed against `darpan-ui/src` before publishing. Keep literal in-app labels verbatim.
+- A backend-only review is structurally blind to these. Treat `darpan-ui/src` as a first-class source of truth alongside the Moqui `darpan` component, not an afterthought.
+- When in doubt about an in-app step that the PWA does not expose, state that honestly rather than inventing a destination or control.
