@@ -3,6 +3,8 @@ title: "Reconciliation runs"
 description: "Troubleshoot failed or surprising reconciliation output."
 ---
 
+A run that fails or returns empty usually leaves evidence — the result status, the support logs, or the source data itself. The failure is fixable. Start with the result row, then work down through these checks.
+
 ## Failed run
 
 Check:
@@ -14,6 +16,8 @@ Check:
 - The run or support logs show the first processing error, not only the final failure.
 
 ## Zero matches
+
+If zero matches followed a file upload issue — encoding, leading zeros, or delimiter — check [File upload](/troubleshooting/file-upload) first.
 
 Check:
 
