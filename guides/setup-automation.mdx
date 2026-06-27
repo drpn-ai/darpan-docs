@@ -1,11 +1,9 @@
 ---
 title: "Set up an automation"
-description: "Create a scheduled or manual automation for a saved reconciliation run."
+description: "Create a scheduled automation for a saved reconciliation run, or run one on demand."
 ---
 
 An automation puts a reconciliation run on a schedule — or makes it available on demand — so you are not manually running the same comparison every day. Set the input source and cadence once; Darpan handles execution and alerts from then on.
-
-This tutorial is a scaffold for reconciliation automation setup. It reflects the current automation wizard and will be tightened after the final source and schedule flows are confirmed.
 
 ## Before you start
 
@@ -14,7 +12,7 @@ Confirm:
 - A saved reconciliation run exists, or you are ready to create one.
 - The saved run has the correct source systems, schemas, and primary IDs.
 - Source access is ready: SFTP servers for file inputs, or API sources such as Shopify and HotWax for date-range extraction.
-- The schedule is known: manual, hourly, daily, or another schedule supported by your environment.
+- The schedule is known: hourly, daily, weekly, monthly, or a custom schedule (you can also run an automation on demand and pause it with the **Active**/**Inactive** status).
 - The remote file paths or API date window are known.
 - Your user can edit tenant settings.
 
@@ -26,8 +24,8 @@ Confirm:
 | **Create a new reconciliation and automate it** | The saved run needs to be created before automation can be saved. |
 | **SFTP file inputs** | Each run should read files from SFTP paths. |
 | **API date-range extraction** | Each run should pull source records from API-backed sources such as Shopify or HotWax. |
-| **Manual** | The automation should be runnable on demand but not scheduled. |
-| **Every hour** or **Daily at 6:00 UTC** | The automation should run on a recurring schedule. |
+| **Run now** or the **Active**/**Inactive** status | The automation should be runnable on demand, or paused, instead of relying only on its schedule. |
+| **Hourly**, **Daily**, **Weekly**, **Monthly**, or **Custom** | The automation should run on a recurring schedule. For **Daily**, set the time in the separate **Time** field (defaults to 06:00). |
 
 ## Steps
 
@@ -68,7 +66,9 @@ For **API date-range extraction**, choose the API source for the first file, cho
 </Step>
 <Step title="Choose the schedule">
 
-When Darpan asks **When should this automation run?**, choose **Manual**, **Every hour**, or **Daily at 6:00 UTC**.
+When Darpan asks **When should Darpan run this automation?**, choose a schedule preset: **Hourly**, **Daily**, **Weekly**, **Monthly**, or **Custom**. For **Daily**, set the time in the separate **Time** field, which defaults to 06:00.
+
+To run an automation on demand rather than on a schedule, use the **Run now** action on its dashboard. To stop scheduled runs without deleting the automation, set its status to **Inactive** with the **Active**/**Inactive** toggle.
 
 </Step>
 <Step title="Name and create the automation">
@@ -78,9 +78,9 @@ Answer **What should this automation be called?** with a stable name that includ
 </Step>
 <Step title="Validate the automation">
 
-Return to **Open Automations**. Confirm the row shows the expected input mode, schedule, state, and next run.
+Return to **Open Automations** and open the automation tile to view its dashboard. Confirm the **Schedule**, **Status**, and **Next Run** are as expected. Verify the input mode within the wizard.
 
-Use the run-now action for a controlled test, then open automation history to confirm the execution status and generated output.
+Use the **Run now** action for a controlled test, then open automation history to confirm the execution status and generated output.
 
 </Step>
 </Steps>
