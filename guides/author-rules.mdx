@@ -60,7 +60,7 @@ Pre-actions normalize a field value before the operator runs, so a comparison is
 <Steps>
 <Step title="Open the Ruleset Manager">
 
-Open **Ask Darpan** with `Cmd/Ctrl+K` or the floating **Ask Darpan** button. Search for **Ruleset Manager** and open the result for the saved run you are configuring.
+Open **Ask Darpan** with `Cmd/Ctrl+K` or the floating **Ask Darpan** button. Choose **Open Runs Settings** (or search the saved run by name), then open the run you are configuring; ruleset-type runs open in the **Ruleset Manager**.
 
 The **Ruleset Manager** shows the two compared sources, their schemas, and the current list of rules.
 
@@ -72,11 +72,9 @@ In the **Rules** section, choose **Edit Rules**. This opens the rule editor, whe
 </Step>
 <Step title="Add or edit a rule">
 
-Select an operator box to edit that rule, or add a new rule.
+To add a rule, connect a field from the first source to its matching field on the second source: press and drag from one field pill to the other to draw a line between them. To edit an existing rule, select its operator box.
 
-- Choose the **Field** from the first source.
-- Choose the **Operator**.
-- Choose the matching field from the second source.
+In the rule popover that opens, choose the **Operator**. Pre-actions and the sequence number are set here too.
 
 Pick fields that should always line up when the two systems are in sync. A price field on one side maps to the price field on the other; a quantity to a quantity.
 
