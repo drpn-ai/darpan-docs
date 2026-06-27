@@ -1,9 +1,9 @@
 ---
 title: "Set up Shopify"
-description: "Create the Shopify source config used by API-backed reconciliation runs and automations."
+description: "Create the Shopify connection used by API-backed reconciliation runs and automations."
 ---
 
-Shopify setup stores the Admin API connection Darpan uses to read order data for reconciliation runs and automations.
+Shopify setup is a one-time task — save the connection once and every reconciliation run or automation that reads Shopify order data can use it from then on.
 
 <Note>
 Keep access tokens, customer hostnames, and account-specific values in secure configuration. The docs should describe the sequence, not store credentials.
@@ -13,7 +13,7 @@ Keep access tokens, customer hostnames, and account-specific values in secure co
 
 Confirm:
 
-- You are signed in to the correct company or tenant.
+- You are signed in to the correct active company or active tenant.
 - Your user can edit connection settings.
 - The Shopify shop or Admin API URL is known.
 - The Shopify API version is known.
@@ -28,7 +28,7 @@ Confirm:
 Open **Ask Darpan** with `Cmd/Ctrl+K` or the floating **Ask Darpan** button. Search for **Open Shopify Settings** and open the result.
 
 </Step>
-<Step title="Create the Shopify config">
+<Step title="Create the Shopify connection">
 
 Choose **Create Shopify Config**. Answer the setup questions:
 
@@ -38,14 +38,14 @@ Choose **Create Shopify Config**. Answer the setup questions:
 4. **Access Token**
 5. Shopify label
 
-Save the config. Darpan creates it as active and derives the config ID from the label. If the ID, active state, or endpoint access needs to change later, open the saved config from **Open Shopify Settings** and edit it.
+Save the connection. Darpan creates it as active and derives the connection ID from the label. If the ID, active state, or endpoint access needs to change later, open the saved connection from **Open Shopify Settings** and edit it.
 
 </Step>
-<Step title="Confirm the config is reusable">
+<Step title="Confirm the connection is reusable">
 
-Return to **Open Shopify Settings**. The saved config should appear on the settings surface.
+Return to **Open Shopify Settings**. The saved connection should appear on the settings surface.
 
-The config is ready when a reconciliation run or automation can select Shopify as an API source.
+The connection is ready when a reconciliation run or automation can select Shopify as an API source.
 
 </Step>
 </Steps>
@@ -57,5 +57,5 @@ Use a small read-only reconciliation run or automation test with a narrow date r
 ## Troubleshooting
 
 - If Shopify fails, check the shop URL, API version, token validity, timezone, and order-read permission.
-- If Shopify does not appear as an API source, confirm the config is active and that **Admin GraphQL Orders** is enabled on the saved record.
+- If Shopify does not appear as an API source, confirm the connection is active and that **Admin GraphQL Orders** is enabled on the saved record.
 - If records return outside the expected window, confirm the timezone used for Shopify date windows.
