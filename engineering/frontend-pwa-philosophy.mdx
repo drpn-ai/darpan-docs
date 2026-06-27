@@ -3,9 +3,9 @@ title: "Frontend PWA philosophy"
 description: "How the Darpan frontend is shaped as a focused browser application."
 ---
 
-Darpan's frontend is the user control surface for the backend engine. It helps users set up connections, define schemas and RuleSets, start reconciliation runs, and reopen saved output without moving that work into the browser.
+Darpan's frontend is the user control surface for the backend engine; these decisions explain where the browser surface ends and backend ownership begins.
 
-The app is implemented in [`drpn-ai/darpan-ui`](https://github.com/drpn-ai/darpan-ui). The current PWA direction is about shell behavior, route structure, keyboard access, responsive layout, and durable browser workflows. It is not currently an offline-first or installable app.
+The app is implemented in [`drpn-ai/darpan-ui`](https://github.com/drpn-ai/darpan-ui). It helps users set up connections, define schemas and RuleSets, start reconciliation runs, and reopen saved output without moving that work into the browser. The current PWA direction is about shell behavior, route structure, keyboard access, responsive layout, and durable browser workflows. It is not currently an offline-first or installable app.
 
 ## What PWA means today
 
@@ -69,3 +69,5 @@ Installability and offline behavior can be added later within the current shell 
 - Document which surfaces work without a network before calling the app offline-ready.
 
 Until then, Darpan is a responsive browser app with PWA-oriented shell patterns, not a fully offline PWA.
+
+See also: [Frontend design system](/engineering/frontend-design-system) for shared CSS, component, and page-surface contracts; [Engineering process](/engineering/process) for how frontend changes are traced and verified.
