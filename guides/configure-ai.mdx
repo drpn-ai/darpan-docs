@@ -3,7 +3,7 @@ title: "Configure AI providers"
 description: "Set up AI provider records used by assisted Darpan workflows."
 ---
 
-AI provider setup is a Super Admin task you do once per provider. Save the record with the right credential reference and Darpan's assisted workflows — schema support, analysis, and similar features — have what they need from then on.
+AI provider setup is a Darpan admin task (the DARPAN_ADMIN group) you do once per provider. Save the record with the right credential reference and Darpan's assisted workflows — schema support, analysis, and similar features — have what they need from then on.
 
 Tenant Admins manage tenant-owned setup records such as timezone, notifications, connections, schemas, saved runs, and automations. AI provider settings are outside their scope.
 
@@ -11,12 +11,12 @@ Tenant Admins manage tenant-owned setup records such as timezone, notifications,
 
 Confirm:
 
-- You are signed in as a Super Admin.
+- You are signed in as a Darpan admin (DARPAN_ADMIN group).
 - The provider identifier and required credential reference are available in secure configuration.
 
 ## Setup checklist
 
-1. From **Ask Darpan**, open **Open AI Settings**.
+1. From **Ask Darpan**, open **Open Tenant Settings** (search ai / llm / api key), then start the AI provider workflow.
 2. Create or edit the provider record.
 3. Enter the provider identifier and required credential reference.
 4. Save the record.
