@@ -123,7 +123,7 @@ Pick **Google Chat** or **Slack**. Arriving from the Slack menu answers this alr
 </Step>
 <Step title="Point it at a destination">
 
-For Google Chat, paste the webhook URL. Darpan validates it on save and stores it encrypted. The URL is write-only: saved spaces show their status and name, never the full URL.
+For Google Chat, paste the webhook URL. Darpan validates it on save. The URL is stored in clear text and returned to members of the tenant who can read its chat spaces, so anyone in the tenant can see it. If it leaks, create a new webhook in Google Chat and update the space.
 
 For Slack with a connected workspace, pick the channel from the searchable list. Darpan reads every page of channels rather than the first one, and says so when a workspace has more channels than it lists at once — you are never shown a partial list that looks complete.
 

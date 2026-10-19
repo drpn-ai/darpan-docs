@@ -5,7 +5,7 @@ description: "Build the field comparison rules that decide when two systems line
 
 Rules are what turn a match into a business check — each one compares a field from the first source against the same-meaning field from the second. Any matched pair that fails a rule shows up as a difference, which is the output that drives alerts and review. Getting the rules right before you run means the output is useful the first time.
 
-A RuleSet is the full set of comparison rules Darpan applies after it matches records across two sources. Rules live with the saved run setup, so a run and its RuleSet are managed together. You author and edit rules in the **Ruleset Manager**.
+A RuleSet is the full set of comparison rules Darpan applies after it matches records across two sources. Rules live with the saved run setup, so a run and its RuleSet are managed together. You first draw them on the rules board at the end of [Set up a reconciliation run](/guides/setup-reconciliation-run), and edit them later from the **Ruleset Manager**.
 
 ## Before you start
 
@@ -84,17 +84,35 @@ Pick fields that should always line up when the two systems are in sync. A price
 When one side stores a value as text and the other as a number, add a **Pre Action** on the affected field side so the values compare correctly. Use **String to int** for whole numbers and **String to number** for decimals.
 
 </Step>
-<Step title="Save the rule">
+<Step title="Apply the rule to the board">
 
-Choose **Save rule**. The rule joins the active comparison and is included in the next run.
+Choose **Save rule** in the popover. This updates the board only; nothing is stored yet.
+
+</Step>
+<Step title="Save the rules">
+
+Choose **Save** at the bottom of the editor to store every change on the board. The rules are included in the next run. **Cancel** discards everything changed since you opened the editor, including exclusions.
 
 </Step>
 <Step title="Confirm the RuleSet">
 
-Return to the **Ruleset Manager** and confirm the rule list reflects every comparison you expect. The order is shown by sequence number.
+Back in the **Ruleset Manager**, confirm the rule list reflects every comparison you expect. The order is shown by sequence number.
 
 </Step>
 </Steps>
+
+## Leave records out with exclusions
+
+Some records should never be compared, for example a channel or status that one system carries and the other does not. An exclusion drops records whose field holds one of the values you list.
+
+1. On the rules board, double-click a field pill on the side the records come from, or focus it and press Enter.
+2. In **Values to exclude**, type a value and press Enter. Repeat for each value.
+3. Choose **Save exclusion**. A ⊘ mark on the pill shows it carries an exclusion. The trash icon in the same popup deletes it.
+4. Choose **Save** in the editor to store it with the rules.
+
+Exclusions apply when the records are extracted, before matching and before any rule runs. An exclusion removes records from its own side only: if the same records exist in the other system, exclude them there too, or they report as missing from this side. They work only on API sources whose connector supports filtering. On a file upload, or a source that cannot filter, the board says so instead of opening the editor.
+
+The **Ruleset Manager** lists the run's exclusions in their own panel next to the rules.
 
 ## Where the field choices come from
 

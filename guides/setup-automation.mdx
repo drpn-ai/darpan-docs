@@ -12,8 +12,9 @@ Confirm:
 - A saved reconciliation run exists, or you are ready to create one.
 - The saved run has the correct source systems, schemas, and primary IDs.
 - Source access is ready: SFTP servers for file inputs, or API sources such as Shopify and HotWax for date-range extraction.
-- The schedule is known: hourly, daily, weekly, monthly, or a custom schedule (you can also run an automation on demand and pause it with the **Active**/**Inactive** status).
+- The schedule is known: hourly, daily, weekly, or monthly. You can also run an automation on demand, and pause it with its **Active**/**Inactive** status.
 - The remote file paths or API date window are known.
+- The tenant timezone is set. A new automation takes the tenant's zone when it is saved.
 - Your user can edit tenant settings.
 
 ## Automation choices
@@ -22,10 +23,10 @@ Confirm:
 | --- | --- |
 | **Automate an existing reconciliation** | The saved run already exists and only needs input and schedule setup. |
 | **Create a new reconciliation and automate it** | The saved run needs to be created before automation can be saved. |
-| **SFTP file inputs** | Each run should read files from SFTP paths. |
-| **API date-range extraction** | Each run should pull source records from API-backed sources such as Shopify or HotWax. |
+| **SFTP scheduled file pickup** | Each run should read files from SFTP paths. |
+| **API extraction** | Each run should pull source records from API-backed sources such as Shopify or HotWax for a date window. |
 | **Run now** or the **Active**/**Inactive** status | The automation should be runnable on demand, or paused, instead of relying only on its schedule. |
-| **Hourly**, **Daily**, **Weekly**, **Monthly**, or **Custom** | The automation should run on a recurring schedule. For **Daily**, set the time in the separate **Time** field (defaults to 06:00). |
+| **Daily**, **Hourly**, **Weekly**, or **Monthly** | The automation should run on a recurring schedule. **Daily**, **Weekly**, and **Monthly** also take a **Time** (defaults to 06:00); **Hourly** takes a **Minute**. |
 
 ## Steps
 
@@ -51,26 +52,35 @@ If the run is missing, go back to [Set up a reconciliation run](/guides/setup-re
 </Step>
 <Step title="Choose the input mode">
 
-When Darpan asks how it should get files for the run, choose one input mode:
+When Darpan asks **How will Darpan get source data for …?**, choose one input mode:
 
-- **SFTP file inputs** for two remote file paths.
-- **API date-range extraction** for two API-backed sources and a date window.
+- **SFTP scheduled file pickup** for two remote file paths.
+- **API extraction** for two API-backed sources and a date window.
+
+If the saved run uses only API sources, Darpan picks **API extraction** for you and skips the question.
 
 </Step>
 <Step title="Configure the sources">
 
-For **SFTP file inputs**, choose the SFTP server for the first file, enter the first remote path, choose the SFTP server for the second file, and enter the second remote path.
+For **SFTP scheduled file pickup**, choose the SFTP server for the first file, enter the first remote path, choose the SFTP server for the second file, and enter the second remote path.
 
-For **API date-range extraction**, choose the API source for the first file, choose the API source for the second file, and select the date window.
+For **API extraction**, choose the API source for each side when there is more than one, then answer **How far back should each scheduled run reconcile?** with a window such as **Previous day**, **Last N days**, or **Custom range**.
 
 </Step>
 <Step title="Choose the schedule">
 
-When Darpan asks **When should Darpan run this automation?**, choose a schedule preset: **Hourly**, **Daily**, **Weekly**, **Monthly**, or **Custom**. For **Daily**, set the time in the separate **Time** field, which defaults to 06:00.
+When Darpan asks **When should Darpan run this automation?**, choose **Daily**, **Hourly**, **Weekly**, or **Monthly**. **Weekly** adds a **Day**, **Monthly** adds a **Date**, and **Daily**, **Weekly**, and **Monthly** take a **Time**, which defaults to 06:00. **Hourly** takes a **Minute**.
 
-Times are read in **the tenant's timezone**, not UTC. A daily automation set to 06:00 runs at 06:00 for the tenant, wherever the server happens to be. Set the tenant timezone in [Manage tenant settings](/guides/manage-tenant-settings) before relying on a specific hour.
+An automation whose schedule matches none of the presets, for example one saved through the API, shows **Custom schedule** and keeps that schedule until you pick a preset.
 
-To run an automation on demand rather than on a schedule, use the **Run now** action on its dashboard. To stop scheduled runs without deleting the automation, switch its status with the **Active**/**Inactive** control — available on the automation tile from the dashboard, so pausing one does not mean opening its edit form.
+The schedule shows the **Timezone** it runs in. See [Timezone](#timezone) below before relying on a specific hour.
+
+To run an automation on demand, use **Run automation now** on its dashboard. To stop scheduled runs without deleting the automation, switch the **Active**/**Inactive** toggle on its dashboard, so pausing one does not mean opening its edit form.
+
+</Step>
+<Step title="Choose where notifications go">
+
+When Darpan asks **Where should Darpan send notifications for this automation?**, choose your default space, **Choose another space**, **Set up a new space**, or **No notifications**. A new space asks for a name, the chat product (**Google Chat** or **Slack**), and a webhook URL or Slack channel. See [Run-completion alerts](/guides/run-completion-alerts).
 
 </Step>
 <Step title="Name and create the automation">
@@ -80,12 +90,26 @@ Answer **What should this automation be called?** with a stable name that includ
 </Step>
 <Step title="Validate the automation">
 
-Return to **Open Automations** and open the automation tile to view its dashboard. Confirm the **Schedule**, **Status**, and **Next Run** are as expected. Verify the input mode within the wizard.
+Return to **Open Automations** and open the automation tile to view its dashboard. Confirm the **Schedule**, **Window**, and **Next Run** are as expected.
 
-Use the **Run now** action for a controlled test, then open automation history to confirm the execution status and generated output.
+Use the **Run automation now** action (the play icon) for a controlled test, then check **Previous Runs** for the execution status and differences.
 
 </Step>
 </Steps>
+
+## Timezone
+
+Each automation stores its own timezone, and its schedule and date window run in that zone. The schedule's **Timezone** shows which one.
+
+- A new automation takes the **tenant's timezone** when it is saved (UTC if the tenant has none), and keeps it.
+- Changing the tenant timezone later does **not** move existing automations. They keep running in the zone they were saved with.
+- A zone that does not match the tenant's business day reconciles the wrong day: a daily window of "previous day" ends at midnight in the automation's zone, not the tenant's.
+
+In this release the **Timezone** on an automation is shown, not edited. To move an automation to a different zone, set the tenant timezone first, then create the automation again. Do not work around a wrong zone by shifting the clock hour: the window boundaries stay in the old zone.
+
+## Delete an automation
+
+The trash icon on an automation's dashboard, **Delete automation**, removes the automation together with its source setup and its execution history. It asks for confirmation first and cannot be undone. To stop it running but keep its history, set it **Inactive** instead.
 
 ## Keep an automation in step with its run
 
@@ -106,7 +130,7 @@ Sync when the drift report names a field you care about. Ignore it when it names
 - If no saved runs appear, finish [Set up a reconciliation run](/guides/setup-reconciliation-run) first.
 - If an automation reports drift, compare the named fields against the saved run and use **Sync** only if you want the run's version to win.
 - If **Sync** is refused, the automation's saved run no longer exists. Recreate the automation against a current run.
-- If a schedule fires at an unexpected hour, check the tenant timezone rather than the schedule — times are interpreted in the tenant's timezone.
+- If a schedule fires at an unexpected hour, or reconciles the wrong day, check the **Timezone** shown on the automation's schedule. It is the zone the automation was saved with, which may no longer match the tenant's. See [Timezone](#timezone).
 - If saving or syncing is refused with a view-access message, your active tenant grants you view access only; automation changes need write access.
 - If no SFTP source appears, create or reactivate the required SFTP server from **Open SFTP Servers**.
 - If no API source appears, confirm the relevant system setup from [Set up Shopify](/guides/setup-shopify) or [Set up HotWax](/guides/setup-hotwax).

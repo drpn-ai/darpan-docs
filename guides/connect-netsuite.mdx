@@ -1,34 +1,60 @@
 ---
 title: "Connect NetSuite"
-description: "Capture the NetSuite setup Darpan needs for reconciliation workflows."
+description: "Save the NetSuite auth profiles and endpoints Darpan stores for a tenant."
 ---
 
-NetSuite involves more moving parts than most connections — account IDs, role permissions, integration records, script deployment status, RESTlet details. Confirming these before you start in Darpan means any connection failure gives you a useful error code instead of a dead end.
+NetSuite involves more moving parts than most connections: account IDs, role permissions, integration records, certificates. Confirming these with the NetSuite owner before you start means a failure gives you a useful error instead of a dead end.
+
+<Note>
+In this release, runs and automations cannot pull records from NetSuite through the API. To reconcile NetSuite data, export it and use a **File upload** source when you [set up a reconciliation run](/guides/setup-reconciliation-run). The settings on this page store NetSuite credentials and endpoints for the tenant.
+</Note>
 
 ## Before you start
 
-Confirm account, role, integration, and script deployment details with the NetSuite owner. Keep token values in secure configuration.
+Confirm:
 
-## Recommended setup order
+- You are a Tenant Admin, or have edit access, for the active tenant.
+- The NetSuite owner has given you the authentication method and its values: a username and password, a token, or an OAuth 2.0 client-credentials setup (client ID, certificate ID, and private key).
+- For OAuth 2.0, the integration record and role in NetSuite grant the permissions the account needs.
 
-1. From **Ask Darpan**, open **Open NetSuite Settings**.
-2. Create or confirm the authentication configuration.
-3. Create or confirm endpoint configuration.
-4. Validate the configuration with a read-only operation (for example, a fetch/retrieve against the saved endpoint) before relying on it.
-5. Attach the configuration to the workflow that needs it.
+## Open NetSuite settings
 
-## Troubleshooting
+From **Ask Darpan**, open **Open NetSuite Settings**. The page has two sections:
 
-If the connection fails, capture the exact NetSuite error code and message. Most fixes start by checking role permissions, environment target, token validity, script deployment status, or SuiteQL field names.
+- **Auth**: authentication profiles. **Create Auth Profile** adds one.
+- **Endpoints**: NetSuite URLs that use an auth profile. **Create Endpoint** adds one.
+
+## Create an auth profile
+
+Choose **Create Auth Profile**, then answer **How should this NetSuite auth profile authenticate?**
+
+| Auth type | What Darpan asks for |
+| --- | --- |
+| **None** | Nothing further. |
+| **Basic** | Username and password. |
+| **Bearer** | An API token. |
+| **OAuth2 M2M JWT** | Token URL, **Client ID**, **Cert ID**, scopes (**RESTlets**, **REST Web Services**), and the **Private Key PEM**. |
+
+Every profile also asks whether it is active, a label, and a name or ID.
 
 <Note>
-The API reference and engineering docs cover request shape. Secrets and account-specific values belong in secure configuration, not documentation.
+For OAuth 2.0, the **Client ID** comes from the NetSuite integration record and is 64 hexadecimal characters. The **Cert ID** comes from the certificate mapping and is a 43-character value. They are easy to swap; check them before saving.
 </Note>
+
+Secrets are write-only on edit: leave the password, token, or private key blank to keep the stored value.
+
+## Create an endpoint
+
+Choose **Create Endpoint** and answer the setup questions: the endpoint URL, the HTTP method (**POST**, **PUT**, or **GET**), the auth profile it uses, optional headers as JSON, connect and read timeouts in seconds, whether it is active, a label, and a name or ID.
+
+## Share with another tenant
+
+When the same NetSuite account serves several tenants, the owning tenant can share an auth profile or endpoint instead of entering the credentials again. Open the saved record and use its **Shared with** panel; see [Share the connection with another tenant](/guides/setup-shopify#share-the-connection-with-another-tenant) for how the panel works.
 
 ## Expected result
 
-The configuration is validated with a read-only operation and attached to the workflow that needs it.
+The auth profile and endpoint appear under **Open NetSuite Settings** with the labels you gave them.
 
 ## Next step
 
-Use the connection in [Set up a reconciliation run](/guides/setup-reconciliation-run) or [Set up an automation](/guides/setup-automation).
+Set up the run that compares your NetSuite export with another system in [Set up a reconciliation run](/guides/setup-reconciliation-run).

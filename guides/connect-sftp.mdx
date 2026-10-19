@@ -7,20 +7,29 @@ An SFTP connection is a one-time record — set it up once and every run or auto
 
 ## Before you start
 
-Confirm these values outside the docs site:
+Confirm these values with the server owner:
 
 - Host and port
 - Username
-- Authentication method
-- Root or working directory
-- Expected input and output folders
+- Password, private key, or both
+- The remote folders and file paths runs will read from
 
 ## Create the connection
 
-1. From **Ask Darpan**, open **Open SFTP Servers**.
-2. Start the create workflow from the SFTP surface.
-3. Enter the connection name and server details.
-4. Save the record.
+From **Ask Darpan**, open **Open SFTP Servers**, then choose **Create New Server**. Darpan asks one question per card:
+
+| Field | Notes |
+| --- | --- |
+| Host | The server hostname, for example `sftp.example.com`. |
+| Port | The SFTP port. |
+| Username | The login name on the server. |
+| Remote attributes | **Yes** or **No**. Defaults to **Yes**; change it only when the server owner says the server needs it. |
+| Password | Optional. Leave blank when the server uses a key. |
+| Private key | Optional. Paste the private key when the server uses key authentication. |
+| Label | The name Darpan shows for this server. |
+| Server name / ID | A stable ID for the record, for example `primary_sftp`. |
+
+Save the record. Passwords and keys are write-only: on edit, leave them blank to keep the stored values.
 
 ## Edit an existing connection
 
@@ -31,7 +40,7 @@ Confirm these values outside the docs site:
 
 ## Validation
 
-After saving, run a small workflow that verifies the server path and credentials. If validation fails, check path, authentication method, and network access.
+After saving, create a test automation with **SFTP scheduled file pickup** that reads a known file from the server, and use **Run automation now**. If it fails, check the remote path, the password or key, and whether the Darpan deployment can reach the host.
 
 <Warning>
 Private keys, passwords, and customer hostnames belong in secure configuration, not public docs.

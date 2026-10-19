@@ -3,16 +3,17 @@ title: "Set up a reconciliation run"
 description: "Create a saved run setup that ties source systems, file types, schemas, and primary IDs together."
 ---
 
-A saved run is the reusable setup behind every reconciliation — source systems, file types, schemas, and the primary IDs Darpan uses to match records. Creating it takes a few minutes; running it takes one click. Once the setup exists, author its comparison logic in the **Ruleset Manager**. See [Author reconciliation rules](/guides/author-rules).
+A saved run is the reusable setup behind every reconciliation — source systems, file types, schemas, and the primary IDs Darpan uses to match records. Creating it takes a few minutes; running it takes one click. The last step of the create flow is the rules board, so the comparison logic is saved with the run. See [Author reconciliation rules](/guides/author-rules).
 
 ## Before you start
 
 Confirm:
 
 - The two source systems are known.
-- Each source file type is known: CSV or JSON.
-- Saved schemas exist for JSON sources, or you are ready to create them from the setup flow.
-- Each source has a stable primary ID field or expression.
+- For each source, you know whether it arrives as a **File upload** or through the **API**.
+- For file uploads, the file type is known: CSV or JSON. Saved schemas exist for JSON sources, or you are ready to create them from the setup flow.
+- For API sources, the connection exists: see [Set up Shopify](/guides/setup-shopify) or [Set up HotWax](/guides/setup-hotwax).
+- Each source has a stable primary ID field, or a set of fields that together identify a record.
 - The saved run name is clear enough to recognize later from **Open Runs Settings**, **Run Reconciliation**, and automation setup.
 
 ## What Darpan saves
@@ -21,9 +22,11 @@ Confirm:
 | --- | --- |
 | Run name and description | Identifies the saved setup in run history, automation setup, and result review. |
 | Source systems | Tells Darpan which systems are being compared. |
-| File types | Tells Darpan how to read each input. |
-| Schemas | Gives JSON sources a reusable field contract. |
-| Primary IDs | Defines how records are matched across the two sources. |
+| Source mode | **File upload** or **API** for each side. |
+| Config and endpoint | For API sources, the saved connection and the endpoint to extract from. |
+| File types and schemas | For file uploads, how to read each input: a saved schema for JSON, or a column list for CSV. |
+| Primary IDs | One or more fields that match records across the two sources. |
+| Rules and exclusions | The comparison logic applied to matched records. |
 
 ## Steps
 
@@ -40,23 +43,25 @@ Answer **What should this run be called?** with a stable, specific name. Add a s
 </Step>
 <Step title="Configure the first source">
 
-Choose the system that provides the first file. Then choose the file type.
+Answer **Which system provides the first source?**, then **How should … provide data?** with **File upload** or **API**.
 
-If the first source is JSON, select the saved schema that describes it. If the schema does not exist, use **Create New Schema** from the setup flow and return after saving it.
+For **API**, choose the saved config for that system, then the endpoint when the config enables more than one. If no config exists yet, use **Add a … config** on the same card.
 
-Choose the primary ID field or enter the primary ID expression that identifies each first-source record.
+For **File upload**, choose which data the file holds when the system offers more than one kind, then the file type. For JSON, pick the saved schema that describes it, or use **Create New Schema**. For CSV, a schema is optional: pick a saved column list, or skip and type the column names.
+
+Then choose the primary ID. The picker accepts more than one field: pick several to match on a composite key, such as order ID plus line number. See [Composite matching keys](/reference/composite-matching-keys).
 
 </Step>
 <Step title="Configure the second source">
 
-Choose the system that provides the second file. The second system must be different from the first system.
-
-Choose the file type, select the saved JSON schema when needed, and choose or enter the primary ID field for the second source.
+Repeat for the second source. The app requires a different system on each side; choosing the same one shows **Source 2 must use a different system than source 1.**
 
 </Step>
-<Step title="Create the saved run">
+<Step title="Add rules and save the run">
 
-On the last primary ID step, choose **Create**. Darpan saves the run setup so it can be executed manually or reused by an automation.
+The last card, **How should Darpan compare these two systems?**, is the rules board. Draw the field comparisons and add any exclusions, then choose **Save run**. See [Author reconciliation rules](/guides/author-rules) for how the board works.
+
+Darpan saves the run setup so it can be executed manually or reused by an automation.
 
 </Step>
 <Step title="Confirm the setup">
@@ -68,13 +73,9 @@ Open **Ask Darpan**, search for **Open Runs Settings**, and confirm the saved ru
 
 ## Comparing two instances of one system
 
-The two sides do not have to be different systems. Comparing one database against another, or one instance of a system against a second instance, is a normal reconciliation — staging against production, or two regional instances that should agree.
+The create flow in the app always uses two different systems. The service layer is less strict: it accepts the same system on both sides when the two sides use different source configurations, for example staging against production, or two regional instances that should line up. Runs like that are set up through the API.
 
-What Darpan requires is that the two sides are **not the same source**. Same system with two different source configurations is allowed; the same source on both sides is rejected, because a source compared against itself has nothing to find.
-
-<Note>
-Runs built from **direct file uploads** keep the stricter rule and still require two different systems. An upload carries no source configuration, so there is nothing to tell two same-system sides apart.
-</Note>
+The same source on both sides is always rejected, because a source compared against itself has nothing to find. Runs built from file uploads carry no source configuration, so they always need two different systems.
 
 Where both sides are the same system, run results label each side by its source rather than by the system name alone, so the two instances stay distinguishable when you review differences.
 
@@ -90,6 +91,6 @@ Which endpoints a source offers is controlled per source configuration; see [Man
 
 The saved run can be selected from **Run Reconciliation** and from the automation setup flow. It should clearly show what two systems are compared and which record IDs are used for matching.
 
-## Add comparison rules
+## Change rules later
 
-The create flow saves the source, schema, and primary-ID setup. The comparison logic, which fields must line up and how, lives in the RuleSet for the saved run. Open the **Ruleset Manager** for the run to add rules. See [Author reconciliation rules](/guides/author-rules).
+The rules saved with the run can be changed at any time from the **Ruleset Manager**. Open **Open Runs Settings**, open the run, and choose **Edit Rules**. See [Author reconciliation rules](/guides/author-rules).

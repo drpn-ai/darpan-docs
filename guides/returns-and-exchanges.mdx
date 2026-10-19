@@ -1,0 +1,85 @@
+---
+title: "Reconcile returns and exchanges"
+description: "Check that Shopify refunds, returns, and exchanges made it into HotWax."
+---
+
+Returns are where two systems drift apart most quietly. A refund lands in Shopify, the return is booked in HotWax a little later, and drafts, cancellations, and in-transit items all look like gaps if you compare naively. Darpan's returns and exchange checks are built to report only the gaps that are real, and to say what they left out.
+
+There are two checks:
+
+- **Returns**: every Shopify refund or return in the window has a matching HotWax return, and the other way round.
+- **Exchanges**: every closed Shopify exchange in the window was imported into HotWax as an exchange order. This runs inside an orders run.
+
+## Before you start
+
+Confirm:
+
+- A Shopify connection with **Shopify Return References** enabled, and a token that can read returns. See [Set up Shopify](/guides/setup-shopify).
+- A HotWax connection with **Reconciliation Returns API** enabled for returns, and **Orders API** for exchanges. See [Set up HotWax](/guides/setup-hotwax).
+
+## Set up a returns run
+
+Create the run as in [Set up a reconciliation run](/guides/setup-reconciliation-run), with both sides as **API** sources:
+
+| Side | Endpoint | Primary ID |
+| --- | --- | --- |
+| Shopify | **Shopify Return References** | `refundOrReturnId` |
+| HotWax | **Reconciliation Returns API** | `externalId` |
+
+Shopify Return References emits one record per refund or return event, keyed by the Shopify refund ID or return ID. HotWax books each return under the same ID as its `externalId`, so the two sides match one-to-one.
+
+### Leave in-progress returns out
+
+A Shopify return that is still requested or open usually has no HotWax return yet. On the Shopify side, add an exclusion on **Return workflow status** with the values `REQUESTED` and `OPEN`. See [Leave records out with exclusions](/guides/author-rules#leave-records-out-with-exclusions).
+
+## What a returns run does not report
+
+Several kinds of one-sided record are expected, not gaps. Darpan removes them before the result is written and says how many it removed.
+
+| Rule | Why it is not reported |
+| --- | --- |
+| Sync grace | An event younger than the grace period may still be syncing into HotWax. It is held as pending, not missing. |
+| Before the window | Shopify is read a little before the window start so late HotWax returns can still match. A Shopify event dated before the window is never reported missing in HotWax. |
+| Whole-order cancellation | A refund on a cancelled order is booked in HotWax as a cancellation, not a return. |
+| Superseded return draft | Shopify keeps every draft return; HotWax books one return per settled outcome. A draft on an order that already has a HotWax return is not a gap. |
+| Cancelled-item refund | A refund for lines that were never shipped is booked as an item cancellation, not a return. |
+
+Records still reported missing in HotWax are then checked one by one with a point lookup, by both `externalId` and `shopifyReturnId`. Records found that way are dropped. See [Verification passes](/guides/review-results#verification-passes).
+
+<Note>
+A rule only removes a record when the record's own data proves it. Where the evidence is incomplete, the record stays reported.
+</Note>
+
+## Exchanges
+
+An exchange in Shopify becomes a separate exchange order in HotWax, carrying the same Shopify order ID as the original. Order extracts from HotWax leave exchange orders out by default, so they do not show up as extra orders in an orders run.
+
+When an orders run compares Shopify orders with the HotWax **Orders API**, Darpan also runs an exchange presence check:
+
+1. It lists the Shopify exchanges created in the run window.
+2. It matches them against the exchange orders HotWax returned in the extract.
+3. For any left over, it asks HotWax directly by order ID.
+4. Only exchanges HotWax confirms it does not have are reported, as missing from HotWax.
+
+| Exchange state | Result |
+| --- | --- |
+| Found in HotWax | Matched. |
+| Return not yet closed | In transit. Counted in the run note, not reported. |
+| Less than 3 hours old | Pending. Not reported. |
+| Return cancelled | Ignored. |
+| Closed, older than 3 hours, absent from HotWax | Reported as missing from HotWax. |
+
+Each run looks up at most 200 exchanges in HotWax. Any beyond that are deferred to a later run rather than reported, and the run note says how many.
+
+## Reading the result
+
+The run note on a returns or exchange run lists what each rule removed, and how many exchanges were matched, pending, or in transit. A count that moved between runs can be traced to these numbers rather than guessed at.
+
+When a record is reported:
+
+- Missing from HotWax: the refund, return, or exchange was not imported. Check the HotWax import for that order.
+- Missing from Shopify: HotWax holds a return that Shopify does not list in the window. Check the return's dates first; a return near the window edge may belong to the next window.
+
+## Next step
+
+Schedule the run in [Set up an automation](/guides/setup-automation). Scheduled runs apply the same checks as a manual run.

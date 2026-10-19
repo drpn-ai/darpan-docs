@@ -7,6 +7,10 @@ Plenty of the data worth reconciling never becomes a file. It sits in a database
 
 A database source is two pieces. A **connection** says where the database is and how to authenticate. A **query** says which records to compare. One connection can carry many queries.
 
+<Note>
+The app has no screens for database sources in this release. A database source is set up through the `facade.DatabaseFacadeServices.*` JSON-RPC methods, or by an operator on your behalf. Once saved, it is used by a run or automation like any other source.
+</Note>
+
 ## Before you start
 
 Confirm:
@@ -16,60 +20,55 @@ Confirm:
 - The database is reachable from the Darpan deployment, and you have a username and password for it.
 - You have a read-only account. Darpan only ever issues `SELECT`, but a read-only credential means a mistake in a query cannot become a mistake in your database.
 - You know which TLS posture the server needs, and have the CA certificate in PEM form if the server requires verifying one.
+- You can call the Darpan API. See the [API quickstart](/api-reference/quickstart).
 
 ## Create the connection
 
+Save the connection with `facade.DatabaseFacadeServices.save#DatabaseSourceConfig`. It is created in the active tenant; connections are tenant-scoped and are not shared across tenants. `list#DatabaseSourceConfigs` and `delete#DatabaseSourceConfig` read and remove saved connections.
+
 <Steps>
-<Step title="Open database sources">
-
-Open **Ask Darpan** and search for database sources. Confirm the active tenant is the one the connection belongs to — connections are tenant-scoped and are not shared across tenants.
-
-</Step>
 <Step title="Describe the server">
 
-Give the connection a description, then set:
-
-| Field | Notes |
+| Parameter | Notes |
 | --- | --- |
-| Dialect | `MYSQL`, `POSTGRES`, or `DB2`. |
-| Host | Hostname or address of the server. |
-| Port | Optional. Left blank, Darpan uses the dialect default: 3306 for MySQL, 5432 for PostgreSQL, 50000 for Db2. |
-| Database name | The database to connect to. |
-| Username / Password | The credential. The password is stored encrypted and is never readable back. |
+| `description` | A label for the connection. |
+| `dialect` | `MYSQL` (the default), `POSTGRES`, or `DB2`. |
+| `host` | Hostname or address of the server. Required. |
+| `port` | Optional. Left blank, Darpan uses the dialect default: 3306 for MySQL, 5432 for PostgreSQL, 50000 for Db2. |
+| `databaseName` | The database to connect to. Required. |
+| `username` / `password` | The credential. The password is stored encrypted and is never readable back. |
 
 </Step>
 <Step title="Set the TLS posture">
 
-TLS is required by default. Leave it on unless the server genuinely cannot offer it.
+`requireTls` is `Y` by default. Leave it on unless the server cannot offer TLS.
 
-If the server presents a certificate that must be verified against a private authority, paste that authority's certificate in PEM form. Darpan then verifies the server's certificate against it rather than accepting whatever the server presents.
+If the server presents a certificate that must be verified against a private authority, pass that authority's certificate in PEM form as `caCertPem`. Darpan then verifies the server's certificate against it rather than accepting whatever the server presents.
 
 </Step>
 <Step title="Set the limits">
 
-| Limit | Default | What it does |
+| Parameter | Default | What it does |
 | --- | --- | --- |
-| Connect timeout | 10 seconds | How long to wait for the connection itself. |
-| Query timeout | 300 seconds | How long a single extraction query may run. |
-| Max rows | 500,000 | The largest result Darpan will accept from one query. |
+| `connectTimeoutSeconds` | 10 | How long to wait for the connection itself. |
+| `queryTimeoutSeconds` | 300 | How long a single extraction query may run. |
+| `maxRows` | 500,000 | The largest result Darpan will accept from one query. |
 
 <Warning>
 Max rows is a hard cap, not a page size. A query that returns more rows than the cap **fails the extraction** — it never silently truncates. That is deliberate: a reconciliation run against a quietly truncated source reports differences that are artefacts of the truncation, and nothing on the result would tell you. If you hit the cap, narrow the query rather than raising the number.
 </Warning>
 
 </Step>
-<Step title="Test before saving">
+<Step title="Check the connection">
 
-Test the connection. Darpan connects and runs the dialect's test query, and it can do this with the values on screen before the connection is saved — so a wrong password is caught while you are still looking at it.
+Once saved, the connection is covered by the standard connection diagnostics (`facade.SettingsFacadeServices.test#SourceConnection`), which connect and run the dialect's test query. A credential that expires later shows up as a failed check rather than as a failed run.
 
 </Step>
 </Steps>
 
-A saved connection is also checked by the standard connection diagnostics alongside every other source type, so a credential that expires later shows up as a failed check rather than as a failed run.
-
 ## Write the query
 
-A query belongs to a connection and holds the `SELECT` that produces the records to compare.
+A query belongs to a connection and holds the `SELECT` that produces the records to compare. Save it with `facade.DatabaseFacadeServices.save#DatabaseSourceQuery`, passing the `databaseSourceConfigId` and the statement as `sqlSelect`. The statement is validated before it is stored. `list#DatabaseSourceQueries` and `delete#DatabaseSourceQuery` read and remove saved queries.
 
 <Steps>
 <Step title="Write a single SELECT">
@@ -88,20 +87,22 @@ Use them for anything scheduled. A query with no window re-reads the whole table
 </Step>
 <Step title="Preview it">
 
-Preview runs the query capped at 10 rows and shows what comes back. Check the column names and a few values before saving: the preview is where a wrong alias or an unexpected null is cheap to notice.
+`facade.DatabaseFacadeServices.preview#DatabaseQuery` runs the query capped at 10 rows and returns the columns and rows. Check the column names and a few values before saving: the preview is where a wrong alias or an unexpected null is cheap to notice.
 
 </Step>
 </Steps>
 
 ## Use it in a run
 
-A database source behaves like any other source once saved. Pick it as a side when you [set up a reconciliation run](/guides/setup-reconciliation-run), pair it with a schema, and choose matching keys as usual.
+A run side reads from a database when its source has `sourceConfigType` `DATABASE_QUERY` and the saved query's `databaseSourceQueryId` as its `sourceConfigId`. Set that up through the saved-run and automation methods in the [service catalog](/api-reference/service-catalog), or ask an operator. Both sides of a run may be database sources, for example two instances with the same schema and a different `SELECT` per side.
+
+From there it behaves like any other API-backed source: it runs on the automation's date window, and the window fills `:windowStart` and `:windowEnd`.
 
 Because the query fixes the field names, a flat schema matching those column names is usually the right pairing. [Create a schema](/guides/create-schema) can infer one from a CSV sample of the same shape if you have one.
 
 ## Expected result
 
-The connection tests clean, the query previews the rows you expect with the names you expect, and the source appears alongside file and API sources when you build a run.
+The connection passes its diagnostics check, the query previews the rows you expect with the names you expect, and a run that points at the query extracts those rows.
 
 ## Troubleshooting
 
@@ -109,7 +110,7 @@ The connection tests clean, the query previews the rows you expect with the name
 | --- | --- |
 | The dialect is rejected | Only `MYSQL`, `POSTGRES` and `DB2` are supported. |
 | Connection times out | The host and port, and whether the Darpan deployment can reach the server at all. Raise the connect timeout only after confirming reachability. |
-| TLS fails to negotiate | Whether the server offers TLS, and whether it needs a CA certificate you have not pasted. |
+| TLS fails to negotiate | Whether the server offers TLS, and whether it needs a CA certificate you have not supplied in `caCertPem`. |
 | The extraction fails on row count | The query returned more than the max-rows cap. Narrow the query — the cap never truncates. |
 | The query is rejected | It must be a single `SELECT` or `WITH … SELECT`. |
 | A long query is cut off | Raise the query timeout, or narrow the query with the window placeholders. |

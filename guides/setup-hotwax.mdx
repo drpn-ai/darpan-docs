@@ -18,7 +18,7 @@ Confirm:
 - The HotWax Moqui API URL is known.
 - The HotWax authentication type is known: none, basic, bearer, or API key.
 - The required username, password, JWT bearer token, or API key is available in secure configuration.
-- The HotWax orders endpoint is available for the tenant.
+- You know which HotWax data you will reconcile: orders, transfer orders, or returns.
 
 ## Steps
 
@@ -42,6 +42,8 @@ For bearer authentication, use the JWT token value from HotWax. Darpan sends it 
 
 Save the connection. Darpan creates it as active and derives the connection ID from the label. If the ID, active state, auth details, or endpoint access needs to change later, open the saved connection from **Open HotWax Settings** and edit it.
 
+The edit form also carries **Available Endpoints**, where you choose which endpoints this connection may be read through, and the **Shared with** panel. See [Share the connection with another tenant](/guides/setup-shopify#share-the-connection-with-another-tenant).
+
 </Step>
 <Step title="Confirm the connection is reusable">
 
@@ -52,12 +54,27 @@ The connection is ready when a reconciliation run or automation can select HotWa
 </Step>
 </Steps>
 
+## Endpoints
+
+One HotWax connection can serve several endpoints, because they share the same base URL and credentials:
+
+| Endpoint | Reads |
+| --- | --- |
+| **Orders API** | Sales orders. |
+| **Orders API (Transfer Orders)** | Transfer orders, from the same orders API. |
+| **Reconciliation Orders API** | Sales orders, served with a fixed set of fields. Use **Orders API** when your rules need fields outside that set. |
+| **Reconciliation Returns API** | Returns, for [returns reconciliation](/guides/returns-and-exchanges). |
+
+Each connection enables endpoints separately under **Available Endpoints**. An endpoint that is not enabled is not offered when you build a run. The saved connection's page lists the enabled endpoints under **Endpoints**.
+
 ## Validation
 
-Use a small read-only reconciliation run or automation test with a narrow date range. Confirm HotWax returns orders before using the setup for scheduled reconciliation.
+Open the saved connection from **Open HotWax Settings** and choose **Run connection diagnostics**. Darpan checks the base URL and credentials and lists each check with its result, without running a reconciliation.
+
+Then run one small reconciliation with a narrow date range and confirm HotWax returns records before you schedule it.
 
 ## Troubleshooting
 
-- If HotWax fails, check the Moqui API URL, auth type, bearer token validity, API key header behavior, and tenant context.
-- If HotWax does not appear as an API source, confirm the connection is active and that **Orders API** is enabled on the saved record.
+- If HotWax fails, run the connection diagnostics first, then check the Moqui API URL, auth type, bearer token validity, API key header behavior, and tenant context.
+- If HotWax does not appear as an API source, confirm the connection is active and that the endpoint you need is enabled under **Available Endpoints**.
 - If the request succeeds but returns no records, test a wider date range and confirm the tenant has orders for that period.

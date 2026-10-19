@@ -9,10 +9,33 @@ The results page is where a reconciliation earns its keep. It shows which record
 
 1. From **Ask Darpan**, search by run name or output file name.
 2. Open **Open Result: ...**.
-3. Confirm run metadata and input sources.
-4. Review match and mismatch counts.
-5. Open generated output.
+3. Confirm the run's source files and **Run steps**.
+4. Review the difference buckets and their counts.
+5. Open the differences, or download the saved result.
 6. Classify each difference as source data, schema, mapping, rule behavior, or expected variance.
+
+## Reading the result page
+
+| Part | What it shows |
+| --- | --- |
+| Source files | The files each side read, with a download for each. |
+| **Run steps** | The stages the run went through and how each ended. Collapse it once you have read it. |
+| Difference buckets | **Missing from** *system* for each side, and **Rule differences** when any rule failed. Select a bucket to filter the list to it. |
+| Rule selector | The panel at the side lists **All** plus each rule with its count. Pick a rule to see only the pairs that failed it. |
+| **Record search** | Type a record ID to find it in the differences. |
+| Download | **Download saved result** saves the full result file. |
+| **Notify me** | Sends a message to your chat space when this run finishes. See [Run-completion alerts](/guides/run-completion-alerts). |
+
+The footer links to **Open run**, **View previous runs**, and **Run settings**.
+
+## Run history
+
+**View previous runs** opens the history for one saved run, grouped into:
+
+- **In Progress**: runs still working. Open one to watch it.
+- **Needs Attention**: runs that failed.
+- **Most Recent**: the latest result.
+- **Previous Results**: earlier results, newest first.
 
 ## Common result categories
 
@@ -37,7 +60,7 @@ For sources that support it, Darpan re-checks reported-missing records with a di
 
 Some differences cannot exist by definition, and reporting them buries the ones that can. Where a record's own data proves no counterpart is possible, Darpan suppresses it and says so.
 
-Returns reconciliation carries three such rules on the missing-in-OMS side, each a logical implication rather than an observed correlation:
+Returns reconciliation carries three such rules on the missing-in-HotWax side, each a logical implication rather than an observed correlation:
 
 | Rule | Why no counterpart can exist |
 | --- | --- |
@@ -49,7 +72,7 @@ Returns reconciliation carries three such rules on the missing-in-OMS side, each
 Suppression only applies when the row's own data **proves** the rule. Where the evidence is inconclusive — a truncated view, a field the extract predates — the record stays reported. Suppressing on a "don't know" is the one direction that hides real differences, so Darpan never does it.
 </Note>
 
-Together these substantially change what a result reports. On one production run, the missing-in-OMS count fell from 31 to 9: 78 cancellation refunds, 6 superseded returns and 65 cancelled-item refunds suppressed as structurally impossible, plus 127 records confirmed present by point lookup.
+Together these can move a count substantially. The run's alert reports how many rows each rule removed, and the tallies sum to the rows actually removed. See [Reconcile returns and exchanges](/guides/returns-and-exchanges).
 
 ### Reading source labels
 

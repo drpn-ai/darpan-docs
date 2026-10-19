@@ -30,8 +30,8 @@ Most of the work in Darpan is front-loaded: connections, schemas, and a saved ru
   <Card title="HotWax" icon="server" href="/guides/setup-hotwax">
     Store the HotWax connection used by runs and automations.
   </Card>
-  <Card title="AI provider" icon="sparkles" href="/guides/configure-ai">
-    Configure the AI provider — a Darpan admin task you do once per provider.
+  <Card title="Database" icon="database" href="/guides/connect-database">
+    Read records from MySQL, PostgreSQL, or IBM Db2 with a saved connection and a SELECT.
   </Card>
 </Columns>
 
@@ -53,13 +53,16 @@ Most of the work in Darpan is front-loaded: connections, schemas, and a saved ru
   <Card title="Review results" icon="table" href="/guides/review-results">
     Interpret generated differences and choose the next action.
   </Card>
+  <Card title="Returns and exchanges" icon="arrow-rotate-left" href="/guides/returns-and-exchanges">
+    Reconcile Shopify returns and exchanges against HotWax.
+  </Card>
 </Columns>
 
 ## Admin & alerts
 
 <Columns cols={2}>
   <Card title="Tenant settings" icon="sliders" href="/guides/manage-tenant-settings">
-    Set the tenant timezone and register Google Chat spaces.
+    Set the tenant timezone and register Google Chat or Slack spaces.
   </Card>
   <Card title="Users & access" icon="users" href="/guides/manage-users-and-access">
     Grant tenant access and assign roles.
@@ -68,7 +71,7 @@ Most of the work in Darpan is front-loaded: connections, schemas, and a saved ru
     Schedule a saved reconciliation run, or run it on demand.
   </Card>
   <Card title="Run-completion alerts" icon="bell" href="/guides/run-completion-alerts">
-    Get a Google Chat message when a run finishes flagging differences.
+    Get a Google Chat or Slack message when a run finishes flagging differences.
   </Card>
 </Columns>
 

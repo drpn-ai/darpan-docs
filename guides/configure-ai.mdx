@@ -1,31 +1,31 @@
 ---
-title: "Configure AI providers"
-description: "Set up AI provider records used by assisted Darpan workflows."
+title: "AI provider settings"
+description: "What the AI provider settings store, and what they do not do yet."
 ---
 
-AI provider setup is a Darpan admin task (the DARPAN_ADMIN group) you do once per provider. Save the record with the right credential reference and Darpan's assisted workflows — schema support, analysis, and similar features — have what they need from then on.
+Tenant Settings has an **AI Configuration** section. It stores AI provider settings. No Darpan feature reads these settings yet: schema inference, matching, rules, and results all work without them, and saving a provider changes nothing about how a run behaves.
 
-Tenant Admins manage tenant-owned setup records such as timezone, notifications, connections, schemas, saved runs, and automations. AI provider settings are outside their scope.
+This page describes what the section stores, so the record is accurate if you keep one.
 
-## Before you start
+## Who can edit it
 
-Confirm:
+Only a Darpan admin (the DARPAN_ADMIN group) can view or change the section. Tenant Admins see **Darpan admin only** in its place.
 
-- You are signed in as a Darpan admin (DARPAN_ADMIN group).
-- The provider identifier and required credential reference are available in secure configuration.
+## What is stored
 
-## Setup checklist
+From **Ask Darpan**, open **Open Tenant Settings** (it also matches ai, llm, and api key), then choose the **AI Configuration** tile.
 
-1. From **Ask Darpan**, open **Open Tenant Settings** (search ai / llm / api key), then start the AI provider workflow.
-2. Create or edit the provider record.
-3. Enter the provider identifier and required credential reference.
-4. Save the record.
-5. Run the smallest workflow that uses the provider.
+| Field | Notes |
+| --- | --- |
+| **Provider** | **OpenAI** or **Gemini**. One provider is the selected one at a time. |
+| **Enabled** | **Yes** or **No**. |
+| **Model** | The model name, for example `gpt-4.1-mini`. |
+| **Timeout (seconds)** | Request timeout for the provider. |
+| **Base URL** | The provider's API base URL. Only `api.openai.com` and `generativelanguage.googleapis.com` are accepted; leave it blank to keep the provider default. |
+| **API Key** | The raw provider key. Leave it blank on edit to keep the stored key. |
 
-## Record naming
-
-Clear names and descriptions show whether a provider is for local testing, pilot use, or a production-like target.
+The same settings are available through `facade.SettingsFacadeServices.get#LlmSettings` and `save#LlmSettings`.
 
 ## Safety
 
-Credentials belong in the configured provider record. Public examples use credential references, not raw keys, organization identifiers, or model-routing details.
+The API key is a live credential. Use a key scoped for this purpose, and do not paste one you would not want stored. Because nothing uses the settings yet, leaving the section unconfigured costs nothing.

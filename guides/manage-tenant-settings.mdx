@@ -1,6 +1,6 @@
 ---
 title: "Manage tenant settings"
-description: "Set the shared tenant timezone and register the Google Chat spaces that reconciliation runs report to."
+description: "Set the shared tenant timezone and register the Google Chat or Slack spaces that reconciliation runs report to."
 ---
 
 Two settings define how your tenant behaves for everyone on it: the shared timezone and the chat spaces runs report to. Neither takes long to configure — but getting both right before your first automated run saves your team from reading timestamps in the wrong zone and having to open the app to find out whether a sync failed.
@@ -16,15 +16,15 @@ Confirm:
 - You are signed in as a Tenant Admin for the tenant you want to manage.
 - The active tenant shown in **Open User Settings** is correct.
 - The tenant timezone is known.
-- A Google Chat incoming webhook is available for each space you intend to register.
+- For each space you intend to register: a Google Chat incoming webhook, or a Slack workspace you can connect.
 
 ## What Tenant Settings controls
 
 | Setting | Use it for | Tenant Admin access |
 | --- | --- | --- |
 | Timezone | The tenant's default date and time interpretation for workflows, schedules, and date windows. | View and edit |
-| Notifications | The registry of named Google Chat spaces that finished runs report to. | View and edit |
-| AI configuration | Provider setup for assisted workflows. | Darpan Admin only |
+| Notifications | The registry of named Google Chat or Slack spaces that finished runs report to. | View and edit |
+| AI configuration | Stored AI provider settings. No feature uses them yet; see [AI provider settings](/guides/configure-ai). | Darpan Admin only |
 
 ## Steps
 
@@ -47,14 +47,20 @@ In **Localization**, choose **Timezone**.
 
 Select the timezone for the tenant and save. Use the timezone that operators expect for schedules, date windows, and review timestamps.
 
-This is the tenant default, not a hard rule. Anyone can set a personal timezone in **User Settings** that overrides it for their own view — see [Timezones and how dates resolve](#timezones-and-how-dates-resolve) below.
+The tenant timezone leads: when it is set, everyone on the tenant sees times in it, whatever their personal setting. See [Timezones and how dates resolve](#timezones-and-how-dates-resolve) below.
+
+Changing it does not move existing automations. Each automation keeps the zone it was saved with; see [Set up an automation](/guides/setup-automation#timezone).
 
 </Step>
 <Step title="Register chat spaces">
 
 In **Operations**, choose **Notifications**.
 
-Add one entry per destination Google Chat space: a name that is unique within the tenant, and the space's incoming webhook URL. Darpan validates the URL on save and stores it encrypted — saved spaces show their name and status, never the full URL.
+Add one entry per destination: a name that is unique within the tenant, the chat product (**Google Chat** or **Slack**), and either the space's incoming webhook URL or, for a connected Slack workspace, a channel. Darpan validates a webhook URL on save.
+
+<Warning>
+Webhook URLs are stored in clear text and returned to members of the tenant who can read its chat spaces. Anyone holding the URL can post into the space. If one leaks, create a new webhook in the chat product and update the space.
+</Warning>
 
 Automations link to a space, and individual users pick one of these spaces as their personal default. For the end-to-end alert flow, see [Run-completion alerts](/guides/run-completion-alerts).
 
@@ -70,25 +76,19 @@ Return to **Open Tenant Settings** and confirm the timezone and the registered s
 
 Darpan resolves the timezone it displays and calculates in from the first of these that is set:
 
-1. The signed-in user's preferred timezone, from **User Settings**.
-2. The tenant timezone, from **Tenant Settings**.
-3. The browser's own timezone.
+1. The tenant timezone, from **Tenant Settings**.
+2. The signed-in user's timezone, from **User Settings**.
+3. The server default (UTC unless the deployment sets one).
 
-This affects more than formatting. Run date windows and API day ranges are anchored to midnight in the resolved timezone, so two people on the same tenant with different personal timezones can produce different day boundaries for the same saved run. Set the tenant timezone to the one your operations actually run on, and treat personal overrides as a convenience for people working elsewhere.
+The tenant leads because reconciliation dates describe the tenant's business day, so everyone on a tenant reads the same day boundaries. A personal timezone in **User Settings** applies only while the tenant has none set.
+
+This affects more than formatting. Run date windows and API day ranges are anchored to midnight in the resolved timezone. Set the tenant timezone to the one your operations actually run on.
+
+Scheduled automations are the exception: each one runs in its own saved zone. See [Set up an automation](/guides/setup-automation#timezone).
 
 ## Share a source configuration with another tenant
 
-An organisation running several tenants against one upstream system used to need the same credentials entered, rotated and audited separately in each. Sharing removes the duplication: one tenant owns the configuration, and named peer tenants may use it.
-
-| Action | Effect |
-| --- | --- |
-| Grant | Adds a tenant to the configuration's peer group. |
-| Revoke | Removes a tenant's access from that point onward, leaving the historical grant intact. |
-| List | Shows the owning tenant, the peer tenants, and which tenants a change would affect. |
-
-Sharing applies to API source configurations. Ownership stays with one tenant — peers use the configuration, they do not take it over — and the credential itself is never exposed to a peer tenant, only the ability to run against it.
-
-Check the affected-tenant list before revoking. Revoking a configuration that another tenant's runs depend on stops those runs from resolving their source.
+Sharing is set on the connection itself, not in Tenant Settings. Open the Shopify, HotWax, or NetSuite configuration and use its **Shared with** panel. See [Set up Shopify](/guides/setup-shopify#share-the-connection-with-another-tenant).
 
 ## Troubleshooting
 
@@ -98,5 +98,5 @@ Check the affected-tenant list before revoking. Revoking a configuration that an
 | The wrong tenant changed | Switch to the intended tenant from **Open User Settings**, then review **Open Tenant Settings** again. |
 | A space is registered but no message arrives | Confirm the space is active and still has a webhook, and that an automation is linked to it or someone subscribed with **Notify me**. Registering a space does not by itself route any run to it. |
 | A space cannot be deleted | An automation or an active run subscription still references it. Deactivate it instead. |
-| Timestamps differ between two people on the same tenant | One of them has a personal timezone set in **User Settings** that overrides the tenant default. |
-| AI configuration is unavailable | AI provider settings are Darpan Admin only. Tenant Admins manage tenant settings and tenant-owned reconciliation setup. |
+| Timestamps differ between two people on the same tenant | The tenant has no timezone set, so each person's **User Settings** timezone applies. Set the tenant timezone. |
+| AI configuration shows **Darpan admin only** | AI provider settings are Darpan Admin only. No feature uses them yet. |
