@@ -12,11 +12,12 @@ It lives in the Vue app through CSS variables, shared components, route metadata
 | Source | Owns |
 | --- | --- |
 | `src/style.css` | Global tokens, static-surface classes, workflow classes, form utilities, responsive behavior, safe-area offsets, theme variables, and reduced-motion rules. |
-| `src/App.vue` | Global shell, floating actions, command palette wiring, user menu, tenant switcher, theme toggle, and workflow escape handling. |
+| `src/App.vue` | Global shell, offline banner, error boundary, floating actions, user menu (with the read-only active tenant and the theme toggle), command palette wiring, and workflow escape handling. |
 | `src/router/index.ts` | Route ownership, auth metadata, static versus workflow surface mode, and public route handling. |
-| `src/components/ui/**` | Shared UI primitives for static pages, validation, empty states, badges, tables, selects, save actions, cancel actions, and editable titles. |
-| `src/components/workflow/**` | Shared workflow frame, progress, step form, workflow select, and shortcut choice cards. |
-| `src/components/shell/CommandPalette.vue` | Global command navigation and command result presentation. |
+| `src/components/ui/**` | Shared UI primitives for static pages, validation, empty and error states, badges, tables, selects, toggles, list paging, JSON viewing, save actions, cancel actions, and editable titles. |
+| `src/components/workflow/**` | Shared workflow frame, progress, step form, workflow select, chip text input, time select, and shortcut choice cards. |
+| `src/components/shell/**` | `CommandPalette.vue` for global command navigation, `OfflineBanner.vue`, and `AppErrorBoundary.vue`. |
+| `.stylelintrc.cjs` | The CSS gate that keeps design-system values on tokens. |
 
 When a screen needs a reusable pattern, the default move is to extend one of these contracts before adding page-local styling.
 
@@ -24,13 +25,18 @@ When a screen needs a reusable pattern, the default move is to extend one of the
 
 | Foundation | Current rule |
 | --- | --- |
-| Typography | The app uses a mono-family system through global CSS so setup records, IDs, and reconciliation data read consistently. |
+| Typography | One self-hosted family, IBM Plex Mono, so setup records, IDs, and reconciliation data read consistently. Sizes and tracking come from the `--type-*` scale in `src/style.css`. One weight: 400 everywhere. Emphasis comes from size, never bold. |
 | Color | Light and dark themes are expressed through CSS variables. Components consume semantic variables instead of hard-coded palettes. |
 | Spacing | Shared `--space-*` tokens define page rhythm, grid gaps, controls, and floating-action offsets. |
 | Radius | Radius tokens keep controls and surfaces restrained and consistent. |
 | Surfaces | Static and workflow surfaces have separate width, padding, and typography tokens. |
 | Interaction | Focus states, selection colors, disabled states, and reduced-motion behavior live in shared CSS. |
 | Responsiveness | Shared breakpoints and safe-area-aware offsets keep workflows and floating actions usable on smaller screens. |
+
+The CSS gate enforces part of this. `npm run lint:css` runs Stylelint over `src/**/*.{css,vue}` and is part of `npm run check`:
+
+- Color, fill, stroke, radius, font size, letter spacing, margin, gap, and padding must use a token (a `var(...)` or a derived function), not a literal. The few literals left carry an inline disable with a reason.
+- `font-weight` may only be `400`, `normal`, or `inherit`.
 
 The design system favors quiet, dense, scan-friendly screens because Darpan is an operational tool. Visual polish supports repeated work without turning setup and review pages into marketing layouts.
 
@@ -54,7 +60,7 @@ Workflow pages use the workflow system:
 - `workflow-form-grid`, `workflow-form-grid--two`, and `workflow-form-grid--compact` provide form layout before page-local CSS is considered.
 - `workflow-form--edit-single-page` marks compact edit surfaces inside the workflow visual system.
 
-Shared feedback and control primitives include `InlineValidation`, `EmptyState`, `StatusBadge`, `AppTableFrame`, `AppSaveAction`, and `AppCancelAction`.
+Shared feedback and control primitives include `InlineValidation`, `EmptyState`, `ErrorState`, `StatusBadge`, `AppTableFrame`, `AppListPager`, `AppToggleSwitch`, `JsonCollapseViewer`, `AppSaveAction`, and `AppCancelAction`. Workflow inputs add `WorkflowChipTextInput` and `WorkflowTimeSelect`.
 
 ## Page composition
 

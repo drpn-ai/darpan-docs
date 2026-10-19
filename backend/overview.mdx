@@ -21,13 +21,16 @@ This split keeps browser workflows thin. The UI asks for a run; the backend vali
 ## Current shape
 
 - Moqui component descriptor: `component.xml`
-- Public service surface: Moqui JSON-RPC services through `/rpc/json`
+- Public service surface: `facade.*` Moqui JSON-RPC services through `/rpc/json`
+- Operator surface: `admin.*` services, restricted to super admins and called by the Darpan admin app. They are not part of the public API.
+- GraphQL: the images include a GraphQL component (`moqui-gql`). It is not a supported public API yet.
 - Service contracts: XML service definitions under `service/**`
 - Data model: Moqui entity definitions under `entity/**`
 - Processing helpers: Groovy code under `src/main/groovy/**`
 - Reconciliation engine: Spark-backed compare services with RuleSet and legacy mapping paths
 - Rule engine: Drools/KIE services for compiling and executing reconciliation rules
 - Output handling: generated-output descriptors plus tenant-scoped files
+- One-time upgrade work: a migration registry and supervisor (see [Data migrations](/backend/migrations))
 
 ## What the backend owns
 
@@ -60,7 +63,10 @@ This section traces product workflows into backend services, entities, processin
   <Card title="Data access and tenancy" icon="shield" href="/backend/data-access-and-tenancy">
     Active tenant scope, permission membership, and generated-output isolation.
   </Card>
+  <Card title="Data migrations" icon="database" href="/backend/migrations">
+    Registry, prerequisites, ledger, and supervisor for one-time data migrations.
+  </Card>
   <Card title="Operations and validation" icon="terminal" href="/backend/operations-and-validation">
-    Gradle commands and backend review checklist.
+    Test pools, Gradle commands, runtime baseline, and backend review checklist.
   </Card>
 </CardGroup>

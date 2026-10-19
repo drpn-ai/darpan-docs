@@ -11,10 +11,18 @@ Darpan engineering work starts from product behavior and follows it through the 
 | --- | --- |
 | Codebase discovery | Traces a product behavior from app route to API client, facade service, entity, backend helper, and test. |
 | UI implementation | Keeps custom UI in the Vue app while reusing shared page and workflow patterns. |
-| Backend implementation | Keeps service contracts explicit in Moqui XML and places dense processing in testable Groovy or Java helpers. |
+| Backend implementation | Keeps service contracts explicit in Moqui XML, writes service bodies as XML actions by default, and places dense processing in testable Groovy helpers. |
 | Reconciliation logic | Preserves the split between Spark dataset work and Drools-backed decisioning. |
 | Verification | Runs focused checks, reports what passed, and calls out remaining risk. |
 | Documentation | Updates product and engineering docs from implemented behavior instead of planned architecture. |
+
+## Tracking and branching
+
+Every feature or bug fix starts from an item in Darpan's internal backlog. Each item has an ID of the form `DAR-<SURFACE>-<n>` (`DAR-UI-<n>` for app work, `DAR-BE-<n>` for backend work), and the backlog holds its status, priority, and next action.
+
+- Commit messages and pull request titles reference the item ID when code work starts.
+- The code repositories work directly on `main`. There are no long-lived topic branches.
+- Progress, verification, and closeout notes are recorded on the backlog item, not in an external tracker.
 
 ## Engineering principles
 

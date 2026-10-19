@@ -11,10 +11,10 @@ Four pieces, each with one job.
 
 | Piece | Entity / service | Responsibility |
 | --- | --- | --- |
-| Registry | `DarpanMigration` | Declares a migration: owning component, service to call, description, sequence, whether it supports a dry run, and whether it is parked. |
+| Registry | `DarpanMigration` | Declares a migration: owning component (`componentName`), service to call (`serviceName`), `description`, `sequenceNum`, whether it supports a dry run (`supportsDryRun`), and whether it is enabled (`enabled`; `N` parks it). |
 | Prerequisites | `DarpanMigrationPrereq` | Declares migrations that must have succeeded first. Verified, never assumed. |
 | Ledger | `DarpanMigrationRun` | One row per attempt. `migrationId` plus `runId` form the key, so a failed attempt survives the retry that follows it. |
-| Supervisor | `run#PendingMigrations` | Walks the registry in sequence order and applies what has no success recorded. |
+| Supervisor | `migration.MigrationServices.run#PendingMigrations` | Walks the registry in sequence order and applies what has no success recorded. |
 
 Registering a migration is a **seed data row**, not an application change. `componentName` exists so sibling components can register into the same registry rather than each growing a private one.
 
@@ -43,17 +43,29 @@ Committing the ledger independently means a failure leaves evidence behind. This
 
 Three gates apply, to the sweep and to a targeted run alike:
 
-- A **parked** migration is skipped. Parking exists so one broken migration does not strand every migration behind it — the rest of the sweep proceeds, and the parked one is dealt with on its own.
+- A **parked** migration (`enabled` = `N`) is skipped. Parking exists so one broken migration does not strand every migration behind it — the rest of the sweep proceeds, and the parked one is dealt with on its own.
 - A migration whose **prerequisites** have not succeeded is refused and recorded as blocked, rather than run against the state it was not written for.
 - An **already-applied** migration is skipped.
 
-`run#Migration` runs one named migration for targeted remediation, under the same gates. `dryRun#Migration` previews one.
+`run#Migration` runs one named migration for targeted remediation, under the same gates. `dryRun#Migration` previews one, and `run#PendingMigrations` with `dryRun` set previews the whole sweep. `set#MigrationEnabled` parks or unparks a migration.
 
 ## Operator surface
 
-`get#MigrationStatus` returns registry and ledger state for every migration in sequence order, including the most recent attempt's detail. `get#MigrationHistory` returns every attempt at one migration, newest first, each with its own sanitized failure detail — which is how a failed migration is diagnosed without shell access to the installation.
+The internal services live in `service/migration/MigrationServices.xml` and are not callable remotely (`allow-remote="false"`). `list#MigrationStatus` returns registry and ledger state for every migration in sequence order, including the most recent attempt's detail. `get#MigrationHistory` returns every attempt at one migration, newest first, each with its own sanitized failure detail — which is how a failed migration is diagnosed without shell access to the installation.
 
-Both are exposed to the admin application through `admin.MigrationAdminServices`, behind the `DARPAN_ADMIN_API` artifact fence and a super-admin content gate. The component also ships a `Migrations` screen carrying the same status, dry-run and run-pending actions.
+The admin application reaches them through `admin.MigrationAdminServices`, behind the `DARPAN_ADMIN_API` artifact group, which only super admins hold:
+
+| Admin service | Delegates to |
+| --- | --- |
+| `get#MigrationStatus` | `list#MigrationStatus` |
+| `get#MigrationHistory` | `get#MigrationHistory` |
+| `run#PendingMigrations` | The sweep |
+| `dryRun#PendingMigrations` | The sweep, as a preview |
+| `run#Migration` | One named migration |
+| `dryRun#Migration` | One named migration, as a preview |
+| `set#MigrationEnabled` | Park or unpark |
+
+Preview and apply are separate method names on purpose: a dropped `dryRun` flag cannot turn a preview into a write. The component also ships a `Migrations` screen with the status table and **Dry Run All** and **Run Pending** actions.
 
 Failure detail is sanitized before it is stored, because it is read by an operator through a remote surface.
 
@@ -78,3 +90,18 @@ The seed registry currently declares six, in sequence:
 4. Set `supportsDryRun` to `Y` only once the service genuinely honours it.
 
 The description is operator-facing. It appears on the admin screen and is what someone reads when deciding whether to run the migration now or park it.
+
+## Upgrade data
+
+Migrations translate existing rows. Seed and reference data, such as enumerations, security groups, connector rows, and the migration registry itself, ships separately as upgrade data.
+
+- Seed files under `data/*.xml` are the source of truth. Files that every installation needs declare `type="darpan-seed"`.
+- `data/upgrade-data.xml` is the load target for the current release. Each release's pack, with its notes and review, is archived under `data/releases/<version>/`.
+- `./gradlew :runtime:component:darpan:loadDarpanUpgradeData` loads every `darpan-seed` file idempotently (`types=darpan-seed`). Set `DARPAN_UPGRADE_DATA_LOCATION` to load one file instead.
+
+Two hazards apply to every load:
+
+- The `type` attribute is a gate. A load only reads rows whose file `type` matches the requested types. A file with the wrong type is skipped, and the load still reports success. Check the type before relying on a load.
+- Foreign-key order matters. Moqui loads rows in file order. A parent row, such as a `DarpanMigration`, must come before any row that references it, such as its `DarpanMigrationPrereq`. Check parent-before-child order by hand when assembling a release pack from several seed files.
+
+After upgrade data loads, run the migration sweep.

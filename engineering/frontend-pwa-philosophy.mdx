@@ -11,14 +11,17 @@ The app is implemented in [`drpn-ai/darpan-ui`](https://github.com/drpn-ai/darpa
 
 | Area | Current behavior |
 | --- | --- |
-| App shell | `src/App.vue` owns the shared shell, floating actions, user menu, read-only active-tenant indicator, theme toggle, and command palette. The actual tenant switch control lives on the **User Settings** page (`src/pages/settings/UserSettingsPage.vue`). |
+| App shell | `src/App.vue` owns the skip link, the offline banner, an error boundary around the routed page, the floating actions, and the command palette. The floating actions are a Dashboard button, a user menu (display name, read-only active tenant, sign out, theme toggle, and a link to user settings), and the **Ask Darpan** button (Cmd/Ctrl+K). Tenant switching lives on the **User Settings** page (`src/pages/settings/UserSettingsPage.vue`) and in the `/switch-tenant` command in Ask Darpan. |
 | Routing | `src/router/index.ts` is the route registry and auth gate. Route metadata tells the shell whether the page is static, workflow, authenticated, or public. |
 | Navigation | **Ask Darpan** is the primary global navigation model. The command palette combines static destinations with limited record-backed actions such as saved outputs and SFTP records. |
 | Workflow continuity | Static pages launch workflows with origin state. Workflow pages can return to the originating static page instead of forcing users back through the dashboard. |
 | Browser behavior | Routes are linkable, page reloads keep route intent, the app respects focus states, and the shell provides a skip link for keyboard users. |
 | User preference | Theme selection is persisted through the frontend theme helper and reflected in CSS variables. |
+| Session | Two build-time modes, chosen by `VITE_DARPAN_COOKIE_AUTH`. In header mode, the session token is held in memory with a `sessionStorage` backing, so it lasts for one tab and each new tab signs in on its own. In cookie mode, the credential is the HttpOnly `darpan_login_key` cookie and every call carries an `X-CSRF-Token` header; the CSRF token is kept per tab. The active tenant is stored on the server per user, so switching it in one tab affects every tab. |
 
 The frontend does not currently ship a service worker, install prompt, manifest-driven install flow, background sync, or offline reconciliation mode. Those capabilities become documentation topics when they are implemented.
+
+What it does have is an `OfflineBanner` (`src/components/shell/OfflineBanner.vue`): when the browser reports it is offline, the shell shows a status banner, and it clears when the connection returns. Requests made while offline fail; they are not queued.
 
 ## Surface model
 

@@ -17,6 +17,7 @@ UI workflow
   -> source data staging
   -> Spark dataset preparation
   -> base diff and optional rule execution
+  -> verification passes
   -> generated output descriptor and file
   -> UI result view
 ```
@@ -29,18 +30,64 @@ UI workflow
 | Source staging | Save uploaded files, text payloads, or configured-source inputs for processing. |
 | Base comparison | Normalize records and compute missing-object or matched-pair output. |
 | Rule evaluation | Apply RuleSet rules to compare-ready data and matched pairs. |
+| Verification | Recheck reported differences against lookup-capable sources before the output is written. |
 | Output storage | Store generated output metadata and files for review. |
 
 ## Current execution paths
 
-Darpan has two execution paths.
+A run starts from one of two entry points. After the trigger, both execute the same stages and the same verification passes.
 
-| Path | Role |
+| Entry point | Where it lives | Starts when |
+| --- | --- | --- |
+| Interactive saved run | `facade.ReconciliationFacadeServices.run#SavedRunDiff`, implemented in `src/main/groovy/darpan/facade/reconciliation/runSavedRunDiff.groovy` | A user runs a saved run from the app. |
+| Automation pipeline | `darpan.reconciliation.automation.AutomationExecutionSupport`, driven by `scan#DueAutomations`, `execute#Automation`, and SFTP polling | A schedule comes due, a user presses **Run now**, or SFTP polling picks up a file. |
+
+The verification decisions live in one place, `darpan.facade.reconciliation.RunVerificationSupport`, so a scheduled run and an interactive run apply the same rechecks. On the automation path, one runtime switch can turn all verification off for an instance.
+
+Separately, a run's compare definition takes one of two shapes:
+
+| Shape | Role |
 | --- | --- |
-| RuleSet path | A saved run points to a `RuleSetCompareScope` with compare sources and optional rules. |
-| Mapping path | A reconciliation mapping describes source members and comparison behavior. |
+| RuleSet | A saved run points to a `RuleSetCompareScope` with compare sources and optional rules. |
+| Mapping | A reconciliation mapping describes source members and comparison behavior. |
 
-Darpan supports both paths. New run contracts center on `RuleSetCompareScope`; existing services and release history may still reference mappings.
+Darpan supports both. New run contracts center on `RuleSetCompareScope`; existing services and release history may still reference mappings.
+
+## Run stages and observability
+
+A run's progress is recorded so an operator can see where it is, and where it stopped. `darpan.facade.reconciliation.RunObservability` is the single instrumentation point for both entry points.
+
+Each run has one `ReconciliationRunResult` row. Its `statusEnumId` moves from `AUT_STAT_PENDING` or `AUT_STAT_RUNNING` to one terminal status: `AUT_STAT_SUCCESS`, `AUT_STAT_FAILED`, `AUT_STAT_NO_DATA`, `AUT_STAT_SKIP_DUP`, or `AUT_STAT_CANCELLED`. The row also carries `currentStage` and a heartbeat date.
+
+Each stage writes one `ReconciliationRunStep` row with its own status, timing, and metrics. Stages run in this order:
+
+| Sequence | Stage | Work |
+| --- | --- | --- |
+| 1 | `RESOLVE` | Load the saved run, its compare scope, and the run window. |
+| 2 | `EXTRACT_FILE1` | Extract or stage the first source. |
+| 3 | `EXTRACT_FILE2` | Extract or stage the second source. |
+| 4 | `COMPARE` | Spark base diff and rule evaluation. |
+| 5 | `VERIFY` | Point-lookup rechecks of the compared output. |
+| 6 | `WRITE_OUTPUT` | Write the verified result artifact and the run-result summary. |
+| 7 | `NOTIFY` | Send run-completion alerts. |
+
+`VERIFY` runs before `WRITE_OUTPUT`, so the file a user downloads is the corrected one. Several passes share the `VERIFY` stage code; each records the systems it rechecked in its own step metrics. A pass that declines to run records why.
+
+| Pass | What it rechecks |
+| --- | --- |
+| Missing-diff recheck | Rows reported missing on a side whose connector supports point lookups are looked up again in that system. Rows the lookup confirms present are removed and the counts adjusted, with an audit note. A failed or skipped lookup changes nothing. |
+| Return presence | For returns runs between Shopify and HotWax OMS, regrades return and refund events reported missing on one side. An event younger than the sync grace period is pending, not missing. An event before the run window, a refund on a cancelled order, or an unrefunded Shopify return draft on an order that already has a booked OMS return is not reported as a gap. |
+| Exchange presence | For order runs between Shopify and HotWax OMS, checks that each Shopify exchange in the window was imported into OMS. Only lookup-confirmed absences become rows. |
+
+## Stuck-run recovery
+
+If a JVM crash or container restart kills a run mid-flight, its run-result row can be left in a running state forever, which blocks re-triggering. An internal scheduled reaper handles this:
+
+```text
+reconciliation.ReconciliationAutomationServices.sweep#StuckReconciliationRuns
+```
+
+It flips `ReconciliationRunResult` and `ReconciliationAutomationExecution` rows still in running or pending state, whose last update is older than a threshold (`staleMinutes`, default 120), to failed with an explanatory status message. The service is internal only (`allow-remote="false"`) and is not part of the JSON-RPC surface.
 
 ## RuleSet compare flow
 
@@ -112,12 +159,30 @@ Runs that reach a terminal state alert the owning tenant so sync issues surface 
 
 1. A run reaches a terminal state through one of three paths: a manual saved-run diff (`facade.ReconciliationFacadeServices.run#SavedRunDiff`), a scheduled automation execution, or SFTP polling. Terminal states are `AUT_STAT_SUCCESS`, `AUT_STAT_FAILED`, `AUT_STAT_NO_DATA`, `AUT_STAT_SKIP_DUP`, and `AUT_STAT_CANCELLED`.
 2. The completion path calls `darpan.reconciliation.notification.TenantNotificationSupport`, which resolves destinations through `resolveDestinationChatSpaces`: the automation's linked `chatSpaceId`, plus the snapshotted space on every `darpan.reconciliation.ReconciliationRunNotifySubscription` row for the run.
-3. That set is deduplicated and filtered to `darpan.reconciliation.TenantChatSpace` rows that are active, hold a webhook URL, and belong to the run's own tenant. A dropped *automation-linked* space is logged as a warning; a dropped subscriber space is expected churn and stays silent.
+3. That set is deduplicated and filtered to `darpan.reconciliation.TenantChatSpace` rows that are active, can deliver, and belong to the run's own tenant. A dropped *automation-linked* space is logged as a warning; a dropped subscriber space is expected churn and stays silent.
 4. The helper builds the message through `reconciliation.ReconciliationNotificationServices.build#RunCompletedPayload` and posts it to each surviving destination.
 
-Delivery is claim-then-deliver: a single claim per run-result means at most one notification pass even when several stages report completion. Subscription rows are purged once the run is terminal. The payload includes the run name, tenant label, result ID, a link back to the run result, the difference count, and the only-in-source counts. The run-result link base URL comes from the `DARPAN_APP_BASE_URL` environment variable or the `darpan.app.baseUrl` property, falling back to the first allowed origin.
+Delivery is claim-then-deliver: a single claim per run-result means at most one notification pass even when several stages report completion. A failed delivery still consumes the claim; there is no automatic redelivery. Subscription rows are purged once the run is terminal. The payload includes the run name, tenant label, result ID, a link back to the run result, the difference count, and the only-in-source counts. The run-result link base URL comes from the `DARPAN_APP_BASE_URL` environment variable or the `darpan.app.baseUrl` property, falling back to the first allowed origin.
 
-The registry and the per-user default are configured through:
+Automation executions have one more end state. An execution that fails with a transient error is retried; one that exhausts its retries ends in `AUT_STAT_DEAD_LETTER` and sends a give-up alert to the same destinations. `facade.ReconciliationFacadeServices.reprocess#AutomationExecution` resets a failed or dead-lettered execution to pending with a fresh retry budget.
+
+### Chat providers
+
+A chat space posts to one provider, recorded in `chatProviderEnumId`:
+
+| Provider | Enum | Delivery |
+| --- | --- | --- |
+| Google Chat | `CHAT_PROV_GOOGLE` | Incoming webhook. A null provider reads as Google Chat, because rows written before Slack support have no provider. |
+| Slack | `CHAT_PROV_SLACK` | The bot token of a connected Slack workspace (`chat.postMessage` to `slackChannelId`) when the space names a workspace install, or an incoming webhook otherwise. |
+
+The webhook URL is validated on save:
+
+- Google Chat: `https` on `chat.googleapis.com`, a `/v1/spaces/…/messages` path, and `key` and `token` query parameters.
+- Slack: `https` on `hooks.slack.com`, a complete `/services/…` path.
+
+Webhook URLs are stored in clear text in `TenantChatSpace.webhookUrl`, and `list#TenantChatSpaces` returns them to members of the tenant. Treat read access to a tenant's settings as access to its webhook URLs. Slack bot tokens belong to the workspace install and are not returned.
+
+The registry, the per-user default, and Slack setup are configured through:
 
 ```text
 facade.SettingsFacadeServices.list#TenantChatSpaces
@@ -127,20 +192,13 @@ facade.SettingsFacadeServices.get#UserNotificationDefault
 facade.SettingsFacadeServices.save#UserNotificationDefault
 facade.ReconciliationFacadeServices.subscribe#RunNotification
 facade.ReconciliationFacadeServices.unsubscribe#RunNotification
+facade.SlackFacadeServices.begin#SlackInstall
+facade.SlackFacadeServices.save#SlackBotToken
+facade.SlackFacadeServices.get#SlackInstall
+facade.SlackFacadeServices.list#SlackChannels
+facade.SlackFacadeServices.disconnect#SlackWorkspace
 ```
 
-`save#TenantChatSpace` requires tenant write access; `save#UserNotificationDefault` and the subscribe pair are personal preferences and do not. `delete#TenantChatSpace` hard-deletes only unreferenced spaces — a space an automation or subscription points at must be deactivated instead.
+`save#TenantChatSpace` requires tenant write access; `save#UserNotificationDefault` and the subscribe pair are personal preferences and do not. `delete#TenantChatSpace` hard-deletes only unreferenced spaces — a space an automation or subscription points at must be deactivated instead. A Slack space can only name a workspace install that belongs to the same tenant.
 
-The webhook URL must be an `https` Google Chat space-messages endpoint on `chat.googleapis.com` with `key` and `token` query parameters. It is stored encrypted and is write-only: facade responses never return it, masked or otherwise.
-
-The single-webhook `darpan.reconciliation.TenantNotificationSetting` entity this replaced is retired. `reconciliation.ReconciliationNotificationServices.migrate#TenantNotificationSettings` is the one-time v1.2.0 upgrade that copies each tenant's old webhook into a space named `Default space` and links that tenant's space-less automations to it. It is idempotent and internal only (`allow-remote="false"`). The product-side setup flow is described in [Manage tenant settings](/guides/manage-tenant-settings).
-
-## Stuck-run recovery
-
-If a JVM crash or container restart kills a run mid-flight, its run-result row can be left in a running state forever, which blocks re-triggering. An internal scheduled reaper handles this:
-
-```text
-reconciliation.ReconciliationAutomationServices.sweep#StuckReconciliationRuns
-```
-
-It flips `ReconciliationRunResult` and `ReconciliationAutomationExecution` rows still in running or pending state, whose last update is older than a threshold (default 120 minutes), to failed with an explanatory status message. The service is internal only (`allow-remote="false"`) and is not part of the JSON-RPC surface.
+The single-webhook `darpan.reconciliation.TenantNotificationSetting` entity this replaced is retired. `reconciliation.ReconciliationNotificationServices.migrate#TenantNotificationSettings` is the one-time upgrade that copies each tenant's old webhook into a space named `Default space` and links that tenant's space-less automations to it. It is idempotent, internal only (`allow-remote="false"`), and registered as a [data migration](/backend/migrations). The product-side setup flow is described in [Manage tenant settings](/guides/manage-tenant-settings).
