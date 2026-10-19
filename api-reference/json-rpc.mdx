@@ -16,6 +16,8 @@ All Darpan backend calls use `POST /rpc/json` with a JSON-RPC 2.0 envelope.
 }
 ```
 
+`params` must be a JSON object of named parameters. Send one call per request. Batch requests (a JSON array of calls) are not supported: the response has no body, so the outcome of each call in the array is lost.
+
 The following calls `get#SessionInfo` from the Auth facade:
 
 ```json
@@ -44,12 +46,19 @@ channel adds `login_key` instead, with no CSRF token and no cookie.
 Two channels exist. Which one applies is not ambiguous:
 
 - **Browser app (canonical): HttpOnly cookie.** With cookie auth enabled, the app
-  authenticates through the `darpan_login_key` HttpOnly cookie plus the CSRF token from
-  `/apps/darpan/csrfToken`. No token is stored where page scripts can read it.
+  authenticates through the `darpan_login_key` HttpOnly cookie plus a CSRF token. No token is
+  stored where page scripts can read it. `login#Session` sets the cookie on a successful
+  sign-in. To get the CSRF token, call `GET /apps/darpan/csrfToken`; it restores the session
+  from the cookie when one is present and returns `{"moquiSessionToken": "<token>",
+  "authenticated": true|false}`. Send that value in the `X-CSRF-Token` header on every
+  `POST /rpc/json`. A missing or mismatched token is refused with HTTP 401.
 - **Integration callers and fallback: `login_key` header.** Non-browser clients — and
   browser deployments where credentialed CORS is unavailable — send the token returned by
   `login#Session` in the `login_key` request header. Keep the token in memory; never put it
-  in query parameters.
+  in query parameters. Calls that send `login_key` are not CSRF-checked.
+
+For token lifetime, sign-out, and password changes, see
+[Auth and access](/reference/auth-and-access#session-lifecycle).
 
 The backend CORS end-state is an exact-origin allowlist with
 `Access-Control-Allow-Credentials` for the app origins. A wildcard allowlist is an incident
@@ -69,7 +78,7 @@ posture, not a configuration.
 
 ## Error shape
 
-Errors return an `error` object instead of `result`; facade business validation instead returns `result.ok: false` with `result.errors[]`. For the envelope, the code table, and the validation shape, see [Errors](/api-reference/errors).
+Errors return an `error` object instead of `result`. A service that fails or ends with errors returns `error.code: 500` with HTTP 500, so read the body on non-200 responses. For the HTTP refusals, the code table, and the validation shape, see [Errors](/api-reference/errors).
 
 ## Contract versioning
 

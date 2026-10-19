@@ -35,6 +35,15 @@ Backend JSON-RPC calls usually require:
 - For integration callers: a `login_key` header instead of the cookie and CSRF token
 - Permission for the target service
 
+## Session lifecycle
+
+- Sign-in: `login#Session` returns a login-key token and also sets the HttpOnly `darpan_login_key` cookie. Read `authenticated` in the result to know whether a session exists.
+- Lifetime: the token lasts for the server's login-key expiry, 144 hours (6 days) by default; `authTokenExpiresInSeconds` reports it. The cookie expires at the same time. There is no refresh call: sign in again to get a new token.
+- CSRF bootstrap (browser): `GET /apps/darpan/csrfToken` restores the session from the cookie when present and returns `{"moquiSessionToken": "<token>", "authenticated": true|false}`. Send the token in the `X-CSRF-Token` header on later `POST /rpc/json` calls. Header-token callers skip this step.
+- Sign-out: `logout#Session` revokes the token on the current request (header or cookie) and ends only that session. `logout#AllSessions` revokes every login key for the user, which signs them out on every device.
+- Password: `verify#OwnPassword` checks the current password without changing anything. `change#OwnPassword` changes it for a signed-in user. When sign-in reports `passwordChangeRequired`, use `change#ExpiredPassword`, which needs no session; then sign in again.
+- Active tenant: the active tenant is stored as a preference on the user, not on the session. Switching tenant with `save#ActiveTenant` changes it for every session of that user, including other browser tabs. Give integrations their own user rather than sharing a login with a browser user.
+
 ---
 
-For backend API authentication details, see [JSON-RPC reference](/api-reference/json-rpc).
+For backend API authentication details, see [JSON-RPC reference](/api-reference/json-rpc). For a worked sign-in, call, and sign-out, see [API quickstart](/api-reference/quickstart).

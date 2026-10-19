@@ -3,32 +3,34 @@ title: "Service catalog"
 description: "Verified backend facade services exposed through Darpan JSON-RPC."
 ---
 
-Every method below is a verified backend facade service defined in `service/facade/*.xml` in the Darpan backend component (or a named integration component) and called as the JSON-RPC `method` value.
+Every method below is called as the JSON-RPC `method` value. The generated contract builds this list from the services marked for remote calls in `service/facade/` and `service/admin/` of the Darpan backend component, plus `service/facade/` of the integration components. `facade.*` methods are the public API. `admin.*` methods are operator-only and listed under [Administration](#administration); they are not part of the public API.
 
-All methods require an authenticated session unless noted. Login, logout, and session-info methods accept anonymous calls so the UI can establish or end a session.
+This catalog matches Darpan 1.5.1 (contract version 3).
+
+All methods require an authenticated session unless noted. Four methods accept anonymous calls, so a caller can establish or end a session: `login#Session`, `logout#Session`, `get#SessionInfo`, and `change#ExpiredPassword`.
 
 ## Auth (`facade.AuthFacadeServices`)
 
 | Method | Purpose |
 | --- | --- |
 | `login#Session` | Create an authenticated session from username/password and return the login-key token. Anonymous. |
-| `logout#Session` | End the current session. Anonymous-safe. |
-| `logout#AllSessions` | Invalidate every session for the current user. |
+| `logout#Session` | Revoke the token on the current request and end that session only. Anonymous-safe. |
+| `logout#AllSessions` | Revoke every login key for the current user, signing them out on every device. |
 | `get#SessionInfo` | Return current session, user, and active-tenant context. Anonymous-safe. |
-| `save#ActiveTenant` | Switch the active tenant for the session. |
+| `save#ActiveTenant` | Switch the caller's active tenant. The choice is stored on the user, not the session, so it applies to every session and tab of that user. The tenant key is the tenant's user group id (`companyUserGroupId` on tenant-owned records). |
 | `save#UserSettings` | Save per-user settings, including display name and preferred display timezone (IANA id; empty string clears the preference). Returns refreshed session metadata. |
 | `verify#OwnPassword` | Re-verify the current user's password. |
 | `change#OwnPassword` | Change the current user's password. |
-| `change#ExpiredPassword` | Change the password of an account that cannot sign in until it is changed, without a session. Requires the account's current password. |
+| `change#ExpiredPassword` | Change the password of an account that cannot sign in until it is changed, without a session. Requires the account's current password. Anonymous. Issues no token: sign in again afterwards. |
 
 ## Settings (`facade.SettingsFacadeServices`)
 
 | Method | Purpose |
 | --- | --- |
 | `list#EnumOptions` | List enumeration options for settings surfaces. |
-| `get#LlmSettings` / `save#LlmSettings` | Read and save AI provider settings. |
+| `get#LlmSettings` / `save#LlmSettings` | Read and save AI provider settings. The settings are stored; no product feature reads them yet. |
 | `get#TenantSettings` / `save#TenantSettings` | Read and save tenant-level settings such as timezone. |
-| `list#TenantChatSpaces` / `save#TenantChatSpace` / `delete#TenantChatSpace` | Manage the tenant's registry of named Google Chat spaces. Webhook URLs are write-only and never returned. `delete` succeeds only for unreferenced spaces. |
+| `list#TenantChatSpaces` / `save#TenantChatSpace` / `delete#TenantChatSpace` | Manage the tenant's registry of named chat spaces (Google Chat or Slack). Webhook URLs are stored in clear text, and `list#TenantChatSpaces` returns them to any tenant member with view access. `delete` succeeds only for unreferenced spaces. |
 | `get#UserNotificationDefault` / `save#UserNotificationDefault` | Read and set the caller's own default chat space for the active tenant. Personal preference — no tenant write access required. |
 | `test#SourceConnection` | Run a connectivity probe against a configured source. |
 | `list#SftpServers` / `save#SftpServer` | List and save SFTP server records. |
@@ -71,6 +73,7 @@ All methods require an authenticated session unless noted. Login, logout, and se
 | `cancel#ReconciliationRun` | Request that a running reconciliation stop. Cooperative — the run ends at its next checkpoint, so it may still report as running briefly. |
 | `subscribe#RunNotification` / `unsubscribe#RunNotification` | Subscribe the caller to completion notification for one active run, snapshotting their default chat space, or remove that subscription. |
 | `sync#Automation` | Re-derive an automation's snapshot from its saved run. Overwrites compare scope, input mode, source definitions and exclusion filters; preserves name, schedule, window, chat space, active status and SFTP details. Never re-points the automation at a different run. |
+
 ## Slack (`facade.SlackFacadeServices`)
 
 Connecting a Slack workspace to the active tenant. The bot token is never an output of any method here.
@@ -119,7 +122,9 @@ Source-system facades ship in sibling Moqui components and follow the same JSON-
 
 ## Administration
 
-The methods below are **not** part of the tenant product API. They serve the operator admin application and are reachable only by a super-admin: a caller must pass the `DARPAN_ADMIN_API` artifact fence and a super-admin content gate. A non-super-admin caller is denied before the service body runs.
+<Warning>
+Operator-only. The `admin.*` methods below are not part of the public API, and integrations should not depend on them. They serve the operator admin application and are reachable only by a super-admin: a caller must pass the `DARPAN_ADMIN_API` artifact fence and a super-admin content gate. A non-super-admin caller is denied before the service body runs.
+</Warning>
 
 ### Tenants (`admin.TenantAdminServices`)
 
@@ -172,18 +177,20 @@ The methods below are **not** part of the tenant product API. They serve the ope
 
 ## Per-method reference
 
-The machine-readable contract for every method above lives in the
+The machine-readable contract for the public methods lives in the
 [generated OpenAPI reference](/api-reference/openapi.json), regenerated from the backend
-facade XML (`./gradlew :runtime:component:darpan:generateApiContract`) and drift-checked
-against this catalog in CI. How to read it:
+facade XML (`./gradlew :runtime:component:darpan:generateApiContract`). Backend CI runs
+`scripts/check_service_catalog.py` from this docs repo against the generated method list
+(`docs/api-contract/methods.txt`): it fails when this catalog names a method the contract
+does not define, and only reports, without failing, contract methods the catalog does not
+list. How to read the reference:
 
 - Each method has four schemas in `components.schemas`, named from its verb#noun:
   `<VerbNoun>Params` (request parameters, with `required` markers), `<VerbNoun>Result`
   (the response payload the hand-written UI types model), and the `...Request`/`...Response`
   JSON-RPC envelopes around them.
 - Parameter and field descriptions come straight from the service definitions.
-- Error behavior is uniform — see [JSON-RPC](/api-reference/json-rpc): protocol/dispatch
-  failures use the `JsonRpcError` codes; business validation returns `result.ok=false`
-  with `result.errors[]`.
+- Error behavior is uniform. A failed call returns the `JsonRpcError` object; a service
+  that ends with errors returns code `500` with HTTP 500. See [Errors](/api-reference/errors).
 
 For the transport contract used by all methods above, see [JSON-RPC transport](/api-reference/json-rpc).
