@@ -1,6 +1,6 @@
 ---
 title: "Login and session"
-description: "Diagnose sign-in, redirect, and session failures."
+description: "Diagnose sign-in, redirect, tenant, and session failures."
 ---
 
 Getting locked out of your own tool is the worst kind of broken — you can't even get in to fix it. Most login failures come down to a handful of things, and you can rule them out in a couple of minutes. Start at the top.
@@ -8,12 +8,13 @@ Getting locked out of your own tool is the worst kind of broken — you can't ev
 ## Symptoms
 
 - The app redirects back to login.
-- A backend call returns unauthorized.
+- A backend call is refused as not logged in.
 - A JSON-RPC call fails with a CSRF or session error.
 - The user appears signed in but cannot access expected records.
-
+- Records from a different tenant appear after working in another tab.
 - Sign-in hangs for a long time before completing.
 - An expired password blocks sign-in.
+- Sign-in is refused even with the right password.
 
 ## Checks
 
@@ -21,28 +22,57 @@ Getting locked out of your own tool is the worst kind of broken — you can't ev
 2. Confirm the frontend is pointed at the intended backend.
 3. Confirm the user is using the correct environment credentials.
 4. Refresh the CSRF token by loading the login page again.
-5. Confirm the user has access to the active company or tenant.
+5. Confirm the user has access to the active tenant.
+
+## How the app keeps you signed in
+
+Darpan environments use one of two session modes. Which one applies depends on how the environment was built, not on anything you set.
+
+| Mode | Where | What it means for you |
+| --- | --- | --- |
+| Secure cookie | The hosted app | The session is an HttpOnly cookie that page scripts cannot read, sent with every call alongside an `X-CSRF-Token` header. New tabs share the session. |
+| Per-tab session | Some environments | The session lives in the tab that signed in and is sent as a `login_key` header. A new tab starts signed out and needs its own sign-in, and closing the tab ends the session. |
+
+If a fresh tab shows the login page while another tab is still working, you are on a per-tab environment. Sign in again in the new tab.
+
+## Lockouts and session length
+
+| Limit | Value |
+| --- | --- |
+| Failed sign-ins before lockout | 3 |
+| Lockout duration | 5 minutes |
+| Session length | Up to 6 days (144 hours), then sign in again |
+
+After three wrong passwords, the account refuses sign-in for five minutes even with the right password. Wait it out rather than retrying, because each retry during the lockout gets the same refusal.
+
+## Records changed after you switched tenant in another tab
+
+The active tenant is stored on your user account on the server, not in the browser tab. Switching tenant in one tab re-points every other tab signed in as the same user, including tabs in other browsers. The next call from those tabs reads and writes the newly selected tenant, even though the page may still show the old one.
+
+- Reload any other open tabs after switching tenant, and confirm the tenant shown before saving.
+- To work in two tenants side by side, use two different user accounts.
+- Never share a login between a browser user and an API integration. An integration that switches tenant moves the person's session too, and the reverse.
 
 ## A session is restored, but a call was still refused
 
 Darpan checks the session by asking the backend, and that check restores the session from the login cookie before answering. So a session probe can report a healthy, authenticated session about a call the backend has just refused.
 
-Read the failing call's own response rather than the probe. An authorization refusal arrives as a normal HTTP 200 with an error in the JSON-RPC body — not as a 401 — so a check that only looks at HTTP status will report success on a refusal.
+Read the failing call's own response body rather than the probe or the HTTP status alone. A refused call returns a JSON-RPC `error` object. A call made without a session is refused with an error message saying the user must be logged in, not with HTTP 401, and depending on the failure the HTTP status may be 500 or 200. A check that only looks for 401 will report success on a refusal.
 
 ## Sign-in is slow rather than failing
 
 A sign-in that eventually succeeds after a long pause is a different failure from one that is rejected quickly. A slow sign-in points at contention on the account record rather than at the credentials, and it affects everyone signing in against that record, not one person.
 
-A fast rejection points at the account state instead: an expired password, a required password change, or a disabled account. Darpan has a dedicated path for changing an expired password, so an expired credential is recoverable without an administrator resetting it.
+A fast rejection points at the account state instead: an expired password, a required password change, a lockout, or a disabled account. Darpan has a dedicated path for changing an expired password, so an expired credential is recoverable without an administrator resetting it.
 
 <Note>
-Sharing one account across several people makes the slow-sign-in case much more likely, and makes it look intermittent. Give each person their own account.
+Sharing one account across several people makes the slow-sign-in case much more likely, and makes it look intermittent. It also means one person's tenant switch moves everyone else's tabs. Give each person their own account.
 </Note>
 
 ## API testing shape
 
-For API testing, authenticate against the assigned backend and send the session cookie plus `X-CSRF-Token` with `/rpc/json`. Use placeholder values only.
+For API testing, authenticate against the assigned backend and send the session cookie plus `X-CSRF-Token` with `/rpc/json`. On a per-tab environment, send the `login_key` header returned at sign-in instead. Use placeholder values only.
 
 <Warning>
-Share only redacted examples in documentation, support threads, or external comments. Real cookies, CSRF tokens, and passwords stay out of public material.
+Share only redacted examples in documentation, support threads, or external comments. Real cookies, CSRF tokens, login keys, and passwords stay out of public material.
 </Warning>

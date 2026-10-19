@@ -22,6 +22,14 @@ Open **Ask Darpan**, search for **Open Automations**, and open the result. Confi
 
 When the automation asks **Which saved run should this automation use?**, it points to a specific saved reconciliation run. If that run was deleted or its sources removed, the automation cannot execute. Confirm the saved run still exists and its sources, schemas, and primary IDs are intact. See [Set up a reconciliation run](/guides/setup-reconciliation-run) to recreate it if needed.
 
+**Check whether the automation gave up**
+
+A scheduled execution that fails for a transient reason, such as a source timing out, is retried automatically. When the retries run out, the execution is marked dead-lettered (`AUT_STAT_DEAD_LETTER`), a failure alert is sent naming the last error, and no further retries happen for that execution. Fix the cause, then wait for the next scheduled run, or re-drive the execution through the API with `reprocess#AutomationExecution`.
+
+**Run it now to watch it**
+
+The run button on the automation dashboard starts the automation immediately and opens the live run view, which advances stage by stage. If the run fails, the live view shows the full error text.
+
 **If a run appears permanently stuck**
 
 A JVM crash or container restart mid-run can leave a reconciliation run result in a running state, which blocks re-triggering. An internal scheduled reaper (`reconciliation.ReconciliationAutomationServices.sweep#StuckReconciliationRuns`) automatically flips run results that have been in a running or pending state for more than 120 minutes to failed with an explanatory status message. No user action is required — wait for the next reaper cycle, then trigger the automation again.
@@ -32,7 +40,7 @@ The stuck-run reaper is an internal service (`allow-remote="false"`) and does no
 
 ## Alert never arrived
 
-Run-completion alerts post a Google Chat message when any reconciliation run reaches a final state — manual or automated, succeeded or failed. A run reports to the chat space its automation is linked to, plus the space of anyone who subscribed with **Notify me**. Registering a space in Tenant Settings does not by itself route any run to it, which is the most common reason a correctly configured space stays quiet.
+Run-completion alerts post a message to Google Chat or Slack when any reconciliation run reaches a final state — manual or automated, succeeded or failed. A run reports to the chat space its automation is linked to, plus the space of anyone who subscribed with **Notify me**. Registering a space in Tenant Settings does not by itself route any run to it, which is the most common reason a correctly configured space stays quiet.
 
 <Note>
 Notification delivery is best-effort. A run never fails because an alert could not be sent. The run result is always saved and viewable in the app regardless of whether the alert fired.
@@ -40,11 +48,11 @@ Notification delivery is best-effort. A run never fails because an alert could n
 
 | Symptom | What to check |
 | --- | --- |
-| No message arrives after a run | Confirm something routes the run to a space: the automation is linked to one, or you subscribed with **Notify me**. Then confirm the space is active, still has a webhook, and belongs to the run's tenant. |
-| One automation's alerts stopped, others still arrive | Its linked space was deactivated or lost its webhook. Darpan logs a warning naming the dropped space. Relink the automation or reactivate the space. |
+| No message arrives after a run | Confirm something routes the run to a space: the automation is linked to one, or you subscribed with **Notify me**. Then confirm the space is active, still has its delivery target (a webhook, or a Slack channel), and belongs to the run's tenant. |
+| One automation's alerts stopped, others still arrive | Its linked space was deactivated or lost its delivery target. Darpan logs a warning naming the dropped space. Relink the automation or reactivate the space. |
 | **Notify me** does not subscribe | You have no default chat space set. Set one in **User Settings**, then subscribe again. |
 | Alerts arrived for older runs but not this one | Subscriptions cover a single run and are cleared once it finishes. Subscribe again on the new run. |
-| Save is rejected | The webhook URL must be `https` on `chat.googleapis.com`, target a space messages endpoint, and include `key` and `token` query parameters. |
+| A Google Chat space save is rejected | The webhook URL must be `https` on `chat.googleapis.com`, target a space messages endpoint, and include `key` and `token` query parameters. |
 | A space cannot be deleted | An automation or an active subscription still references it. Deactivate it instead. |
 | Message arrives but the link does not open the result | Confirm the run produced a saved result and that the app base URL for the environment is reachable. |
 | Alerts stopped after a tenant switch | Chat spaces are per tenant. Confirm the active tenant matches the runs you expect alerts for. |
@@ -67,9 +75,13 @@ Darpan reports the drift, naming the fields that differ. Use **Sync** to re-deri
 
 If **Sync** is refused, the saved run no longer exists and the automation has to be recreated. An automation can never be pointed at a different run; that is fixed for its lifetime.
 
-## A schedule fires at the wrong hour
+## A schedule fires at the wrong hour, or covers the wrong day
 
-Schedules are interpreted in the tenant's timezone, not UTC. Check the tenant timezone in [Manage tenant settings](/guides/manage-tenant-settings) before adjusting the schedule itself.
+Each automation stores its own timezone. When the automation is created, the timezone defaults to the tenant's, and it stays pinned to that zone afterwards. Changing the tenant timezone later does not move existing automations.
+
+A pinned zone that does not match the tenant's business day does more than shift the clock: the automation's date window is computed in its own zone, so it reconciles the wrong day.
+
+The automation's schedule shows the zone it runs in. Check that first, rather than converting the schedule hours to compensate. In this release the zone is shown but cannot be edited; to move an automation to another zone, set the tenant timezone in [Manage tenant settings](/guides/manage-tenant-settings) and create the automation again.
 
 ## Slack alerts specifically
 
@@ -83,6 +95,6 @@ Schedules are interpreted in the tenant's timezone, not UTC. Check the tenant ti
 
 ## An alert looked clean but differences existed
 
-Records present on only one source and records whose values disagree are counted separately. A run with no missing records but many value mismatches has a difference count of zero.
+Records present on only one source and records whose values do not line up are counted separately. A run with no missing records but many value mismatches has a difference count of zero.
 
 Read the value-mismatch line in the alert, not only the difference count. See [Review results](/guides/review-results).

@@ -1,6 +1,6 @@
 ---
 title: "Reconciliation runs"
-description: "Reconciliation run data model, status values, and preservation guidelines."
+description: "Reconciliation run data model, status values, stage order, counts, and preservation guidelines."
 ---
 
 A reconciliation run is one execution of a reconciliation.
@@ -8,7 +8,7 @@ A reconciliation run is one execution of a reconciliation.
 ## Run data to preserve
 
 - Who started the run
-- Active company or active tenant
+- Active tenant
 - Selected schemas for source shape
 - RuleSet or rules used for comparison logic
 - Source inputs
@@ -27,22 +27,42 @@ A reconciliation run is one execution of a reconciliation.
 | Failed | `AUT_STAT_FAILED` | Processing stopped before producing expected output. |
 | Skipped duplicate | `AUT_STAT_SKIP_DUP` | The run matched an existing run and was skipped as a duplicate. |
 | Cancelled | `AUT_STAT_CANCELLED` | An operator stopped the run before it finished. Work completed before the stop is discarded. |
+| Dead-lettered | `AUT_STAT_DEAD_LETTER` | Automation executions only. A scheduled execution failed transiently, used up its retries, and was given up on. A failure alert is sent. |
 
-Pending and Running are the active statuses. The remaining five are terminal: a run in any of them is finished, will not change status again, and triggers run-completion alerts.
+Pending and Running are the active statuses. Succeeded, No data, Failed, Skipped duplicate and Cancelled are the terminal statuses for a run: a run in any of them is finished, will not change status again, and triggers run-completion alerts. Dead-lettered is also final, but it is recorded on the automation execution rather than on a run result.
 
 ## Stage sequence
 
-A run advances through stages in a fixed order. The current stage is exposed on live run status and identifies where a run is spending time or where it stopped.
+A run advances through stages in a fixed order. The current stage is exposed on live run status and identifies where a run is spending time or where it stopped. The app shows each stage by its label.
 
-| Order | Stage | Purpose |
-| --- | --- | --- |
-| 1 | `RESOLVE` | Resolve the saved run, its sources, and the date window. |
-| 2 | `EXTRACT_FILE1` | Extract records from the first source. |
-| 3 | `EXTRACT_FILE2` | Extract records from the second source. |
-| 4 | `COMPARE` | Match records and apply rules. |
-| 5 | `WRITE_OUTPUT` | Write the reviewable result. |
-| 6 | `VERIFY` | Point-lookup recheck of missing-in-side differences against lookup-capable sources; may rewrite the written artifact. |
-| 7 | `NOTIFY` | Deliver run-completion alerts. |
+| Order | Stage | App label | Purpose |
+| --- | --- | --- | --- |
+| 1 | `RESOLVE` | Preparing run | Resolve the saved run, its sources, and the date window. |
+| 2 | `EXTRACT_FILE1` | Extracting *system* | Extract records from the first source. |
+| 3 | `EXTRACT_FILE2` | Extracting *system* | Extract records from the second source. |
+| 4 | `COMPARE` | Comparing records | Match records and apply rules. |
+| 5 | `VERIFY` | Verifying differences | Point-lookup recheck of reported differences against lookup-capable sources. A run can record more than one `VERIFY` step, one per verification pass; each names the system it rechecked. |
+| 6 | `WRITE_OUTPUT` | Writing results | Write the reviewable result, after verification has corrected it. |
+| 7 | `NOTIFY` | Sending notifications | Deliver run-completion alerts. |
+
+Some stages are conditional. A file-upload side records no extract step, and a run with nothing to recheck, or no source that supports a point lookup, records no `VERIFY` step. When verification is switched off or cannot run, the run records a `VERIFY` step that states the reason.
+
+## How differences are counted
+
+The difference count is the number of records missing from one side: records only in the first source plus records only in the second. Value mismatches found by rules are counted separately.
+
+A run that finds value mismatches but no missing records therefore has a difference count of zero. Read the value-mismatch count as well before treating a run as clean.
+
+## Duplicate compare IDs
+
+A compare ID should identify exactly one record on each side. When a side produces the same compare ID more than once after normalization:
+
+| Run type | Behavior |
+| --- | --- |
+| No active rules (presence check only) | The duplicates collapse to one row per compare ID, and the run records a processing warning naming examples. A duplicated key can therefore read as a single clean match. |
+| Active rules | The run fails with an error naming the duplicated values and their row counts. |
+
+If a source legitimately carries several rows per key, use a [composite matching key](/reference/composite-matching-keys) that makes each row unique.
 
 ## Failure visibility
 

@@ -17,13 +17,14 @@ Upload problems are usually about the file, not the app. Format mismatch, a sche
 1. Open **Ask Darpan** and search for the official surface where the upload failed: **Create Schema** or **Run Reconciliation**.
 2. Confirm the file format matches the selected workflow.
 3. Confirm the schema matches the input headers or keys.
-4. Check encoding and delimiter.
+4. Check encoding and delimiter. CSV files must be comma-delimited UTF-8; semicolon-, tab- and pipe-delimited files are not split into columns.
 5. Remove blank leading rows and summary footer rows.
 6. Confirm identifiers have not been converted to numbers by a spreadsheet tool.
 
 ## Common fixes
 
-- Save CSV files as UTF-8.
+- Save CSV files as UTF-8 with commas as the delimiter.
+- Keep each file under the upload cap, 500 MB by default, and upload `.csv` or `.json` only. See [File formats](/reference/file-formats).
 - Preserve leading zeros in identifier columns.
 - Normalize date formats before upload.
 - Use a schema that matches the current source shape.

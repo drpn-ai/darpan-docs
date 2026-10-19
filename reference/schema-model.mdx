@@ -1,9 +1,36 @@
 ---
 title: "Schema model"
-description: "Schema structure, lifecycle stages, and change control."
+description: "What a Darpan schema stores, how one is created, and how runs use it."
 ---
 
-A schema is a reusable contract for source data shape.
+A schema is a saved JSON Schema document that describes the shape of one source's data.
+
+## What a schema stores
+
+| Field | Detail |
+| --- | --- |
+| Name | Unique within a tenant. Two tenants can each have a schema with the same name. |
+| Schema text | The JSON Schema document. |
+| Description | Optional free text. |
+| System | Optional source system the schema belongs to. |
+
+Every saved schema is active. There is no draft, review, or adoption state: a saved schema can be used by a run as soon as it exists.
+
+## How a schema is created
+
+| Path | Result |
+| --- | --- |
+| Infer from a JSON sample | Darpan builds the schema from a sample document. An optional strict mode marks every observed property as required and disallows additional properties on every object. |
+| Infer from a CSV header | Darpan builds a flat schema with one field per header column. |
+| Upload or paste | You supply the JSON Schema text yourself. |
+| Refine | You adjust an existing or inferred schema and save the result. |
+
+Inference is deterministic: the same sample produces the same schema.
+
+## How runs use a schema
+
+- **JSON sources.** At run time each JSON source is validated against its schema. Validation errors are recorded on the run as validation errors; they do not stop the run.
+- **CSV sources.** CSV sources are not validated against a schema. The schema supplies the field names the run setup picks from.
 
 ## Schema design
 
@@ -12,15 +39,6 @@ A schema is a reusable contract for source data shape.
 - Represent identifiers as strings unless arithmetic is required.
 - Represent money and quantities consistently.
 - Document fields that are derived or normalized.
-
-## Schema lifecycle
-
-| Stage | Action |
-| --- | --- |
-| Draft | Create the initial schema from a known source sample. |
-| Validate | Run a small reconciliation or parse test. |
-| Adopt | Use the schema for recurring reconciliation runs. |
-| Revise | Update only when the source shape or business contract changes. |
 
 ## Change control
 

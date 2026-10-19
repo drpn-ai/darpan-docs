@@ -7,10 +7,13 @@ Preferred terms used consistently across the documentation.
 
 | Term | Meaning |
 | --- | --- |
-| Active company | The company context used to scope reads and writes. |
-| Active tenant | Tenant context used to scope records in tenant-aware flows. |
+| Active tenant | The tenant whose records your reads and writes are scoped to. It is stored on your user account, so switching it in one tab switches it in every tab. |
 | Ask Darpan | Search-first navigation surface for app destinations and selected records. |
+| Automation | A schedule that runs a saved run unattended. It holds a snapshot of the saved run taken when the automation was created. |
+| Chat space | A Google Chat or Slack destination registered for a tenant, where run-completion alerts are posted. |
+| Compare ID | The key that identifies a record on each side of a run, built from one or more primary ID fields. Also called the primary ID. |
 | Connection | Saved external system or provider setup. |
+| Exclusion filter | A condition on a source that leaves matching records out of a run before comparison. |
 | Generated output | Files or records produced by a workflow or run. |
 | JSON-RPC | Backend request format sent to `/rpc/json`. |
 | Reconciliation run | One execution of a reconciliation. |
@@ -19,6 +22,9 @@ Preferred terms used consistently across the documentation.
 | Saved run | The reusable run setup that ties sources, schemas, primary IDs, and rules together, reused across executions. |
 | Schema | Saved definition of source data shape. |
 | Source strategy | The way inputs are selected or loaded for a run. |
+| Sync | Re-deriving an automation's snapshot from its saved run after the run was edited. |
+| Tenant | The organization whose data and configuration a set of users shares. Every saved record belongs to one tenant. |
+| Verification | A recheck, after comparison, of reported differences against a source that supports point lookups, so records that exist are not reported missing. |
 
 ---
 

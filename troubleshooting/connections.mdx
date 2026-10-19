@@ -5,6 +5,42 @@ description: "Troubleshoot external connection records."
 
 A connection that worked last week can break after a credential rotation, a host change, or a server that stopped accepting the authentication method it was set up with. The checks below are grouped by connection type. If you haven't set up the connection yet, start with the setup guide for that type instead.
 
+## Rules every outbound address follows
+
+Shopify, HotWax OMS and NetSuite addresses are checked before Darpan connects to them, and Shopify and HotWax OMS addresses also when you save them:
+
+- The address must use `https`.
+- The host must not resolve to a private, loopback, link-local or cloud-metadata address.
+- Some connections also restrict the host. A Shopify store address must end in `.myshopify.com`.
+
+A save that breaks one of these rules is rejected with the reason. If an address worked before and is now refused, check whether its host now resolves somewhere internal.
+
+## Shopify
+
+Setup guide: [Set up Shopify](/guides/setup-shopify).
+
+| Symptom | What to check |
+| --- | --- |
+| Orders older than about 60 days are reported missing from Shopify | The app's access token lacks the `read_all_orders` scope. Without it, Shopify answers a lookup of an older order successfully but with no order, which Darpan can only read as "absent". Grant `read_all_orders` and run again. |
+| The save is rejected | The store address is not `https`, or does not end in `.myshopify.com`. |
+
+## HotWax OMS
+
+Setup guide: [Set up HotWax](/guides/setup-hotwax).
+
+| Symptom | What to check |
+| --- | --- |
+| A returns extraction stops on gateway errors | Darpan retries a returns page that fails with HTTP 429, 502, 503 or 504 before giving up. If the gateway keeps failing at the default page size, lower `returnsPageSize` (1–1000) on the OMS configuration through the API (`save#HotWaxOmsRestSourceConfig`); the settings form does not show this field. |
+| The save is rejected | The OMS base URL is not `https`, or its host resolves to an internal address. |
+
+## Database sources
+
+| Symptom | What to check |
+| --- | --- |
+| The save or connection test says the host resolves to a non-routable or internal address | Database hosts on private, loopback or metadata addresses are refused by default. A self-hosted deployment that needs a private database host can allow it with the JVM system property `database_source_allow_private_hosts=true`. |
+| The extraction fails with a max-rows error | The query returned more rows than the connection's max-rows cap. The extraction fails rather than truncating. Narrow the query window or raise the cap. |
+| The query is rejected on save | Only a single read statement is accepted: it must start with `SELECT` or `WITH`, contain no semicolon, and use no placeholders other than `:windowStart` and `:windowEnd`, which carry the run window. The error names the rule that failed. |
+
 ## SFTP
 
 Setup guide: [Connect SFTP](/guides/connect-sftp).
@@ -15,13 +51,26 @@ Search **Ask Darpan** for **Open SFTP Servers**. For an existing record, search 
 
 Setup guide: [Connect NetSuite](/guides/connect-netsuite).
 
-Search **Ask Darpan** for **Open NetSuite Settings**. Check account target, role permissions, token validity, integration status, and RESTlet script deployment.
+In this release, NetSuite settings hold authentication profiles and RESTlet endpoint records. No reconciliation run or automation extracts from NetSuite directly; NetSuite data reaches a run as an uploaded file. The RESTlet endpoints serve inventory checks, which are not live.
+
+Search **Ask Darpan** for **Open NetSuite Settings** and check the authentication profile:
+
+| Check | Detail |
+| --- | --- |
+| Authentication type | **OAuth2 M2M JWT** (OAuth 2.0 client credentials) needs the token URL, client ID, certificate ID, scope, and the private key whose certificate is uploaded to the NetSuite integration. **Basic** and **Bearer** are also offered. |
+| Integration record | Enabled for the client credentials grant, with the certificate mapped to an entity and role. |
+| Role permissions | The mapped role can read the records you need. |
+| Client ID and certificate ID | Not swapped. The client ID is 64 hexadecimal characters; the certificate ID is a 43-character string of letters, digits, `-` and `_`. Swapped values make the token endpoint answer an opaque HTTP 500 `server_error` rather than an authentication error. |
 
 ## AI providers
 
 Setup guide: [Configure AI](/guides/configure-ai).
 
-Search **Ask Darpan** for **Open Tenant Settings** (AI provider settings live on the Tenant Settings page). Check the provider record, credential reference, model availability, and feature-specific limits.
+AI provider settings are stored in **Tenant Settings**, but no Darpan feature calls the provider in this release. A provider that is misconfigured or unreachable cannot affect a run, a schema, or a result.
+
+## Slack and Google Chat
+
+Alert delivery problems are covered in [Automations and alerts](/troubleshooting/automations-and-alerts).
 
 ## Safe diagnostics
 

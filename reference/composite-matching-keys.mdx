@@ -38,7 +38,20 @@ Single-field sources keep their existing behavior for missing values: rows with 
 
 ## Normalizers
 
-Each key field carries its own normalizer, applied before the fields are joined. `CASE_FOLD` compares values without regard to case. Normalizing per field rather than across the joined key means one component can be case-insensitive while another stays exact.
+Each key field carries its own normalizer, applied before the fields are joined. Normalizing per field rather than across the joined key means one component can be case-insensitive while another stays exact.
+
+Every key value is trimmed of surrounding whitespace first, whether or not a normalizer is set. Then the field's normalizer, if any, applies:
+
+| Normalizer | Accepted names | Effect |
+| --- | --- | --- |
+| `SHOPIFY_GID_TAIL` | `SHOPIFY_GID_TAIL` | Reduces a Shopify global ID such as `gid://shopify/Order/123` to its numeric tail, `123`. A value that is not a global ID keeps its trailing digits, or is left as is if it has none. |
+| `CASE_FOLD` | `CASE_FOLD`, `CASE_INSENSITIVE`, `LOWER` | Lower-cases the value, so values that differ only by letter case match. |
+
+A key field expression names its normalizer after a pipe: `field|NORMALIZER`, for example `orderId|CASE_FOLD`. Names are not case-sensitive, and hyphens or spaces are read as underscores. Any other name is rejected with an error listing the supported values.
+
+## Known limit
+
+On a run with a composite key, the missing-record verification pass cannot look the joined key up in the source system. The pass records a warning and leaves those missing differences as reported, so they are not rechecked. Single-field keys are verified normally.
 
 ---
 

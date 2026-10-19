@@ -3,9 +3,9 @@ title: "Release updates"
 description: "Major Darpan updates grouped by release tag."
 ---
 
-Darpan releases from newest to oldest, with product and operator changes that affect upgrade, validation, or rollback decisions. Work already on `main` but not yet tagged appears first, marked as unreleased — for release principles and review questions, see [Release discipline](/engineering/release-discipline).
+Darpan releases from newest to oldest, with product and operator changes that affect upgrade, validation, or rollback decisions. Only tagged releases appear here. For release principles and review questions, see [Release discipline](/engineering/release-discipline).
 
-Backend and UI tags are coordinated for major and minor releases; patch tags between them are backend-only.
+Version key: headings carry the backend version (`drpn-ai/darpan`, `v1.x`); the app (`darpan-ui`) has its own `v2.x` tags, named in each entry. Backend and app tags are cut together for major and minor releases. A patch can be backend-only or carry an app tag too, as `v1.5.1` did with app `v2.6.1`.
 
 ## v1.5.1 — August 31, 2026
 
@@ -19,7 +19,7 @@ Cut together with app `v2.6.1` and `shopify-darpan v0.6.1`. One section covers t
 - **Same-system comparison.** A run can compare two instances of the same system, so staging against production, or one database against another, is now a normal reconciliation.
 - **Schemas from a CSV header row.** A schema can be inferred instead of typed field by field, and CSV sides pick columns from a list rather than typing field paths, with likely primary-key columns ranked first.
 - **Automation drift is visible.** An automation reports when it has drifted from its saved run, and can be re-synced from it.
-- **Automation schedules and state.** Schedules are interpreted in the tenant's timezone rather than UTC, and an automation can be activated or deactivated from the dashboard.
+- **Automation schedules and state.** A schedule runs in the automation's own timezone rather than UTC. It defaults to the tenant's timezone when the automation is created and stays pinned to it; changing the tenant timezone later does not move existing automations. An automation can be activated or deactivated from the dashboard.
 - **Ask Darpan gains a command mode.** Type `/` to run something rather than navigate to it, starting with `/switch-tenant`.
 - **Returns reconciliation drops impossible differences.** Three classes that cannot exist by definition are suppressed: whole-order cancellations, superseded return drafts, and refunds for items that were never shipped. Records reported missing are re-checked by point lookup before they are reported.
 - **Scheduled runs do that re-check too, from `v1.5.1`.** An automation and a hand-started run over the same window report the same numbers, and a scheduled run records the same steps a hand-started one does — including the notification step, so whether an alert fired is answerable from the timeline. **On `v1.5.0` this takes effect for database sources only; upgrade to `v1.5.1` for OMS and Shopify automations** — and see Before you deploy, because the counts move.
@@ -259,7 +259,7 @@ First release on Darpan's new independent repository baseline, and the version p
 
 ## Versioning restarted — July 2026
 
-Darpan moved to a new, independent repository baseline on July 3, 2026. Releases tagged before the move (`v1.0.0` through `v2.1.3`) were retired along with the old repository history, so their tags, release pages, and compare links no longer resolve.
+Darpan moved to a new, independent repository baseline on July 3, 2026. Backend releases tagged before the move (`v1.0.0` through `v2.1.3`) were retired along with the old repository history, so their tags, release pages, and compare links no longer resolve.
 
 Versioning restarted with the release above; entries appear here from that release onward.
 

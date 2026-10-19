@@ -23,22 +23,43 @@ What we shipped most recently and what we are building next, in order. Shipped w
   <div className="rm-step">
     <div className="rm-step-marker">1</div>
     <div>
-      <p><strong>Idempotency keys for API mutations</strong> <span className="rm-pill-next">Next up</span> <span className="rm-pill-surface">Engine</span></p>
-      <p className="rm-muted">Retry any mutating API call safely without duplicating work.</p>
+      <p><strong>NetSuite checks as runs</strong> <span className="rm-pill-next">Next up</span> <span className="rm-pill-surface">Engine · App</span></p>
+      <p className="rm-muted">Check NetSuite's own transaction chain — order to fulfillment to invoice, and the return leg — as a run with its own history, set up on a board like the rules creator.</p>
     </div>
   </div>
   <div className="rm-step">
     <div className="rm-step-marker">2</div>
     <div>
-      <p><strong>Fulfillments reconciliation</strong> <span className="rm-pill-surface">Engine · App</span></p>
-      <p className="rm-muted">Track shipments against source and target systems, the same way orders are reconciled today.</p>
+      <p><strong>Lifecycle runs</strong> <span className="rm-pill-surface">Engine · App</span></p>
+      <p className="rm-muted">Follow every record through its stages in one run, and see where each one stopped and which records are late.</p>
     </div>
   </div>
   <div className="rm-step">
     <div className="rm-step-marker">3</div>
     <div>
-      <p><strong>Multi-file-source stitching for a run</strong> <span className="rm-pill-surface">Engine</span></p>
-      <p className="rm-muted">Combine multiple files into one side of a run instead of merging them by hand first.</p>
+      <p><strong>A conclusion on every finding</strong> <span className="rm-pill-surface">App</span></p>
+      <p className="rm-muted">Each finding on a run result says what it means and why, so you can act on it without working it out from the raw differences.</p>
+    </div>
+  </div>
+  <div className="rm-step">
+    <div className="rm-step-marker">4</div>
+    <div>
+      <p><strong>HotWax OMS over GraphQL</strong> <span className="rm-pill-surface">Engine</span></p>
+      <p className="rm-muted">Read HotWax OMS orders and returns through GraphQL, including in-progress returns that are not visible today.</p>
+    </div>
+  </div>
+  <div className="rm-step">
+    <div className="rm-step-marker">5</div>
+    <div>
+      <p><strong>Fulfillment reconciliation</strong> <span className="rm-pill-surface">Engine · App</span></p>
+      <p className="rm-muted">Check that items completed in Shopify are completed in HotWax OMS, the same way orders are reconciled today.</p>
+    </div>
+  </div>
+  <div className="rm-step">
+    <div className="rm-step-marker">6</div>
+    <div>
+      <p><strong>Reset your own password</strong> <span className="rm-pill-surface">Engine · App</span></p>
+      <p className="rm-muted">Request a single-use code by email and set a new password without asking an administrator.</p>
     </div>
   </div>
 </div>
