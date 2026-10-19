@@ -36,8 +36,7 @@
               "guides/connect-database",
               "guides/connect-netsuite",
               "guides/setup-shopify",
-              "guides/setup-hotwax",
-              "guides/configure-ai"
+              "guides/setup-hotwax"
             ]
           },
           {
@@ -47,7 +46,8 @@
               "guides/setup-reconciliation-run",
               "guides/author-rules",
               "guides/run-reconciliation",
-              "guides/review-results"
+              "guides/review-results",
+              "guides/returns-and-exchanges"
             ]
           },
           {
@@ -56,7 +56,8 @@
               "guides/manage-tenant-settings",
               "guides/manage-users-and-access",
               "guides/setup-automation",
-              "guides/run-completion-alerts"
+              "guides/run-completion-alerts",
+              "guides/configure-ai"
             ]
           },
           {
@@ -89,6 +90,7 @@
             "pages": [
               "getting-started/set-up-darpan-independently",
               "getting-started/environments",
+              "getting-started/self-host-production",
               "troubleshooting/local-dev-setup"
             ]
           }
