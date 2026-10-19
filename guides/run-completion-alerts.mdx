@@ -118,7 +118,7 @@ The name must be unique within the tenant and is what everyone else picks from l
 </Step>
 <Step title="Choose the chat product">
 
-Pick **Google Chat** or **Slack**. Arriving from the Slack menu answers this already, and the question is skipped.
+Pick **Google Chat** or **Slack**. Arriving from the Slack menu answers this already, and the question is skipped. A space's product is fixed once it is created; to move a destination to the other product, register a new space.
 
 </Step>
 <Step title="Point it at a destination">
@@ -142,7 +142,7 @@ Repeat for each destination. A tenant can hold as many spaces as it needs — on
 
 There are three ways a message reaches a space, and they stack.
 
-**An automation's linked space.** When you create or edit an [automation](/guides/setup-automation), the chat-space step offers your default space, any existing space, a new space, or none. Every run that automation starts reports to the space it is linked to.
+**An automation's linked space.** When you create or edit an [automation](/guides/setup-automation), the chat-space step offers your default space, any existing space, a new space, or none. Every run that automation starts reports to the space it is linked to. An automation can link only a space of its own tenant: saving one that names another tenant's space, or an inactive one, is refused with **Chat space '…' was not found or is inactive.**
 
 **Your personal default.** In **User Settings**, the **Notifications** card sets which space your own alerts go to. This is a personal preference — it needs no tenant write access, and it does not change anyone else's alerts. A default pointing at a space that was deleted or deactivated reads as not configured.
 

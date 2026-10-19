@@ -10,9 +10,15 @@ Finding a specific saved run, connection, or settings page through a conventiona
 Use either entry point:
 
 - Press `Cmd/Ctrl+K`.
-- Click the floating **Ask Darpan** button.
+- Click the mascot, the red panda in the corner of every page.
 
 Then type a destination, record name, host, run name, or output file name.
+
+## The mascot
+
+The mascot is the launcher, and it also explains what you point at. Rest on a label, heading, timestamp, button, or icon link and the mascot says what it means. Now and then it offers one hint, only for controls on the page in front of you.
+
+Warnings also come through the mascot, for example an automation that has drifted from its saved run. The mascot jumps once and stays alert. Click it to open the warning, one at a time, with its actions inside. Clicking outside the popup closes it and the warning stays; **Dismiss** clears it. **Next ›** moves to the next warning when there is more than one.
 
 ## Select a result
 
@@ -41,7 +47,8 @@ Ask Darpan searches app destinations and selected records. The table below shows
 | HotWax setup | **Open HotWax Settings** | **Open HotWax Settings** |
 | Schema library | **Open Schema Library** | **Open Schema Library** |
 | Schema creation | **Create Schema** | **Create Schema** |
-| Reconciliation setup | **Create Reconciliation Flow** | **Create Reconciliation Flow** |
+| Sync run setup | **Create Reconciliation Flow** | **Create Reconciliation Flow** |
+| Lifecycle run setup | **Create Run** | **Create Run** (opens the Lifecycle builder; **Create Run** on Home asks Sync or Lifecycle first) |
 | Saved runs and their settings | **Open Runs Settings** | **Open Runs Settings** |
 | Run a comparison | **Run Reconciliation** | **Run Reconciliation** |
 | Automation setup | **Open Automations** | **Open Automations** |
@@ -84,6 +91,16 @@ The active tenant is a **server-side account preference, not a per-tab setting**
 </Warning>
 
 Darpan distinguishes a switch the backend refused from one that never reached a verdict, and reports the outcome in the notice pill at the top of the screen.
+
+### `/logout`, `/light`, `/dark`
+
+| Command | What it does |
+| --- | --- |
+| `/logout` | Ends this session and returns to sign in. |
+| `/light` | Shows the app in light mode on this browser. |
+| `/dark` | Shows the app in dark mode on this browser. |
+
+These run as soon as you choose them; they take no argument. There is no user menu: sign out and theme are these commands only.
 
 ## Tenant-scoped links
 

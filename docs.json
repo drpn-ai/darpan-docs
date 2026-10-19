@@ -47,7 +47,8 @@
               "guides/author-rules",
               "guides/run-reconciliation",
               "guides/review-results",
-              "guides/returns-and-exchanges"
+              "guides/returns-and-exchanges",
+              "guides/lifecycle-runs"
             ]
           },
           {

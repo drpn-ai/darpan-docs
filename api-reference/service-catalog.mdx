@@ -5,7 +5,7 @@ description: "Verified backend facade services exposed through Darpan JSON-RPC."
 
 Every method below is called as the JSON-RPC `method` value. The generated contract builds this list from the services marked for remote calls in `service/facade/` and `service/admin/` of the Darpan backend component, plus `service/facade/` of the integration components. `facade.*` methods are the public API. `admin.*` methods are operator-only and listed under [Administration](#administration); they are not part of the public API.
 
-This catalog matches Darpan 1.5.1 (contract version 3).
+This catalog matches Darpan 2.0.0 (contract version 3).
 
 All methods require an authenticated session unless noted. Four methods accept anonymous calls, so a caller can establish or end a session: `login#Session`, `logout#Session`, `get#SessionInfo`, and `change#ExpiredPassword`.
 
@@ -73,6 +73,36 @@ All methods require an authenticated session unless noted. Four methods accept a
 | `cancel#ReconciliationRun` | Request that a running reconciliation stop. Cooperative — the run ends at its next checkpoint, so it may still report as running briefly. |
 | `subscribe#RunNotification` / `unsubscribe#RunNotification` | Subscribe the caller to completion notification for one active run, snapshotting their default chat space, or remove that subscription. |
 | `sync#Automation` | Re-derive an automation's snapshot from its saved run. Overwrites compare scope, input mode, source definitions and exclusion filters; preserves name, schedule, window, chat space, active status and SFTP details. Never re-points the automation at a different run. |
+| `disable#SavedRun` / `enable#SavedRun` | Turn a saved run off or back on. A disabled run stays readable and editable but cannot run, by hand or on a schedule. |
+| `archive#SavedRun` / `restore#SavedRun` | Take a saved run off Home and the runs list, or bring it back. Nothing is deleted; its results and history stay. The app archives lifecycles; restore is API only. |
+| `archive#Automation` / `restore#Automation` | Take an automation off the list and stop it firing, or bring it back with its execution history. Separate from `pause#Automation`, which leaves it on the list. |
+
+### Runs as flowcharts (`facade.ReconciliationFacadeServices`)
+
+A run is a flowchart of questions: each question is one reconciliation, and the questions under it run on its yes or no.
+
+| Method | Purpose |
+| --- | --- |
+| `list#Reconciliations` / `get#Reconciliation` | The active tenant's runs, archived ones left out, or one run with its questions. |
+| `save#Reconciliation` | Create or update a run. |
+| `save#ReconciliationQuestion` / `delete#ReconciliationQuestion` | Create, update or remove one question. Tree rules are enforced on the server. A question with questions under it cannot be removed. |
+| `run#Reconciliation` | Start a run. Returns the execution id at once; the walk continues in the background. |
+| `get#ReconciliationExecution` | Every question's result from one execution. |
+| `list#ReconciliationExecutions` | A run's past executions, newest first, each with a rolled-up status. |
+| `import#NetSuiteChecksAsRuns` | Turn the tenant's NetSuite checks that are not yet in a run into runs, one per population. Safe to repeat; a check that cannot be placed is skipped with a message saying why. |
+
+### Lifecycles (`facade.ReconciliationFacadeServices`)
+
+A lifecycle follows records from a start record type through their stages, and reports where each one stopped.
+
+| Method | Purpose |
+| --- | --- |
+| `save#Lifecycle` | Create a lifecycle from a NetSuite account, a start record type and its stages in order. The server writes the queries, rules and question tree. |
+| `save#LifecycleStages` | Reorder or change a lifecycle's stages. Past results stay readable. |
+| `save#LifecycleRule` / `delete#LifecycleRule` | Leave out start records whose field has a given value, or remove that rule. |
+| `save#LifecycleStageException` / `delete#LifecycleStageException` | Mark a stage as not expected for records whose field has a given value, or remove that exception. |
+| `save#LifecycleFinding` / `delete#LifecycleFinding` | Add or remove a finding: the records that reached a stage and match a field condition, reported in a place of their own. |
+| `save#LifecycleDetails` | Choose the extra fields a lifecycle's records show beside the standard columns. Replaces the list. |
 
 ## Slack (`facade.SlackFacadeServices`)
 
@@ -119,6 +149,8 @@ Source-system facades ship in sibling Moqui components and follow the same JSON-
 | --- | --- | --- |
 | `shopify-darpan` | `facade.ShopifyFacadeServices` | `list#ShopifyAuthConfigs`, `get#ShopifyAuthConfig`, `save#ShopifyAuthConfig`, `delete#ShopifyAuthConfig` |
 | `darpan-hotwax` | `facade.HotWaxOmsFacadeServices` | `list#HotWaxOmsRestSourceConfigs`, `save#HotWaxOmsRestSourceConfig`, `delete#HotWaxOmsRestSourceConfig` |
+| `netsuite-darpan` | `facade.NetSuiteQueryFacadeServices` | `list#NsSuiteQlSourceQueries` (paged), `get#NsSuiteQlSourceQuery`, `save#NsSuiteQlSourceQuery`: NetSuite check definitions. A save is validated by the extractor's own rules before it is written. |
+| `netsuite-darpan` | `facade.NetSuiteLifecycleFacadeServices` | `get#LifecycleOptions`, `get#LifecycleRuleOptions`: what the lifecycle builder may offer for one NetSuite account, read from the account itself. |
 
 ## Administration
 
@@ -168,6 +200,12 @@ Operator-only. The `admin.*` methods below are not part of the public API, and i
 | `run#Migration` | Run one named migration for targeted remediation. Parked migrations are refused, prerequisites enforced, already-applied migrations skipped. |
 | `dryRun#Migration` | Preview one named migration. |
 | `set#MigrationEnabled` | Park or unpark a migration. Parking lets the rest of a sweep proceed when one migration is broken, rather than stranding all of them. |
+
+### Schedule (`admin.ScheduleAdminServices`)
+
+| Method | Purpose |
+| --- | --- |
+| `get#ScheduleBoard` | Every tenant's scheduled automations on one instance-wide timeline, in the order the scheduler will submit them. Only each automation's next fire is authoritative; later entries are projected. |
 
 ### Admin session (`admin.ObserveAdminServices`)
 

@@ -6,7 +6,7 @@ description: "Save the NetSuite auth profiles and endpoints Darpan stores for a 
 NetSuite involves more moving parts than most connections: account IDs, role permissions, integration records, certificates. Confirming these with the NetSuite owner before you start means a failure gives you a useful error instead of a dead end.
 
 <Note>
-In this release, runs and automations cannot pull records from NetSuite through the API. To reconcile NetSuite data, export it and use a **File upload** source when you [set up a reconciliation run](/guides/setup-reconciliation-run). The settings on this page store NetSuite credentials and endpoints for the tenant.
+Runs read NetSuite over SuiteQL with an **OAuth2 M2M JWT** auth profile. A [lifecycle](/guides/lifecycle-runs) reads the account directly: you pick the account and Darpan builds its queries. A Sync run reads NetSuite through a saved NetSuite check, which defines the records to read. The app has no screen for creating checks; they are saved through the API (`facade.NetSuiteQueryFacadeServices.save#NsSuiteQlSourceQuery`). Otherwise, export the data and use a **File upload** source when you [set up a reconciliation run](/guides/setup-reconciliation-run).
 </Note>
 
 ## Before you start

@@ -14,23 +14,36 @@ There are two checks:
 
 Confirm:
 
-- A Shopify connection with **Shopify Return References** enabled, and a token that can read returns. See [Set up Shopify](/guides/setup-shopify).
-- A HotWax connection with **Reconciliation Returns API** enabled for returns, and **Orders API** for exchanges. See [Set up HotWax](/guides/setup-hotwax).
+- A Shopify connection with **Returns** enabled, and a token that can read returns. See [Set up Shopify](/guides/setup-shopify).
+- A HotWax connection with **Refunded returns** or **Returns** enabled for returns, and **Orders** for exchanges. See [Set up HotWax](/guides/setup-hotwax).
 
 ## Set up a returns run
 
 Create the run as in [Set up a reconciliation run](/guides/setup-reconciliation-run), with both sides as **API** sources:
 
-| Side | Endpoint | Primary ID |
+| Side | Source | Primary ID |
 | --- | --- | --- |
-| Shopify | **Shopify Return References** | `refundOrReturnId` |
-| HotWax | **Reconciliation Returns API** | `externalId` |
+| Shopify | **Shopify returns** | **Refund or return ID** (`refundOrReturnId`) |
+| HotWax | **HotWax refunded returns** or **HotWax returns** | **Refund or return ID** (`externalId`) |
 
-Shopify Return References emits one record per refund or return event, keyed by the Shopify refund ID or return ID. HotWax books each return under the same ID as its `externalId`, so the two sides match one-to-one.
+**Shopify returns** emits one record per refund or return event, keyed by the Shopify refund ID or return ID. HotWax books each return under the same ID as its `externalId`, so the two sides match one-to-one. On the HotWax side the key card offers **Shopify return ID** and **Refund or return ID**.
+
+### Choose the HotWax returns source
+
+| Source | Transport | Sees |
+| --- | --- | --- |
+| **HotWax refunded returns** | REST | Refunded returns only. A pending return reads as missing in HotWax. |
+| **HotWax returns** | GraphQL | Refunded and pending returns. Slower: one live 6-hour window took 258 s against 17 s on REST. Needs the HotWax GraphQL upgrade. |
+
+The two carry the same fields, so moving a run from one to the other is a source switch.
 
 ### Leave in-progress returns out
 
-A Shopify return that is still requested or open usually has no HotWax return yet. On the Shopify side, add an exclusion on **Return workflow status** with the values `REQUESTED` and `OPEN`. See [Leave records out with exclusions](/guides/author-rules#leave-records-out-with-exclusions).
+A Shopify return that has not finished usually has no HotWax return yet. On the Shopify side, add an exclusion on **Return status** with the value `IN_PROGRESS`. This is Shopify's own order return status, so it describes the whole order: excluding `IN_PROGRESS` drops an in-progress order's refund rows as well as its return. See [Leave records out with exclusions](/guides/author-rules#leave-records-out-with-exclusions).
+
+<Note>
+Before 2.0.0 this exclusion used a **Return workflow status** field with `REQUESTED` and `OPEN`. That field is withdrawn, and a rule saved on it matches nothing. Re-add the rule on **Return status** with `IN_PROGRESS`.
+</Note>
 
 ## What a returns run does not report
 
@@ -54,7 +67,7 @@ A rule only removes a record when the record's own data proves it. Where the evi
 
 An exchange in Shopify becomes a separate exchange order in HotWax, carrying the same Shopify order ID as the original. Order extracts from HotWax leave exchange orders out by default, so they do not show up as extra orders in an orders run.
 
-When an orders run compares Shopify orders with the HotWax **Orders API**, Darpan also runs an exchange presence check:
+When an orders run compares Shopify orders with the HotWax **Orders** endpoint, Darpan also runs an exchange presence check:
 
 1. It lists the Shopify exchanges created in the run window.
 2. It matches them against the exchange orders HotWax returned in the extract.

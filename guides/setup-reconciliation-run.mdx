@@ -33,7 +33,9 @@ Confirm:
 <Steps>
 <Step title="Open the create flow">
 
-Open **Ask Darpan** with `Cmd/Ctrl+K` or the floating **Ask Darpan** button. Search for **Create Reconciliation Flow** and open the result.
+On Home, choose **Create Run**. Answer **What kind of run?** with **Sync** (do two systems hold the same records?). **Lifecycle** builds a different kind of run; see [Lifecycle runs](/guides/lifecycle-runs).
+
+You can also open **Ask Darpan** with `Cmd/Ctrl+K` or by clicking the mascot in the corner, search for **Create Reconciliation Flow**, and open the result. That goes straight to the Sync flow.
 
 </Step>
 <Step title="Name the saved run">
@@ -73,11 +75,17 @@ Open **Ask Darpan**, search for **Open Runs Settings**, and confirm the saved ru
 
 ## Comparing two instances of one system
 
-The create flow in the app always uses two different systems. The service layer is less strict: it accepts the same system on both sides when the two sides use different source configurations, for example staging against production, or two regional instances that should line up. Runs like that are set up through the API.
+The Sync create flow in the app always compares two different systems. The service layer is less strict: it accepts the same system on both sides when the two sides use different source configurations, for example staging against production, or two regional instances that should line up. Runs like that are set up through the API.
 
 The same source on both sides is always rejected, because a source compared against itself has nothing to find. Runs built from file uploads carry no source configuration, so they always need two different systems.
 
 Where both sides are the same system, run results label each side by its source rather than by the system name alone, so the two instances stay distinguishable when you review differences.
+
+## Checking one system
+
+A run can also check a single system and report the rows that answer a question, for example "which NetSuite orders were never billed?". It has no second side, and its result shows one **Findings** bucket.
+
+The Sync flow does not build one. A one-system run is created through the API (`facade.ReconciliationFacadeServices.create#RuleSetRun` with `scopeMode` set to `EVALUATE`) or from run configuration data. Once it exists, it opens, runs, and shows results in the app like any other run, and Home files it under the one system it checks. One-system NetSuite runs can be turned into a run flowchart with **Import NetSuite Checks**; see [Lifecycle runs](/guides/lifecycle-runs#import-netsuite-checks).
 
 ## Choosing an API endpoint
 
@@ -94,3 +102,7 @@ The saved run can be selected from **Run Reconciliation** and from the automatio
 ## Change rules later
 
 The rules saved with the run can be changed at any time from the **Ruleset Manager**. Open **Open Runs Settings**, open the run, and choose **Edit Rules**. See [Author reconciliation rules](/guides/author-rules).
+
+## Delete a run
+
+The trash icon in the **Ruleset Manager**, **Delete run**, deletes a Sync run together with the generated outputs created for it, after a confirmation. It cannot be undone. A lifecycle's trash icon archives instead; see [Lifecycle runs](/guides/lifecycle-runs#retire-a-run).

@@ -29,6 +29,12 @@ The following calls `get#SessionInfo` from the Auth facade:
 }
 ```
 
+## Allowed methods
+
+`/rpc/json` dispatches only methods whose name starts with `facade.`, `admin.` or `gql.`. Any other method, including stock Moqui services marked `allow-remote`, is refused with HTTP 403 before dispatch, with or without a session. The check covers the top-level method and every entry of a batch. The published method list is the [Service catalog](/api-reference/service-catalog).
+
+The framework's `/rest/login` endpoint is closed and answers HTTP 403. Sign in with `facade.AuthFacadeServices.login#Session`.
+
 ## Required headers
 
 Every call sends:

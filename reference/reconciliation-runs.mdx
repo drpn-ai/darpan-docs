@@ -28,8 +28,9 @@ A reconciliation run is one execution of a reconciliation.
 | Skipped duplicate | `AUT_STAT_SKIP_DUP` | The run matched an existing run and was skipped as a duplicate. |
 | Cancelled | `AUT_STAT_CANCELLED` | An operator stopped the run before it finished. Work completed before the stop is discarded. |
 | Dead-lettered | `AUT_STAT_DEAD_LETTER` | Automation executions only. A scheduled execution failed transiently, used up its retries, and was given up on. A failure alert is sent. |
+| Not run | `AUT_STAT_NOT_RUN` | Run flowcharts only. A question above this one failed or was switched off, so this one was not asked. |
 
-Pending and Running are the active statuses. Succeeded, No data, Failed, Skipped duplicate and Cancelled are the terminal statuses for a run: a run in any of them is finished, will not change status again, and triggers run-completion alerts. Dead-lettered is also final, but it is recorded on the automation execution rather than on a run result.
+Pending and Running are the active statuses. Succeeded, No data, Failed, Skipped duplicate and Cancelled are the terminal statuses for a run: a run in any of them is finished, will not change status again, and triggers run-completion alerts. Dead-lettered is also final, but it is recorded on the automation execution rather than on a run result. Not run is final for the flowchart question that carries it.
 
 ## Stage sequence
 
@@ -41,17 +42,28 @@ A run advances through stages in a fixed order. The current stage is exposed on 
 | 2 | `EXTRACT_FILE1` | Extracting *system* | Extract records from the first source. |
 | 3 | `EXTRACT_FILE2` | Extracting *system* | Extract records from the second source. |
 | 4 | `COMPARE` | Comparing records | Match records and apply rules. |
-| 5 | `VERIFY` | Verifying differences | Point-lookup recheck of reported differences against lookup-capable sources. A run can record more than one `VERIFY` step, one per verification pass; each names the system it rechecked. |
-| 6 | `WRITE_OUTPUT` | Writing results | Write the reviewable result, after verification has corrected it. |
-| 7 | `NOTIFY` | Sending notifications | Deliver run-completion alerts. |
+| 5 | `VERIFY_MISSING` | Verifying differences | Point-lookup recheck of missing-record differences against lookup-capable sources. |
+| 6 | `VERIFY_EXCHANGE` | Verifying exchange pairs | Recheck of exchange pairs: one system's exchanges are looked up in the other. |
+| 7 | `VERIFY_RETURNS` | Verifying returns | Return-presence grading of both missing directions. |
+| 8 | `CONCLUDE` | Drawing conclusions | Name each verified finding with the run's conclusion rules. |
+| 9 | `WRITE_OUTPUT` | Writing results | Write the reviewable result, after verification has corrected it. |
+| 10 | `NOTIFY` | Sending notifications | Deliver run-completion alerts. |
 
-Some stages are conditional. A file-upload side records no extract step, and a run with nothing to recheck, or no source that supports a point lookup, records no `VERIFY` step. When verification is switched off or cannot run, the run records a `VERIFY` step that states the reason.
+Each verification pass has its own stage code, and each names the systems it rechecked. Some stages are conditional. A file-upload side records no extract step, and a run that checks one system never opens `EXTRACT_FILE2`. A run with nothing to recheck, or no source that supports a point lookup, records no verification step. When verification is switched off or cannot run, the run records a `VERIFY_MISSING` step that states the reason. Only a run whose scope has conclusion rules records `CONCLUDE`.
+
+Runs recorded before 2.0.0 keep the single `VERIFY` stage code at order 5, with `WRITE_OUTPUT` at 6 and `NOTIFY` at 7. Anything that reads `stageCode` or `stageSequence` must expect both sets.
+
+## Run window
+
+A run's date window is recorded with the time zone it was anchored in. The app shows the window in that zone, and the mascot gives the exact instants it covered. Over the API, `dateRange.start` and `dateRange.end` are ISO-8601 instants (for example `2026-09-01T11:30:00Z`) beside a nullable `timeZone`. A missing `timeZone` means none was recorded.
 
 ## How differences are counted
 
 The difference count is the number of records missing from one side: records only in the first source plus records only in the second. Value mismatches found by rules are counted separately.
 
 A run that finds value mismatches but no missing records therefore has a difference count of zero. Read the value-mismatch count as well before treating a run as clean.
+
+Duplicate-key findings on a side that opts in (below) are included in the difference count. A run that checks one system has no second side: every row it reports is a finding.
 
 ## Duplicate compare IDs
 
@@ -61,6 +73,9 @@ A compare ID should identify exactly one record on each side. When a side produc
 | --- | --- |
 | No active rules (presence check only) | The duplicates collapse to one row per compare ID, and the run records a processing warning naming examples. A duplicated key can therefore read as a single clean match. |
 | Active rules | The run fails with an error naming the duplicated values and their row counts. |
+| Side opted in to duplicate-key findings | Every record under a repeated key becomes a finding (`DUPLICATE_IN_FILE_1` or `DUPLICATE_IN_FILE_2`), and the key is left out of the compare on both sides, so the other side's record is not reported missing. |
+
+Duplicate-key findings are opt-in per side (`duplicateKeyHandling = FINDING` on the run's compare source). The app has no control for it; it is set in run configuration data. A side without it keeps the behaviour in the first two rows.
 
 If a source legitimately carries several rows per key, use a [composite matching key](/reference/composite-matching-keys) that makes each row unique.
 

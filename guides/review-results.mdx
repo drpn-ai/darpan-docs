@@ -20,13 +20,24 @@ The results page is where a reconciliation earns its keep. It shows which record
 | --- | --- |
 | Source files | The files each side read, with a download for each. |
 | **Run steps** | The stages the run went through and how each ended. Collapse it once you have read it. |
-| Difference buckets | **Missing from** *system* for each side, and **Rule differences** when any rule failed. Select a bucket to filter the list to it. |
+| Difference buckets | **Missing from** *system* for each side, and **Rule differences** when any rule failed. A run that checks one system shows a single **Findings** bucket. Select a bucket to filter the list to it. |
+| Conclusion tiles | Shown in place of the difference buckets when the run's scope has conclusion rules. See [Conclusions](#conclusions). |
 | Rule selector | The panel at the side lists **All** plus each rule with its count. Pick a rule to see only the pairs that failed it. |
 | **Record search** | Type a record ID to find it in the differences. |
 | Download | **Download saved result** saves the full result file. |
 | **Notify me** | Sends a message to your chat space when this run finishes. See [Run-completion alerts](/guides/run-completion-alerts). |
 
 The footer links to **Open run**, **View previous runs**, and **Run settings**.
+
+## Conclusions
+
+When a run's scope has conclusion rules, the result names what each finding most likely means instead of leaving the raw difference to be worked out.
+
+- The page summarises by conclusion: one tile per conclusion with its count. **Unexplained** is always shown, always last, and lists the findings no rule could name.
+- The **Conclusion** column names each finding. Expand a row to see each system's state, **How Darpan concluded** (the fields the deciding rule tested), and the **Raw record**.
+- Where a conclusion needs a decision, **Stop flagging in rules board ›** opens the rules board with a filter pre-filled. **Keep flagging** leaves the rules as they are.
+
+Conclusion rules are configured per tenant. A run whose scope has none shows the difference buckets as before.
 
 ## Run history
 

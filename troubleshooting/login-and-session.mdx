@@ -15,6 +15,7 @@ Getting locked out of your own tool is the worst kind of broken — you can't ev
 - Sign-in hangs for a long time before completing.
 - An expired password blocks sign-in.
 - Sign-in is refused even with the right password.
+- A JSON-RPC call or `/rest/login` answers HTTP 403.
 
 ## Checks
 
@@ -58,6 +59,15 @@ The active tenant is stored on your user account on the server, not in the brows
 Darpan checks the session by asking the backend, and that check restores the session from the login cookie before answering. So a session probe can report a healthy, authenticated session about a call the backend has just refused.
 
 Read the failing call's own response body rather than the probe or the HTTP status alone. A refused call returns a JSON-RPC `error` object. A call made without a session is refused with an error message saying the user must be logged in, not with HTTP 401, and depending on the failure the HTTP status may be 500 or 200. A check that only looks for 401 will report success on a refusal.
+
+## A call is refused with HTTP 403
+
+`/rpc/json` dispatches only `facade.*`, `admin.*` and `gql.*` methods. Any other method, such as a stock Moqui service like `org.moqui.impl.UserServices.update#Password`, gets HTTP 403 before dispatch, signed in or not, and so does every batch that contains one. The framework's `/rest/login` endpoint also answers 403.
+
+- Call the published method instead. The list is in the [Service catalog](/api-reference/service-catalog).
+- Sign in with `facade.AuthFacadeServices.login#Session`, not `/rest/login`.
+
+A 403 here is not a session problem: signing in again does not change it.
 
 ## Sign-in is slow rather than failing
 

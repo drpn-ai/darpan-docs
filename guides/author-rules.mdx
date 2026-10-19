@@ -60,7 +60,7 @@ Pre-actions normalize a field value before the operator runs, so a comparison is
 <Steps>
 <Step title="Open the Ruleset Manager">
 
-Open **Ask Darpan** with `Cmd/Ctrl+K` or the floating **Ask Darpan** button. Choose **Open Runs Settings** (or search the saved run by name), then open the run you are configuring; ruleset-type runs open in the **Ruleset Manager**.
+Open **Ask Darpan** with `Cmd/Ctrl+K` or by clicking the mascot in the corner. Choose **Open Runs Settings** (or search the saved run by name), then open the run you are configuring; ruleset-type runs open in the **Ruleset Manager**.
 
 The **Ruleset Manager** shows the two compared sources, their schemas, and the current list of rules.
 
@@ -103,14 +103,20 @@ Back in the **Ruleset Manager**, confirm the rule list reflects every comparison
 
 ## Leave records out with exclusions
 
-Some records should never be compared, for example a channel or status that one system carries and the other does not. An exclusion drops records whose field holds one of the values you list.
+Some records should never be compared, for example a channel or status that one system carries and the other does not. A filter on a field either drops the values you list or keeps only them.
 
 1. On the rules board, double-click a field pill on the side the records come from, or focus it and press Enter.
-2. In **Values to exclude**, type a value and press Enter. Repeat for each value.
-3. Choose **Save exclusion**. A ⊘ mark on the pill shows it carries an exclusion. The trash icon in the same popup deletes it.
-4. Choose **Save** in the editor to store it with the rules.
+2. Choose the mode: **Exclude these values** or **Only these values**. A new filter opens on **Exclude these values**.
+3. Type a value and press Enter. Repeat for each value.
+4. Choose **Save filter**. The pill shows `≠` for an exclude filter and `=` for an only-these filter. The trash icon in the same popup deletes it.
+5. Choose **Save** in the editor to store it with the rules.
 
-Exclusions apply when the records are extracted, before matching and before any rule runs. An exclusion removes records from its own side only: if the same records exist in the other system, exclude them there too, or they report as missing from this side. They work only on API sources whose connector supports filtering. On a file upload, or a source that cannot filter, the board says so instead of opening the editor.
+| Mode | Keeps | A record with no value for the field |
+| --- | --- | --- |
+| **Exclude these values** | Every record whose value is not listed. | Kept. |
+| **Only these values** | Only records whose value is listed. | Left out. |
+
+Filters apply when the records are extracted, before matching and before any rule runs. A filter removes records from its own side only: if the same records exist in the other system, filter them there too, or they report as missing from this side. Filters work only on API sources whose connector supports filtering. On a file upload, or a source that cannot filter, the board says so instead of opening the editor.
 
 The **Ruleset Manager** lists the run's exclusions in their own panel next to the rules.
 

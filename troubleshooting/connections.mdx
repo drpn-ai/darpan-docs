@@ -51,7 +51,9 @@ Search **Ask Darpan** for **Open SFTP Servers**. For an existing record, search 
 
 Setup guide: [Connect NetSuite](/guides/connect-netsuite).
 
-In this release, NetSuite settings hold authentication profiles and RESTlet endpoint records. No reconciliation run or automation extracts from NetSuite directly; NetSuite data reaches a run as an uploaded file. The RESTlet endpoints serve inventory checks, which are not live.
+NetSuite settings hold authentication profiles and RESTlet endpoint records. Runs read NetSuite over SuiteQL through an **OAuth2 M2M JWT** auth profile: lifecycles directly, Sync runs through a saved NetSuite check. The RESTlet endpoints serve inventory checks, which are not live.
+
+A SuiteQL request times out at 120 seconds, so a month-long NetSuite window can fail where a shorter one works. Use a shorter window.
 
 Search **Ask Darpan** for **Open NetSuite Settings** and check the authentication profile:
 

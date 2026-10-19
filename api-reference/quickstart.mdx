@@ -13,7 +13,7 @@ The **Send** button in the generated reference's request playground does not wor
 
 ## 1. Get a token
 
-`login#Session` is anonymous: no cookie or CSRF bootstrap is needed. It returns a Moqui login-key token.
+`login#Session` is anonymous: no cookie or CSRF bootstrap is needed. It returns a Moqui login-key token. It is the only sign-in path: the framework's `/rest/login` is closed, and `/rpc/json` refuses any method outside `facade.*`, `admin.*` and `gql.*` with HTTP 403.
 
 ```bash
 curl -sS https://api.drpn.ai/rpc/json \

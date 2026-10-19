@@ -7,7 +7,7 @@ The generated contract carries `info.x-darpan-contract-version`, decoupled from 
 
 | Contract version | Darpan releases | Public `facade.*` methods |
 | --- | --- | --- |
-| 3 (current) | 1.5.0, 1.5.1 | 86 |
+| 3 (current) | 1.5.0, 1.5.1, 2.0.0 | 115 |
 | 2 | 1.2.0, 1.3.0, 1.4.0 | 73 |
 | 1 | 1.0.0 to 1.1.0 | 66 |
 
@@ -20,6 +20,53 @@ Operator-only methods (`admin.*`) are listed in the [service catalog](/api-refer
 ## Contract version 3
 
 Darpan 1.5.0. Current.
+
+### Added in 2.0.0
+
+The facade contract stays at version 3: every 1.5.1 method, parameter and response field is unchanged, and 29 public methods are added (86 to 115). The breaking change in 2.0.0 is at the transport, not in the contract: `/rpc/json` now refuses any method outside `facade.*`, `admin.*` and `gql.*` with HTTP 403 before dispatch, and the framework's `/rest/login` is closed. An integration that only calls the methods on this page needs no change. See [Errors](/api-reference/errors).
+
+Runs as flowcharts:
+
+- `facade.ReconciliationFacadeServices.list#Reconciliations`
+- `facade.ReconciliationFacadeServices.get#Reconciliation`
+- `facade.ReconciliationFacadeServices.save#Reconciliation`
+- `facade.ReconciliationFacadeServices.save#ReconciliationQuestion`
+- `facade.ReconciliationFacadeServices.delete#ReconciliationQuestion`
+- `facade.ReconciliationFacadeServices.run#Reconciliation`
+- `facade.ReconciliationFacadeServices.get#ReconciliationExecution`
+- `facade.ReconciliationFacadeServices.list#ReconciliationExecutions`
+- `facade.ReconciliationFacadeServices.import#NetSuiteChecksAsRuns`
+
+Lifecycles:
+
+- `facade.ReconciliationFacadeServices.save#Lifecycle`
+- `facade.ReconciliationFacadeServices.save#LifecycleStages`
+- `facade.ReconciliationFacadeServices.save#LifecycleRule`
+- `facade.ReconciliationFacadeServices.delete#LifecycleRule`
+- `facade.ReconciliationFacadeServices.save#LifecycleStageException`
+- `facade.ReconciliationFacadeServices.delete#LifecycleStageException`
+- `facade.ReconciliationFacadeServices.save#LifecycleFinding`
+- `facade.ReconciliationFacadeServices.delete#LifecycleFinding`
+- `facade.ReconciliationFacadeServices.save#LifecycleDetails`
+- `facade.NetSuiteLifecycleFacadeServices.get#LifecycleOptions`
+- `facade.NetSuiteLifecycleFacadeServices.get#LifecycleRuleOptions`
+
+NetSuite check definitions:
+
+- `facade.NetSuiteQueryFacadeServices.list#NsSuiteQlSourceQueries`
+- `facade.NetSuiteQueryFacadeServices.get#NsSuiteQlSourceQuery`
+- `facade.NetSuiteQueryFacadeServices.save#NsSuiteQlSourceQuery`
+
+Retiring runs and automations without deleting them:
+
+- `facade.ReconciliationFacadeServices.disable#SavedRun`
+- `facade.ReconciliationFacadeServices.enable#SavedRun`
+- `facade.ReconciliationFacadeServices.archive#SavedRun`
+- `facade.ReconciliationFacadeServices.restore#SavedRun`
+- `facade.ReconciliationFacadeServices.archive#Automation`
+- `facade.ReconciliationFacadeServices.restore#Automation`
+
+The release also adds one operator-only method, `admin.ScheduleAdminServices.get#ScheduleBoard`.
 
 ### Breaking change
 

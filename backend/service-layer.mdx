@@ -27,6 +27,8 @@ Facade services are granted to every signed-in Darpan user through the `DARPAN_F
 
 Four facade services accept anonymous calls, all in `AuthFacadeServices.xml`: `login#Session`, `get#SessionInfo`, `change#ExpiredPassword`, and `logout#Session`. Every other facade service requires a signed-in user.
 
+`/rpc/json` is fenced to Darpan's own namespaces. `RpcMethodFence` (`src/main/groovy/darpan/facade/common/RpcMethodFence.groovy`), wired as a webroot before-request hook in the component `MoquiConf.xml`, refuses any method that does not start with `facade.`, `admin.` or `gql.`, checking the top-level method and every batch entry, with an `ArtifactAuthorizationException` (HTTP 403) before dispatch. That includes stock Moqui services marked `allow-remote="true"`. `gql.*` stays callable because each moqui-gql remote service gates itself. The same fence closes the framework's `/rest/login` transition. `/rest/s1/*` is not affected.
+
 ## Facade services
 
 Facade services are the app integration point. The `darpan` component's facade files are:

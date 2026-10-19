@@ -5,7 +5,61 @@ description: "Major Darpan updates grouped by release tag."
 
 Darpan releases from newest to oldest, with product and operator changes that affect upgrade, validation, or rollback decisions. Only tagged releases appear here. For release principles and review questions, see [Release discipline](/engineering/release-discipline).
 
-Version key: headings carry the backend version (`drpn-ai/darpan`, `v1.x`); the app (`darpan-ui`) has its own `v2.x` tags, named in each entry. Backend and app tags are cut together for major and minor releases. A patch can be backend-only or carry an app tag too, as `v1.5.1` did with app `v2.6.1`.
+Version key: headings carry the backend version (`drpn-ai/darpan`); the app (`darpan-ui`) has its own tags, named in each entry: `v2.x` alongside backend `v1.x`, and `v3.x` from backend `v2.0.0`. Backend and app tags are cut together for major and minor releases. A patch can be backend-only or carry an app tag too, as `v1.5.1` did with app `v2.6.1`.
+
+## v2.0.0 — October 2026
+
+Cut together with app `v3.0.0`, `darpan-hotwax v0.9.0`, `shopify-darpan v0.7.0`, `netsuite-darpan v0.3.0` and `database-darpan v0.2.1`. A major release: the API contract only gains methods, but the transport, the run step codes and the connector pairing all change, and every component moves together.
+
+**Product**
+
+- **A run can be a chart of questions.** Each question is one reconciliation, and the questions under it run on its yes or no, for the records that reached it. Run it, watch each question finish, open a finding's records, and browse past executions. A scheduled reconciliation walks the whole chart per window.
+- **Import NetSuite Checks.** Existing NetSuite checks become runs from Home in one step, one per population. Safe to repeat; a check that cannot be placed says why.
+- **Lifecycles.** Follow NetSuite records from a start record type through their stages and see where each one stopped: every record lands in one named place. Build one from four dropdowns whose options are read from the account, with counts and typical timings. Leave records out, mark a stage as not expected for some records, and name the places worth acting on. See [Lifecycle runs](/guides/lifecycle-runs).
+- **Check one system.** The engine can run a check against a single system, such as which NetSuite orders were never billed, and report the records that answer it. These runs are set up through the API; the app shows their results.
+- **Every finding comes with a conclusion.** A run result names what each finding most likely means and expands to the evidence the deciding rule tested. A finding no rule explains says so.
+- **Create Run asks Sync or Lifecycle first** on Home.
+- **Filters can include as well as exclude.** "Only these values" sits beside "exclude these values"; a record with no value for the field is left out by an include rule.
+- **Archive instead of delete.** Deleting an automation or a lifecycle archives it: it leaves the list and stops running, and its results and history stay.
+- **More sources.** HotWax orders and returns over GraphQL (the returns endpoint sees pending returns the REST endpoint does not), NetSuite checks over SuiteQL, order-line units for Shopify and HotWax, and HotWax order items for NetSuite line checks.
+- **Plain names.** Field and source names are short ("Shopify order ID", "Order total", "HotWax returns"), and the returns key card offers Shopify return ID or Refund or return ID.
+- **A new corner.** A red panda replaces the Ask Darpan button. It is still the launcher, and it explains whatever you rest on: labels, headings, timestamps, buttons. Warnings, such as an automation drifting from its saved run, arrive through it with their actions inside.
+- **Sign out and theme are commands:** `/logout`, `/light`, `/dark`. The user menu and the floating Home and Account buttons are gone.
+- **Timestamps.** A time no longer ends in a zone code; rest on it to see the zone. A run's window is shown in the zone the run was anchored in.
+- **Faster pages.** Pages open from your last visit and refresh behind it. Wizards and edit forms always load fresh.
+- **Home groups runs by system**, with a count per group and a Lifecycle section.
+- **Shopify return status.** The **Return status** field now carries Shopify's own order return status. Excluding `IN_PROGRESS` drops an in-progress order's return and its refund rows.
+
+**Operators**
+
+- All five backend components and the app deploy together. The backend seeds sources whose extract services exist only in the new connector versions, and the new connectors need the new backend. No mixed combination works.
+- `/rpc/json` answers HTTP 403 for any method outside `facade.*`, `admin.*` and `gql.*`, before dispatch. The framework's `/rest/login` is closed. Darpan's own clients use nothing else.
+- Run steps: verification records `VERIFY_MISSING`, `VERIFY_EXCHANGE` or `VERIFY_RETURNS` instead of `VERIFY`, a `CONCLUDE` step follows, and `WRITE_OUTPUT` and `NOTIFY` move to 9 and 10. Past runs keep their steps.
+- Every tenant-owned table is under the tenant filter. Rows with no tenant stamp disappear from tenant reads, so count them before upgrading.
+- Saved source filters on Shopify orders start applying after the upgrade; until now they were stored and ignored.
+- Returns verification over a long window gives a partial answer rather than none and says how many records it could not check. The HotWax returns lookup retries a transient gateway error after a minute, up to three times.
+- A weekly automation no longer fires twice when its window crosses a month boundary.
+- An automation can no longer be pointed at another tenant's chat space, and saving an SFTP server can no longer take over another tenant's server.
+- Super-admins get one timeline of every tenant's scheduled runs.
+
+**API**
+
+- Contract version stays `3`: 29 public methods are added (86 to 115) and none is removed or changed, plus one operator-only method. See the [API changelog](/api-reference/changelog).
+- The breaking change for integrations is the method fence above: an integration that calls only published methods needs no change.
+- Run window boundaries in `get#GeneratedOutput` and `get#ReconciliationRunStatus` are ISO-8601 instants with a `timeZone` beside them.
+
+**Upgrade**
+
+- Load `v1.5.1`'s 2 records first if they have not been loaded.
+- Before loading, count rows with no tenant stamp, using the queries in the upgrade file's header (expect 0), and list saved source filters on Shopify-orders sources.
+- Load `v2.0.0`'s 80 records with `./gradlew loadDarpanUpgradeData`.
+- Then, once per environment, run the `RETIRED_FIELDS` migration with force set (`admin.MigrationAdminServices.run#Migration migrationId=RETIRED_FIELDS force=true`), then `run#PendingMigrations`. Skip the forced run and the rules board offers two return-status fields, one of which matches nothing. Re-add any rule on the old field on **Return status** with `IN_PROGRESS`.
+- Client-specific rule sets ship as tenant configuration and load per tenant, not with the upgrade.
+
+**Rollback**
+
+- Roll back as a set, backend to `v1.5.1` with the connectors at their previous tags and the app at `v2.6.1`.
+- The tenant filter rows added by this upgrade must be removed before `v1.5.1` runs on the same database; the other records are inert to it.
 
 ## v1.5.1 — August 31, 2026
 

@@ -1,0 +1,116 @@
+---
+title: "Lifecycle runs"
+description: "Follow NetSuite records from a start record through their stages, see where each one stopped, and run charts of yes/no questions."
+---
+
+A Sync run asks whether two systems hold the same records. A lifecycle asks a different question: where do records stall on their way through? It follows NetSuite records from a start record, such as a sales order, through the stages that should follow it, and puts every record in exactly one named place. The answer is never zero; it is a count per place, and the places marked as findings are the ones worth acting on.
+
+Lifecycles are built on run flowcharts: charts of yes/no questions, where each question is one reconciliation and the questions under it answer only for the records that reached them. A lifecycle writes its chart for you. Imported NetSuite checks arrive as charts you can extend.
+
+## Before you start
+
+Confirm:
+
+- A NetSuite connection exists for the account. See [Connect NetSuite](/guides/connect-netsuite).
+- You are a Tenant Admin for the active tenant. Creating and changing runs requires tenant edit access.
+
+## Create a lifecycle
+
+Every option below is read from the NetSuite account itself, so nothing is typed and nothing is offered that the data does not contain.
+
+<Steps>
+<Step title="Start a Lifecycle">
+
+On Home, choose **Create Run**, then answer **What kind of run?** with **Lifecycle**.
+
+</Step>
+<Step title="Pick the account and records">
+
+Answer **Which account?** with the NetSuite connection. With only one account, Darpan skips this card. Then answer **Which records?** with the record type the lifecycle starts from. Only record types that have records are offered.
+
+</Step>
+<Step title="Pick the stages">
+
+Answer **What happens to** *a record*? with the stages that should follow, in any order; Darpan orders them as the data does. The stages that at least half of these records go on to are chosen for you.
+
+</Step>
+<Step title="Leave records out">
+
+Answer **Leave out any** *records*? with a field, then a value, to leave out records that should not be judged. Repeat for each rule, and choose **Nothing** (or **Nothing else**) to move on.
+
+</Step>
+<Step title="Say when a record is late">
+
+Answer **When is** *a record* **late?** with a day count, or **Same day**. The default is the first day by which at least 90% of records have reached the last stage. Choose **Save lifecycle**.
+
+</Step>
+</Steps>
+
+Darpan names the lifecycle, orders its stages, and names every place a record can stop. The new run opens on its own page, and Home lists it under **Lifecycle**.
+
+## Run it
+
+On the run's page, choose the play icon (**Open run**) and answer **Which days should this run look at?** with **Previous day** or **Last** *N* **days**, then choose **Run**.
+
+A lifecycle's window ends the late-after period back from today, so records too new to have finished are not judged. The result's **This Run** section shows the **Window** it covered, in the zone the run was anchored in.
+
+## Read the run page
+
+| Section | Shows |
+| --- | --- |
+| **How It Works** | The lifecycle as one line: the starting records and account, what is left out, each stage and the places records stop there, each place marked **Finding** or *not a finding*. Read only; the gear changes it. |
+| **In Progress** | Executions still running. |
+| **Most Recent** | The latest execution and its summary. |
+| **Previous Results** | Earlier executions, newest first. |
+
+Open an execution to see its result:
+
+| Section | Shows |
+| --- | --- |
+| **This Run** | **Status**, **Window**, the number of **Stages** (or **Questions**), and **Findings**. |
+| **Where Records Stopped** | Each stage with how many records reached it, and under it the places records stopped, with counts. A place with records opens them. |
+
+## Tune it
+
+Choose the gear (**Run settings**). The page, **Update the lifecycle.**, shows the lifecycle as one line, and each change sits where it acts:
+
+| Change | Where | Does |
+| --- | --- | --- |
+| **+ except** | Under the starting records | A leave-out rule: records where a field has a value are not judged. |
+| **+ shows** | Under the starting records | An extra record detail shown beside each record. |
+| **judged after** | Under the starting records | The late-after period. |
+| ↑ / ↓ | On a stage | Reorders the stages. |
+| **+ not expected for** | Under a stage | A stage exception: records where a field has a value are not expected to reach this stage (store pickup needs no fulfillment). |
+| **finding** / **not a finding** | On a place | Whether records that stop there count as findings. They still show, quietly. |
+| **+ finding** | Under a stage | A written finding: records that reached the stage and whose field is, or is more than, a value. |
+
+Choose **Save** to store the changes.
+
+## Questions and flowcharts
+
+A run that is not built from stages shows **Questions** instead: the chart itself. Each box is a question, labelled with what its "no" is called, and each edge says **yes** (with its count once run), **no**, or **why**.
+
+- Select a question to edit it: its **Rule** (an existing rule set), the **Question** wording, and the **Finding** its "no" is called. Choose **Save question**.
+- **Add next question** adds a question on the yes branch; **Ask why** adds one on the no branch.
+- The **Start** question uses a one-source rule. Every record it returns is a yes, so it has no finding.
+- A question under one that failed or was switched off is not run (`AUT_STAT_NOT_RUN`).
+
+The chart can be edited while the run is not running. A result shows its questions with counts, and **Question Runs** lists each question's own run with its state and yes/no counts, and the reason when it failed or was not run. A finding with records opens them.
+
+## Import NetSuite Checks
+
+**Import NetSuite Checks** on Home turns the tenant's existing NetSuite checks into runs: one run per population (account, record type, and how the key is built), with a **Start** question and each check as a yes question under it. Home offers it to editors whose tenant has a one-system NetSuite run.
+
+It is safe to repeat: a second import adds only checks not yet in a run. Darpan reports how many checks it imported into how many runs, or **No new NetSuite checks to import.**, and names the reason for each check it skipped.
+
+## Retire a run
+
+The trash icon (**Delete run**) on a lifecycle's page archives it. It leaves Home and cannot run again; its past results stay readable. Nothing is deleted.
+
+<Note>
+Lifecycle tiles cannot be pinned on Home yet.
+</Note>
+
+## Next step
+
+To compare two systems instead, set up a Sync run: [Set up a reconciliation run](/guides/setup-reconciliation-run). For how a question's own result reads, see [Review results](/guides/review-results).

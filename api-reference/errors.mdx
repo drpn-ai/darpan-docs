@@ -40,6 +40,7 @@ These are refused before the JSON-RPC dispatcher runs, so the body is not a JSON
 | HTTP status | When |
 | --- | --- |
 | `401` | A cookie-authenticated call (browser channel) is missing the `X-CSRF-Token` header, or the token does not match the session. Calls that send the `login_key` header are not CSRF-checked. |
+| `403` | From Darpan 2.0.0, the `method` (or any entry of a batch) is outside `facade.*`, `admin.*` and `gql.*`. The call is refused before dispatch, whether or not it carries a session. The framework's `/rest/login` endpoint is refused the same way. |
 
 ## JSON-RPC error codes
 

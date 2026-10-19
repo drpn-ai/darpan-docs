@@ -15,6 +15,12 @@ Check:
 - Connection records were reachable.
 - The run or support logs show the first processing error, not only the final failure.
 
+## A run refuses to start
+
+A run that was archived, or switched off with `facade.ReconciliationFacadeServices.disable#SavedRun`, refuses to start, from the app and from a schedule alike. `enable#SavedRun` and `restore#SavedRun` bring it back; the app has no control for either.
+
+In a run flowchart, a question shows **Not run** when a question above it failed or was switched off. Fix the question above, then run again. See [Lifecycle runs](/guides/lifecycle-runs#questions-and-flowcharts).
+
 ## Zero matches
 
 If zero matches followed a file upload issue — encoding, leading zeros, or delimiter — check [File upload](/troubleshooting/file-upload) first.

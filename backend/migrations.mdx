@@ -47,7 +47,7 @@ Three gates apply, to the sweep and to a targeted run alike:
 - A migration whose **prerequisites** have not succeeded is refused and recorded as blocked, rather than run against the state it was not written for.
 - An **already-applied** migration is skipped.
 
-`run#Migration` runs one named migration for targeted remediation, under the same gates. `dryRun#Migration` previews one, and `run#PendingMigrations` with `dryRun` set previews the whole sweep. `set#MigrationEnabled` parks or unparks a migration.
+`run#Migration` runs one named migration for targeted remediation, under the same gates, except that `admin.MigrationAdminServices.run#Migration` with `force=true` re-runs one that is already applied. Upgrading to 2.0.0 needs this once for `RETIRED_FIELDS`, because 1.5.0's run already marked it applied. `dryRun#Migration` previews one, and `run#PendingMigrations` with `dryRun` set previews the whole sweep. `set#MigrationEnabled` parks or unparks a migration.
 
 ## Operator surface
 

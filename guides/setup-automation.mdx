@@ -33,7 +33,7 @@ Confirm:
 <Steps>
 <Step title="Open automations">
 
-Open **Ask Darpan** with `Cmd/Ctrl+K` or the floating **Ask Darpan** button. Search for **Open Automations** and open the result.
+Open **Ask Darpan** with `Cmd/Ctrl+K` or by clicking the mascot in the corner. Search for **Open Automations** and open the result.
 
 </Step>
 <Step title="Start the automation wizard">
@@ -73,14 +73,14 @@ When Darpan asks **When should Darpan run this automation?**, choose **Daily**, 
 
 An automation whose schedule matches none of the presets, for example one saved through the API, shows **Custom schedule** and keeps that schedule until you pick a preset.
 
-The schedule shows the **Timezone** it runs in. See [Timezone](#timezone) below before relying on a specific hour.
+The schedule shows the **Timezone** it runs in, and you can pick another. See [Timezone](#timezone) below before relying on a specific hour.
 
 To run an automation on demand, use **Run automation now** on its dashboard. To stop scheduled runs without deleting the automation, switch the **Active**/**Inactive** toggle on its dashboard, so pausing one does not mean opening its edit form.
 
 </Step>
 <Step title="Choose where notifications go">
 
-When Darpan asks **Where should Darpan send notifications for this automation?**, choose your default space, **Choose another space**, **Set up a new space**, or **No notifications**. A new space asks for a name, the chat product (**Google Chat** or **Slack**), and a webhook URL or Slack channel. See [Run-completion alerts](/guides/run-completion-alerts).
+When Darpan asks **Where should Darpan send notifications for this automation?**, choose your default space, **Choose another space**, **Set up a new space**, or **No notifications**. A new space asks for a name, the chat product (**Google Chat** or **Slack**), and a webhook URL or Slack channel. Only the active tenant's own chat spaces are offered, and the backend refuses an automation pointed at another tenant's space. See [Run-completion alerts](/guides/run-completion-alerts).
 
 </Step>
 <Step title="Name and create the automation">
@@ -105,11 +105,13 @@ Each automation stores its own timezone, and its schedule and date window run in
 - Changing the tenant timezone later does **not** move existing automations. They keep running in the zone they were saved with.
 - A zone that does not match the tenant's business day reconciles the wrong day: a daily window of "previous day" ends at midnight in the automation's zone, not the tenant's.
 
-In this release the **Timezone** on an automation is shown, not edited. To move an automation to a different zone, set the tenant timezone first, then create the automation again. Do not work around a wrong zone by shifting the clock hour: the window boundaries stay in the old zone.
+To correct a wrong zone, edit the automation and pick the right one in **Timezone** on the schedule card. An edit you leave untouched saves the zone it loaded, so opening and saving an automation never moves it. Do not work around a wrong zone by shifting the clock hour: the window boundaries stay in the old zone.
 
 ## Delete an automation
 
-The trash icon on an automation's dashboard, **Delete automation**, removes the automation together with its source setup and its execution history. It asks for confirmation first and cannot be undone. To stop it running but keep its history, set it **Inactive** instead.
+The trash icon on an automation's dashboard, **Delete automation**, archives the automation. It asks for confirmation, leaves the automation list, and never fires again, scheduled or otherwise. Nothing is deleted: its source setup and execution history stay. The app has no control to bring it back; `facade.ReconciliationFacadeServices.restore#Automation` restores it with its history intact.
+
+To stop it running for a while and keep it on the list, set it **Inactive** instead.
 
 ## Keep an automation in step with its run
 
@@ -130,7 +132,7 @@ Sync when the drift report names a field you care about. Ignore it when it names
 - If no saved runs appear, finish [Set up a reconciliation run](/guides/setup-reconciliation-run) first.
 - If an automation reports drift, compare the named fields against the saved run and use **Sync** only if you want the run's version to win.
 - If **Sync** is refused, the automation's saved run no longer exists. Recreate the automation against a current run.
-- If a schedule fires at an unexpected hour, or reconciles the wrong day, check the **Timezone** shown on the automation's schedule. It is the zone the automation was saved with, which may no longer match the tenant's. See [Timezone](#timezone).
+- If a schedule fires at an unexpected hour, or reconciles the wrong day, check the **Timezone** shown on the automation's schedule. It is the zone the automation was saved with, which may no longer match the tenant's. Correct it in the edit form. See [Timezone](#timezone).
 - If saving or syncing is refused with a view-access message, your active tenant grants you view access only; automation changes need write access.
 - If no SFTP source appears, create or reactivate the required SFTP server from **Open SFTP Servers**.
 - If no API source appears, confirm the relevant system setup from [Set up Shopify](/guides/setup-shopify) or [Set up HotWax](/guides/setup-hotwax).

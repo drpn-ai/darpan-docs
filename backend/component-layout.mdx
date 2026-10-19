@@ -47,7 +47,7 @@ Other components install beside `darpan` in the same Moqui runtime:
 | --- | --- |
 | `darpan-hotwax` | HotWax OMS connector: config entities, extract services, and `facade.HotWaxOmsFacadeServices`. |
 | `shopify-darpan` | Shopify connector: config entities, extract services, and `facade.ShopifyFacadeServices`. |
-| `netsuite-darpan` | NetSuite connector services. Its config entities (`NsAuthConfig`, `NsRestletConfig`) are defined in `darpan`; its own entity file is intentionally empty so no entity is defined twice. |
+| `netsuite-darpan` | NetSuite connector services: SuiteQL extraction (`extract#NetSuiteOrders`), NetSuite check save/get/list (`facade.NetSuiteQueryFacadeServices`), and lifecycle options. Its entities (`NsAuthConfig`, `NsRestletConfig`, `NsSuiteQlSourceQuery`, `NsSuiteQlSourceQueryField`) are defined in `darpan`; its own entity file is intentionally empty so no entity is defined twice. |
 | `database-darpan` | Database sources over JDBC: config entities, extract services, and `facade.DatabaseFacadeServices`. |
 | `moqui-gql` | A GraphQL component included in the images. It is not a supported public API yet. |
 | `moqui-sftp` | SFTP transport for file sources. |

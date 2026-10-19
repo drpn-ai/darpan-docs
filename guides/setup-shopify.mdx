@@ -25,7 +25,7 @@ Confirm:
 <Steps>
 <Step title="Open Shopify settings">
 
-Open **Ask Darpan** with `Cmd/Ctrl+K` or the floating **Ask Darpan** button. Search for **Open Shopify Settings** and open the result.
+Open **Ask Darpan** with `Cmd/Ctrl+K` or by clicking the mascot in the corner. Search for **Open Shopify Settings** and open the result.
 
 </Step>
 <Step title="Create the Shopify connection">
@@ -56,8 +56,11 @@ The connection is ready when a reconciliation run or automation can select Shopi
 
 | Endpoint | Reads |
 | --- | --- |
-| **Admin GraphQL Orders** | Orders, for order reconciliation. |
-| **Shopify Return References** | One record per refund or return, for [returns reconciliation](/guides/returns-and-exchanges). |
+| **Orders** | Orders, for order reconciliation. |
+| **Order lines** | One record per order-line unit, so a quantity shortfall on a line is visible. No point lookup. |
+| **Returns** | One record per refund or return, for [returns reconciliation](/guides/returns-and-exchanges). |
+
+Run pickers and results name these by source, for example **Shopify returns** and **Shopify order lines**.
 
 Each connection enables endpoints separately under **Available Endpoints**. An endpoint that is not enabled is not offered when you build a run. The saved connection's page lists the enabled endpoints under **Endpoints**.
 

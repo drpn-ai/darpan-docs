@@ -49,11 +49,14 @@ A run moves through a fixed sequence of stages, and the stage it is on tells you
 | **Extracting** *first system* | Pulling records from the first source. |
 | **Extracting** *second system* | Pulling records from the second source. |
 | **Comparing records** | Matching records and applying rules. |
-| **Verifying differences** | Rechecking differences against sources that support point lookups, so an export timing skew is not reported as a real difference. Shown as **Verifying** *system*'s diffs when it names the system it rechecked; a run can show more than one. |
+| **Verifying differences** | Rechecking missing records against sources that support point lookups, so an export timing skew is not reported as a real difference. Shown as **Verifying** *system*'s diffs when it names the system it rechecked. |
+| **Verifying exchange pairs** | Looking up one system's exchanges in the other. Shown as **Verifying** *system*'s exchange pairs. |
+| **Verifying returns** | Grading returns reported missing on either side. Shown as **Verifying** *system*'s returns. |
+| **Drawing conclusions** | Naming each verified finding with the run's conclusion rules. |
 | **Writing results** | Writing the result you will review, after verification has corrected it. |
 | **Sending notifications** | Sending run-completion alerts. |
 
-Stages that do not apply are skipped: a file upload has no extract stage, and verification runs only for sources that support it.
+Stages that do not apply are skipped: a file upload has no extract stage, a run that checks one system has no second extract, each verification pass runs only for sources that support it, and **Drawing conclusions** runs only when the run has conclusion rules. The stage codes behind these labels are listed in [Reconciliation runs](/reference/reconciliation-runs#stage-sequence).
 
 To be told when it finishes instead of watching, choose **Notify me** — see [Run-completion alerts](/guides/run-completion-alerts).
 
@@ -69,7 +72,7 @@ Any work completed so far is discarded. A stopped run finishes as cancelled and 
 
 ## Expected result
 
-A successful run creates saved output that can be opened from result, history, or generated-output views. The output separates records missing from the first source, records missing from the second source, and matched records that differ by rule (the run result shows a **Missing from** … bucket for each system, plus a **Rule differences** bucket when any rule failed).
+A successful run creates saved output that can be opened from result, history, or generated-output views. The output separates records missing from the first source, records missing from the second source, and matched records that differ by rule (the run result shows a **Missing from** … bucket for each system, plus a **Rule differences** bucket when any rule failed). A run that checks one system shows a single **Findings** bucket, and a run with conclusion rules summarises by conclusion. See [Review results](/guides/review-results).
 
 ## Reusing a run
 

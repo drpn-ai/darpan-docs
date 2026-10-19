@@ -39,7 +39,7 @@
 - Prefer task-oriented pages for workflows and reference pages for stable contracts.
 - Call out assumptions, prerequisites, expected results, and next steps.
 - Write product tutorials for the Ask Darpan navigation model first.
-- When a workflow starts in the app shell, tell users to open **Ask Darpan** with `Cmd/Ctrl+K` or the floating **Ask Darpan** button, then search for the official destination name.
+- When a workflow starts in the app shell, tell users to open **Ask Darpan** with `Cmd/Ctrl+K` or by clicking the mascot in the corner (the floating **Ask Darpan** button is gone since app `v3.0.0`), then search for the official destination name.
 - Do not list Ask Darpan search synonyms in tutorials. Synonyms can exist in the app for convenience, but docs should use official product terms.
 - Avoid assuming a permanent left sidebar, top menu, or traditional nested navigation unless the page itself has local controls after Ask Darpan opens the surface.
 

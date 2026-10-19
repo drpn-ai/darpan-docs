@@ -34,6 +34,9 @@ Backend JSON-RPC calls usually require:
 - For the browser app: an authenticated session cookie and a valid `X-CSRF-Token`
 - For integration callers: a `login_key` header instead of the cookie and CSRF token
 - Permission for the target service
+- A method in the `facade.*`, `admin.*` or `gql.*` namespace. Any other method is refused with HTTP 403 before dispatch, signed in or not. See [JSON-RPC](/api-reference/json-rpc#allowed-methods).
+
+The framework's `/rest/login` endpoint is closed (HTTP 403). Sign in with `login#Session`.
 
 ## Session lifecycle
 

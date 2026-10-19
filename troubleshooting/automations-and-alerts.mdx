@@ -13,6 +13,8 @@ An automation has a saved run, an input mode, and a schedule. If a scheduled run
 
 Open **Ask Darpan**, search for **Open Automations**, and open the result. Confirm the row shows the expected input mode, schedule, state, and next run.
 
+If the automation is not on the list, it was deleted with the trash icon. That archives it: an archived automation never fires, scheduled or otherwise. Its history is kept, and `facade.ReconciliationFacadeServices.restore#Automation` brings it back; the app has no restore control.
+
 **Check the input sources**
 
 - If the automation uses **SFTP file inputs**: confirm the SFTP server is reachable and the remote file paths are populated. If no SFTP server appears, create or reactivate the required server from **Open SFTP Servers**.
@@ -54,6 +56,8 @@ Notification delivery is best-effort. A run never fails because an alert could n
 | Alerts arrived for older runs but not this one | Subscriptions cover a single run and are cleared once it finishes. Subscribe again on the new run. |
 | A Google Chat space save is rejected | The webhook URL must be `https` on `chat.googleapis.com`, target a space messages endpoint, and include `key` and `token` query parameters. |
 | A space cannot be deleted | An automation or an active subscription still references it. Deactivate it instead. |
+| An automation save is refused with **Chat space '…' was not found or is inactive.** | The space is inactive, or belongs to another tenant. An automation can link only a space of its own tenant. |
+| A space's chat product cannot be changed | A space's product is fixed once created. Add a new chat space instead. |
 | Message arrives but the link does not open the result | Confirm the run produced a saved result and that the app base URL for the environment is reachable. |
 | Alerts stopped after a tenant switch | Chat spaces are per tenant. Confirm the active tenant matches the runs you expect alerts for. |
 
@@ -81,7 +85,9 @@ Each automation stores its own timezone. When the automation is created, the tim
 
 A pinned zone that does not match the tenant's business day does more than shift the clock: the automation's date window is computed in its own zone, so it reconciles the wrong day.
 
-The automation's schedule shows the zone it runs in. Check that first, rather than converting the schedule hours to compensate. In this release the zone is shown but cannot be edited; to move an automation to another zone, set the tenant timezone in [Manage tenant settings](/guides/manage-tenant-settings) and create the automation again.
+The automation's schedule shows the zone it runs in. Check that first, rather than converting the schedule hours to compensate. To correct it, edit the automation and pick the right **Timezone** on the schedule card. See [Set up an automation](/guides/setup-automation#timezone).
+
+A weekly automation whose window crosses a month boundary fires once. Only a window longer than 28 days is split at month boundaries.
 
 ## Slack alerts specifically
 

@@ -25,7 +25,7 @@ Confirm:
 <Steps>
 <Step title="Open HotWax settings">
 
-Open **Ask Darpan** with `Cmd/Ctrl+K` or the floating **Ask Darpan** button. Search for **Open HotWax Settings** and open the result.
+Open **Ask Darpan** with `Cmd/Ctrl+K` or by clicking the mascot in the corner. Search for **Open HotWax Settings** and open the result.
 
 </Step>
 <Step title="Create the HotWax connection">
@@ -60,10 +60,16 @@ One HotWax connection can serve several endpoints, because they share the same b
 
 | Endpoint | Reads |
 | --- | --- |
-| **Orders API** | Sales orders. |
-| **Orders API (Transfer Orders)** | Transfer orders, from the same orders API. |
-| **Reconciliation Orders API** | Sales orders, served with a fixed set of fields. Use **Orders API** when your rules need fields outside that set. |
-| **Reconciliation Returns API** | Returns, for [returns reconciliation](/guides/returns-and-exchanges). |
+| **Orders** | Sales orders, over the REST orders API. |
+| **Orders and payments** | Sales orders with payment fields, over GraphQL. |
+| **Sales orders** | Sales orders, served with a fixed set of fields. Use **Orders** when your rules need fields outside that set. |
+| **Transfer orders** | Transfer orders, from the same orders API. |
+| **Order lines** | One record per order-line unit, so a quantity shortfall on a line is visible. No point lookup. |
+| **Order lines (NetSuite)** | Order items for NetSuite line-level checks. Items without a Shopify line ID are kept. |
+| **Refunded returns** | Returns, over REST. Sees refunded returns only. For [returns reconciliation](/guides/returns-and-exchanges). |
+| **Returns** | Returns, over GraphQL, including pending returns. Slower than **Refunded returns**. Needs the HotWax GraphQL upgrade; without it the extract fails rather than returning an empty file. |
+
+Run pickers and results name these by source: **HotWax refunded returns**, **HotWax returns**, **HotWax orders and payments**, **HotWax order lines**, and so on. **Returns** mirrors **Refunded returns** field for field, so moving a returns run to GraphQL is a source switch.
 
 Each connection enables endpoints separately under **Available Endpoints**. An endpoint that is not enabled is not offered when you build a run. The saved connection's page lists the enabled endpoints under **Endpoints**.
 
