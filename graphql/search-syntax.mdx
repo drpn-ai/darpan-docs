@@ -15,6 +15,10 @@ A connection's `query:` argument filters it with `key:value` terms. Terms are se
 reconciliationResults(first: 20, query: "savedRunId:ORDERS_OMS_NS statusEnumId:AUT_STAT_SUCCESS")
 ```
 
+```graphql
+findings(first: 50, query: "statement:R2,R8 state:open firstFound:>=2026-10-01")
+```
+
 - Each query's page lists the keys it accepts, and which comparators each key takes.
 - A value can be wrapped in double quotes; the quotes are removed. A value cannot contain a space.
 - The key ends at the first `:`, so a value may contain `:` itself.

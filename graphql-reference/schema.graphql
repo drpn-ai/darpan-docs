@@ -304,6 +304,52 @@ type FindingEvent {
   event: String
 }
 
+"A finding as findings(query:) lists it: the report's finding summary, plus where it sits."
+type FindingListItem {
+  "Days since `firstFound`, as of today in the tenant's time zone."
+  ageDays: Int
+  "The audit's id within the tenant, e.g. `month-close`."
+  audit: String
+  "The statement's category: `orders`, `refundsAndCredits`, `returns` or `exchangesAndWarranty`."
+  category: String
+  "`actual - expected`."
+  difference: Money
+  "The morning a check first reported it."
+  firstFound: String
+  "One line naming the record and what is wrong."
+  headline: String
+  "The finding's id."
+  id: String
+  "The last morning a check reported it."
+  lastSeen: String
+  "The CLI command that shows the full finding, e.g. `darpan findings show F-20761`."
+  next: String
+  "The period whose run found it, e.g. `2026-10`."
+  period: String
+  "The records it names: one entry per system, record type and id."
+  records: [FindingRecord!]!
+  "`open`, `pending` or `fixed`, as of the last check."
+  state: String
+  "The id of the statement it breaks, e.g. `R2`."
+  statement: String
+}
+
+"A page of findings."
+type FindingListItemConnection {
+  "The findings on this page, in order."
+  edges: [FindingListItemEdge!]!
+  "Whether more pages follow or precede."
+  pageInfo: PageInfo
+}
+
+"One finding in a page, with the cursor that marks its place."
+type FindingListItemEdge {
+  "Pass as after: to page on from this finding, in the same sortKey and reverse."
+  cursor: String
+  "The finding."
+  node: FindingListItem
+}
+
 "One record a finding names, in one system."
 type FindingRecord {
   "The record's id in that system, as people see it."
@@ -441,6 +487,19 @@ type Query {
     "Which period's run, e.g. 2026-10 while October is extended; blank is the morning's own period."
     period: String
   ): AuditReportDocument
+  "The tenant's findings, oldest first by default; each node is the report's finding summary plus its audit, statement, category and period. ageDays is as of today in the tenant's time zone. Filter via `query:` search string. Allowed keys: audit, statement, category, state, period, firstFound"
+  findings(
+    "Return findings after this cursor (pageInfo.endCursor). A cursor belongs to its sortKey and reverse."
+    after: String,
+    "Return the first n findings, 1 to 100; default 50."
+    first: Int,
+    "A search string of key:value terms; see the field description for the keys."
+    query: String,
+    "Reverse the sort order."
+    reverse: Boolean,
+    "The field to sort by."
+    sortKey: FindingListItemSortKey
+  ): FindingListItemConnection
   "One reconciliation run result by id."
   reconciliationResult(
     "The id of the ReconciliationResult to return."
@@ -585,6 +644,14 @@ type SystemCount {
   count: Int
   "The system: OMS, NetSuite or Shopify."
   system: String
+}
+
+"The orders a findings list can be sorted in; reverse: true flips it."
+enum FindingListItemSortKey {
+  "Sort by firstFound."
+  FIRST_FOUND
+  "Sort by statement."
+  STATEMENT
 }
 
 "The orders a reconciliationResults list can be sorted in; reverse: true flips it."

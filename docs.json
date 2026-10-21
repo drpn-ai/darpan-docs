@@ -187,6 +187,7 @@
           {
             "group": "Reconciliation results: queries",
             "pages": [
+              "graphql/queries/findings",
               "graphql/queries/reconciliation-result",
               "graphql/queries/reconciliation-results"
             ]
@@ -194,6 +195,9 @@
           {
             "group": "Reconciliation results: objects",
             "pages": [
+              "graphql/objects/finding-list-item",
+              "graphql/objects/finding-list-item-connection",
+              "graphql/objects/finding-list-item-edge",
               "graphql/objects/page-info",
               "graphql/objects/reconciliation-result",
               "graphql/objects/reconciliation-result-connection",
@@ -203,6 +207,7 @@
           {
             "group": "Enums and scalars",
             "pages": [
+              "graphql/enums/finding-list-item-sort-key",
               "graphql/enums/reconciliation-result-sort-key",
               "graphql/scalars/boolean",
               "graphql/scalars/date-time",
