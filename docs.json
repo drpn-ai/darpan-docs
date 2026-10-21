@@ -122,6 +122,99 @@
         ]
       },
       {
+        "tab": "GraphQL API",
+        "groups": [
+          {
+            "group": "Guides",
+            "pages": [
+              "graphql/overview",
+              "graphql/authentication",
+              "graphql/cost-and-throttling",
+              "graphql/pagination",
+              "graphql/search-syntax",
+              "graphql/errors",
+              "graphql/versioning",
+              "graphql/changelog"
+            ]
+          },
+          {
+            "group": "Audit runs: queries",
+            "pages": [
+              "graphql/queries/audit-finding",
+              "graphql/queries/audit-report"
+            ]
+          },
+          {
+            "group": "Audit runs: objects",
+            "pages": [
+              "graphql/objects/access",
+              "graphql/objects/audit-finding-document",
+              "graphql/objects/audit-health",
+              "graphql/objects/audit-ref",
+              "graphql/objects/audit-report-document",
+              "graphql/objects/audit-report-info",
+              "graphql/objects/audit-summary",
+              "graphql/objects/audit-tenant",
+              "graphql/objects/audit-window",
+              "graphql/objects/category",
+              "graphql/objects/category-counts",
+              "graphql/objects/category-ref",
+              "graphql/objects/check-counts",
+              "graphql/objects/check-ref",
+              "graphql/objects/conclusion",
+              "graphql/objects/diagnosis",
+              "graphql/objects/event-actor",
+              "graphql/objects/evidence",
+              "graphql/objects/evidence-check",
+              "graphql/objects/finding",
+              "graphql/objects/finding-counts",
+              "graphql/objects/finding-event",
+              "graphql/objects/finding-record",
+              "graphql/objects/finding-status",
+              "graphql/objects/finding-summary",
+              "graphql/objects/fix",
+              "graphql/objects/fix-verify",
+              "graphql/objects/money",
+              "graphql/objects/money-source",
+              "graphql/objects/oldest-open",
+              "graphql/objects/source-health",
+              "graphql/objects/statement",
+              "graphql/objects/statement-check",
+              "graphql/objects/statement-ref",
+              "graphql/objects/system-count"
+            ]
+          },
+          {
+            "group": "Reconciliation results: queries",
+            "pages": [
+              "graphql/queries/reconciliation-result",
+              "graphql/queries/reconciliation-results"
+            ]
+          },
+          {
+            "group": "Reconciliation results: objects",
+            "pages": [
+              "graphql/objects/page-info",
+              "graphql/objects/reconciliation-result",
+              "graphql/objects/reconciliation-result-connection",
+              "graphql/objects/reconciliation-result-edge"
+            ]
+          },
+          {
+            "group": "Enums and scalars",
+            "pages": [
+              "graphql/enums/reconciliation-result-sort-key",
+              "graphql/scalars/boolean",
+              "graphql/scalars/date-time",
+              "graphql/scalars/decimal",
+              "graphql/scalars/id",
+              "graphql/scalars/int",
+              "graphql/scalars/string"
+            ]
+          }
+        ]
+      },
+      {
         "tab": "Engineering",
         "groups": [
           {
