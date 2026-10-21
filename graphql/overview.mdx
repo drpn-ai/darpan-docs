@@ -12,6 +12,10 @@ The GraphQL API is Darpan's external, read-only API. An API key belongs to one t
 | Authentication | An API key in the `Authorization: Bearer dgql_…` header. See [Authentication](/graphql/authentication) |
 | Operations | Queries only. A mutation is rejected |
 
+<Note>
+The audit queries (`auditReport`, `auditFinding`) and API key rotation arrive on an instance with its next Darpan release. Until then, `GET /rest/s1/graphql/sdl` on your instance shows exactly what it serves.
+</Note>
+
 ## What you can read
 
 - [`auditReport`](/graphql/queries/audit-report): one audit's report for one morning. Whether the checks can be trusted, what is open, and every statement by category with its checks and findings.
