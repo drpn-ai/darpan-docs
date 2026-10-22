@@ -84,6 +84,11 @@ type AuditReportDocument {
   about: String
   "The four categories, each holding its statements and their findings."
   categories: [Category!]!
+  "One of the four categories by its id; null for an id that is not one of them."
+  category(
+    "The category id: orders, refundsAndCredits, returns or exchangesAndWarranty."
+    id: String!
+  ): Category
   "Whether this morning's reads and checks can be trusted."
   health: AuditHealth
   "Which tenant and audit, which morning, which days were read, and which period."
@@ -156,6 +161,11 @@ type Category {
   id: String
   "The category's display name, e.g. \"Refunds and credits\"."
   label: String
+  "One statement of this category by its id; null when the category has no statement with that id."
+  statement(
+    "The statement id in the tenant's catalog, e.g. R8."
+    id: String!
+  ): Statement
   "Every catalog statement in this category; [] only when the tenant has none in it."
   statements: [Statement!]!
 }

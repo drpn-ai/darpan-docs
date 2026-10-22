@@ -13,6 +13,7 @@ One audit's report for one morning (darpan.audit.report/v1): whether the checks 
 |---|---|---|
 | `about` | [`String`](/graphql/scalars/string) | One sentence saying what this report covers for this tenant. |
 | `categories` | [`[Category!]!`](/graphql/objects/category) | The four categories, each holding its statements and their findings. |
+| `category`<br/>`id` | [`Category`](/graphql/objects/category) | One of the four categories by its id; null for an id that is not one of them. |
 | `health` | [`AuditHealth`](/graphql/objects/audit-health) | Whether this morning's reads and checks can be trusted. |
 | `report` | [`AuditReportInfo`](/graphql/objects/audit-report-info) | Which tenant and audit, which morning, which days were read, and which period. |
 | `schema` | [`String`](/graphql/scalars/string) | The document type and major version, always `darpan.audit.report/v1`. |
