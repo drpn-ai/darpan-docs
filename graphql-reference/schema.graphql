@@ -105,13 +105,11 @@ type AuditReportInfo {
   audit: AuditRef
   "The morning this report describes: the day the scheduled checks ran."
   date: String
-  "The last morning an ended period keeps running. After the period ends, users choose whether it continues; meanwhile the next period's audit starts."
-  extendedThru: String
   "When the assembler built this document."
   generatedAt: String
   "Which period's run this report describes. Each period of an audit is its own run and report; by default the period `date` falls in."
   period: String
-  "Whether this period's audit still runs on `date`: inside the period, or after it while a user's extension covers `date`."
+  "Whether `date` falls inside this period, so its audit still runs that morning."
   running: Boolean
   "Which tenant this report is for."
   tenant: AuditTenant

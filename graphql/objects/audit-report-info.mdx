@@ -13,10 +13,9 @@ Which tenant and audit, which morning, which days were read, and which period.
 |---|---|---|
 | `audit` | [`AuditRef`](/graphql/objects/audit-ref) | Which audit this report is for. |
 | `date` | [`String`](/graphql/scalars/string) | The morning this report describes: the day the scheduled checks ran. |
-| `extendedThru` | [`String`](/graphql/scalars/string) | The last morning an ended period keeps running. After the period ends, users choose whether it continues; meanwhile the next period's audit starts. |
 | `generatedAt` | [`String`](/graphql/scalars/string) | When the assembler built this document. |
 | `period` | [`String`](/graphql/scalars/string) | Which period's run this report describes. Each period of an audit is its own run and report; by default the period `date` falls in. |
-| `running` | [`Boolean`](/graphql/scalars/boolean) | Whether this period's audit still runs on `date`: inside the period, or after it while a user's extension covers `date`. |
+| `running` | [`Boolean`](/graphql/scalars/boolean) | Whether `date` falls inside this period, so its audit still runs that morning. |
 | `tenant` | [`AuditTenant`](/graphql/objects/audit-tenant) | Which tenant this report is for. |
 | `window` | [`AuditWindow`](/graphql/objects/audit-window) | The days the checks read. |
 
