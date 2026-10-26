@@ -18,7 +18,6 @@ Cut together with app `v3.1.0`, `darpan-hotwax v0.10.0`, `netsuite-darpan v0.4.0
 - **Older findings close on their own.** Each morning re-checks open findings by key, so a finding fixed in its own system closes without a full re-read. **Resolve** re-checks one finding now.
 - **Audits from the app.** Create an audit and its statements, add checks (a SuiteQL query with a preview, the run's sides and its conclusions), play it over chosen days, and change its schedule and settings.
 - **Digests.** Daily and weekly audit digests to a chat space or by email, set up by a Darpan administrator.
-- **Forgot password.** Sign-in offers a reset by emailed code, and settings keep a recovery email.
 - **Rules.** "requires" and "required by" for one-way presence rules; "is more than" and "within hours" in conclusions; starts-with source filters.
 - **NetSuite settings.** An auth profile opens a details page with its endpoints, connection diagnostics and delete.
 - **Faster HotWax reads.** Every HotWax read uses GraphQL, reads of the same days are shared between checks, and calls are paced to HotWax's cost limit. A full month's audit runs about a fifth faster.
@@ -30,7 +29,7 @@ Cut together with app `v3.1.0`, `darpan-hotwax v0.10.0`, `netsuite-darpan v0.4.0
 - A scheduled run's extracts report how many records they have read, and Cancel run stops an automation mid-extract.
 - A failed extract fails its run and is retried, rather than reporting the window as empty.
 - Each outbound request to HotWax, NetSuite and Shopify writes one INFO log line (`oms gql call`, `oms rest call`, `netsuite call`, `shopify gql call`).
-- Password reset and audit digests send from `support@drpn.ai` (override with `DARPAN_MAIL_FROM`); the SYSTEM email server needs an `smtpHost`.
+- Audit digests send from `support@drpn.ai` (override with `DARPAN_MAIL_FROM`); the SYSTEM email server needs an `smtpHost`.
 
 **API**
 
