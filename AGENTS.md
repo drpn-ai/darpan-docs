@@ -4,19 +4,17 @@
 
 - This is the Mintlify documentation site for Darpan.
 - Pages are MDX files with YAML frontmatter.
-- Navigation, branding, and API generation live in `docs.json`.
+- Navigation, branding, and redirects live in `docs.json`.
+- This site is for people who use Darpan: product docs and release notes. Technical material (GraphQL API, self-hosting, backend and frontend engineering) goes to `drpn-ai/darpan-developers` (developers.drpn.ai); link to it with absolute `https://developers.drpn.ai/...` URLs.
 - Run `mint dev` to preview locally.
 - Run `mint broken-links` and `mint validate` before publishing broad changes.
-- If the Mintlify CLI is not available, validate JSON with `jq empty docs.json api-reference/openapi.json`.
+- If the Mintlify CLI is not available, validate JSON with `jq empty docs.json`.
 
 ## Content boundaries
 
 - Public product docs should explain Darpan workflows without exposing credentials, tenant data, private URLs, or customer-specific secrets.
-- Engineering docs may explain repo structure, workflow rules, and implementation patterns, but must stay safe for a public repo.
 - Do not publish copied customer data, API tokens, cookies, Postman environments, private Linear details, or live credentials.
 - Prefer linking to public GitHub repositories over pasting long source excerpts.
-- Keep API docs honest: document the current JSON-RPC service shape until a fuller generated OpenAPI catalog exists.
-- Backend engine docs must be grounded in the Darpan Moqui component at `<moqui-framework>/runtime/component/darpan`. Do not present developer-local checkout folder names as official product or repository names. Prefer current XML services, entities, facade contracts, Spark/Drools processing, and tenant-scoped output behavior over aspirational architecture.
 
 ## Terminology
 
@@ -26,7 +24,6 @@
 - Use "connection" for SFTP, NetSuite, AI provider, and similar external setup records.
 - Use "active company" or "active tenant" only when discussing scoped data access.
 - Use "RuleSet" when referring to the rules-backed reconciliation model.
-- Use "JSON-RPC" for the backend `/rpc/json` integration surface.
 
 ## Style preferences
 

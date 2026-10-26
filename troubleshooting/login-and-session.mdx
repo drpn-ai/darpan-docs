@@ -64,7 +64,7 @@ Read the failing call's own response body rather than the probe or the HTTP stat
 
 `/rpc/json` dispatches only `facade.*`, `admin.*` and `gql.*` methods. Any other method, such as a stock Moqui service like `org.moqui.impl.UserServices.update#Password`, gets HTTP 403 before dispatch, signed in or not, and so does every batch that contains one. The framework's `/rest/login` endpoint also answers 403.
 
-- Call the published method instead. The list is in the [Service catalog](/api-reference/service-catalog).
+- Call a `facade.*`, `admin.*` or `gql.*` method instead.
 - Sign in with `facade.AuthFacadeServices.login#Session`, not `/rest/login`.
 
 A 403 here is not a session problem: signing in again does not change it.

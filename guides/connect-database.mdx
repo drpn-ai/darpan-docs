@@ -20,7 +20,6 @@ Confirm:
 - The database is reachable from the Darpan deployment, and you have a username and password for it.
 - You have a read-only account. Darpan only ever issues `SELECT`, but a read-only credential means a mistake in a query cannot become a mistake in your database.
 - You know which TLS posture the server needs, and have the CA certificate in PEM form if the server requires verifying one.
-- You can call the Darpan API. See the [API quickstart](/api-reference/quickstart).
 
 ## Create the connection
 
@@ -94,7 +93,7 @@ Use them for anything scheduled. A query with no window re-reads the whole table
 
 ## Use it in a run
 
-A run side reads from a database when its source has `sourceConfigType` `DATABASE_QUERY` and the saved query's `databaseSourceQueryId` as its `sourceConfigId`. Set that up through the saved-run and automation methods in the [service catalog](/api-reference/service-catalog), or ask an operator. Both sides of a run may be database sources, for example two instances with the same schema and a different `SELECT` per side.
+A run side reads from a database when its source has `sourceConfigType` `DATABASE_QUERY` and the saved query's `databaseSourceQueryId` as its `sourceConfigId`. Ask an operator to set that up. Both sides of a run may be database sources, for example two instances with the same schema and a different `SELECT` per side.
 
 From there it behaves like any other API-backed source: it runs on the automation's date window, and the window fills `:windowStart` and `:windowEnd`.
 

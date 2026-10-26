@@ -27,17 +27,6 @@ Tenant Admins should confirm the active tenant before saving settings, connectio
 
 Examples use placeholders for usernames, passwords, session cookies, login keys, CSRF tokens, and sensitive auth artifacts.
 
-## API calls
-
-Backend JSON-RPC calls usually require:
-
-- For the browser app: an authenticated session cookie and a valid `X-CSRF-Token`
-- For integration callers: a `login_key` header instead of the cookie and CSRF token
-- Permission for the target service
-- A method in the `facade.*`, `admin.*` or `gql.*` namespace. Any other method is refused with HTTP 403 before dispatch, signed in or not. See [JSON-RPC](/api-reference/json-rpc#allowed-methods).
-
-The framework's `/rest/login` endpoint is closed (HTTP 403). Sign in with `login#Session`.
-
 ## Session lifecycle
 
 - Sign-in: `login#Session` returns a login-key token and also sets the HttpOnly `darpan_login_key` cookie. Read `authenticated` in the result to know whether a session exists.
@@ -46,7 +35,3 @@ The framework's `/rest/login` endpoint is closed (HTTP 403). Sign in with `login
 - Sign-out: `logout#Session` revokes the token on the current request (header or cookie) and ends only that session. `logout#AllSessions` revokes every login key for the user, which signs them out on every device.
 - Password: `verify#OwnPassword` checks the current password without changing anything. `change#OwnPassword` changes it for a signed-in user. When sign-in reports `passwordChangeRequired`, use `change#ExpiredPassword`, which needs no session; then sign in again.
 - Active tenant: the active tenant is stored as a preference on the user, not on the session. Switching tenant with `save#ActiveTenant` changes it for every session of that user, including other browser tabs. Give integrations their own user rather than sharing a login with a browser user.
-
----
-
-For backend API authentication details, see [JSON-RPC reference](/api-reference/json-rpc). For a worked sign-in, call, and sign-out, see [API quickstart](/api-reference/quickstart).

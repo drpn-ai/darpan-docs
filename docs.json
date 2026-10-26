@@ -69,7 +69,8 @@
               "reference/schema-model",
               "reference/composite-matching-keys",
               "reference/reconciliation-runs",
-              "reference/glossary"
+              "reference/glossary",
+              "reference/auth-and-access"
             ]
           },
           {
@@ -80,176 +81,6 @@
               "troubleshooting/connections",
               "troubleshooting/reconciliation-runs",
               "troubleshooting/automations-and-alerts"
-            ]
-          }
-        ]
-      },
-      {
-        "tab": "Run it yourself",
-        "groups": [
-          {
-            "group": "Local & self-host",
-            "pages": [
-              "getting-started/set-up-darpan-independently",
-              "getting-started/environments",
-              "getting-started/self-host-production",
-              "troubleshooting/local-dev-setup"
-            ]
-          }
-        ]
-      },
-      {
-        "tab": "API reference",
-        "groups": [
-          {
-            "group": "Overview",
-            "pages": [
-              "api-reference/overview",
-              "api-reference/quickstart",
-              "api-reference/json-rpc",
-              "api-reference/errors",
-              "api-reference/service-catalog",
-              "reference/auth-and-access",
-              "api-reference/changelog"
-            ]
-          },
-          {
-            "group": "Generated reference",
-            "openapi": {
-              "source": "api-reference/openapi.json",
-              "directory": "api-reference/generated"
-            }
-          }
-        ]
-      },
-      {
-        "tab": "GraphQL API",
-        "groups": [
-          {
-            "group": "Guides",
-            "pages": [
-              "graphql/overview",
-              "graphql/authentication",
-              "graphql/cost-and-throttling",
-              "graphql/pagination",
-              "graphql/search-syntax",
-              "graphql/errors",
-              "graphql/versioning",
-              "graphql/changelog"
-            ]
-          },
-          {
-            "group": "Audit runs: queries",
-            "pages": [
-              "graphql/queries/audit-finding",
-              "graphql/queries/audit-report"
-            ]
-          },
-          {
-            "group": "Audit runs: objects",
-            "pages": [
-              "graphql/objects/access",
-              "graphql/objects/audit-finding-document",
-              "graphql/objects/audit-health",
-              "graphql/objects/audit-ref",
-              "graphql/objects/audit-report-document",
-              "graphql/objects/audit-report-info",
-              "graphql/objects/audit-summary",
-              "graphql/objects/audit-tenant",
-              "graphql/objects/audit-window",
-              "graphql/objects/category",
-              "graphql/objects/category-counts",
-              "graphql/objects/category-ref",
-              "graphql/objects/check-counts",
-              "graphql/objects/check-ref",
-              "graphql/objects/conclusion",
-              "graphql/objects/diagnosis",
-              "graphql/objects/event-actor",
-              "graphql/objects/evidence",
-              "graphql/objects/evidence-check",
-              "graphql/objects/finding",
-              "graphql/objects/finding-counts",
-              "graphql/objects/finding-event",
-              "graphql/objects/finding-record",
-              "graphql/objects/finding-status",
-              "graphql/objects/finding-summary",
-              "graphql/objects/fix",
-              "graphql/objects/fix-verify",
-              "graphql/objects/money",
-              "graphql/objects/money-source",
-              "graphql/objects/oldest-open",
-              "graphql/objects/source-health",
-              "graphql/objects/statement",
-              "graphql/objects/statement-check",
-              "graphql/objects/statement-ref",
-              "graphql/objects/system-count"
-            ]
-          },
-          {
-            "group": "Reconciliation results: queries",
-            "pages": [
-              "graphql/queries/findings",
-              "graphql/queries/reconciliation-result",
-              "graphql/queries/reconciliation-results"
-            ]
-          },
-          {
-            "group": "Reconciliation results: objects",
-            "pages": [
-              "graphql/objects/finding-list-item",
-              "graphql/objects/finding-list-item-connection",
-              "graphql/objects/finding-list-item-edge",
-              "graphql/objects/page-info",
-              "graphql/objects/reconciliation-result",
-              "graphql/objects/reconciliation-result-connection",
-              "graphql/objects/reconciliation-result-edge"
-            ]
-          },
-          {
-            "group": "Enums and scalars",
-            "pages": [
-              "graphql/enums/finding-list-item-sort-key",
-              "graphql/enums/reconciliation-result-sort-key",
-              "graphql/scalars/boolean",
-              "graphql/scalars/date-time",
-              "graphql/scalars/decimal",
-              "graphql/scalars/id",
-              "graphql/scalars/int",
-              "graphql/scalars/string"
-            ]
-          }
-        ]
-      },
-      {
-        "tab": "Engineering",
-        "groups": [
-          {
-            "group": "Backend engine",
-            "pages": [
-              "backend/overview",
-              "backend/component-layout",
-              "backend/service-layer",
-              "backend/reconciliation-engine",
-              "backend/rules-and-schemas",
-              "backend/data-access-and-tenancy",
-              "backend/migrations",
-              "backend/operations-and-validation"
-            ]
-          },
-          {
-            "group": "Frontend app",
-            "pages": [
-              "engineering/frontend-pwa-philosophy",
-              "engineering/frontend-design-system"
-            ]
-          },
-          {
-            "group": "Engineering workflow",
-            "pages": [
-              "engineering/overview",
-              "engineering/process",
-              "engineering/repo-map",
-              "engineering/release-discipline"
             ]
           }
         ]
@@ -301,6 +132,10 @@
   "navbar": {
     "links": [
       {
+        "label": "Developers",
+        "href": "https://developers.drpn.ai"
+      },
+      {
         "label": "Back to website",
         "href": "https://drpn.ai"
       }
@@ -322,5 +157,39 @@
       "cursor",
       "vscode"
     ]
-  }
+  },
+  "redirects": [
+    {
+      "source": "/getting-started/set-up-darpan-independently",
+      "destination": "https://developers.drpn.ai/self-host/set-up-darpan-independently"
+    },
+    {
+      "source": "/getting-started/environments",
+      "destination": "https://developers.drpn.ai/self-host/environments"
+    },
+    {
+      "source": "/getting-started/self-host-production",
+      "destination": "https://developers.drpn.ai/self-host/production"
+    },
+    {
+      "source": "/troubleshooting/local-dev-setup",
+      "destination": "https://developers.drpn.ai/self-host/troubleshooting"
+    },
+    {
+      "source": "/graphql/:slug*",
+      "destination": "https://developers.drpn.ai/graphql/:slug*"
+    },
+    {
+      "source": "/backend/:slug*",
+      "destination": "https://developers.drpn.ai/backend/:slug*"
+    },
+    {
+      "source": "/engineering/:slug*",
+      "destination": "https://developers.drpn.ai/engineering/:slug*"
+    },
+    {
+      "source": "/api-reference/:slug*",
+      "destination": "https://developers.drpn.ai/graphql/overview"
+    }
+  ]
 }

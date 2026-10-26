@@ -1,6 +1,6 @@
 ---
 title: "Darpan documentation"
-description: "Product, API, backend, release, and engineering docs for Darpan."
+description: "Product docs and release notes for Darpan."
 ---
 
 Darpan is a reconciliation workspace. It connects source systems, describes source data with schemas, executes reconciliation runs, applies RuleSets, and preserves the output needed to explain each difference.
@@ -89,38 +89,16 @@ Most of the work in Darpan is front-loaded: connections, schemas, and a saved ru
   </Card>
 </Columns>
 
-## Run Darpan yourself
+## More
 
 <Columns cols={2}>
-  <Card title="Independent setup" icon="route" href="/getting-started/set-up-darpan-independently">
-    Clone repositories, install dependencies, start the local stack, and verify sign-in.
-  </Card>
-  <Card title="Environments" icon="layer-group" href="/getting-started/environments">
-    The contexts Darpan runs in, from local development to the hosted app.
-  </Card>
-  <Card title="Local dev troubleshooting" icon="wrench" href="/troubleshooting/local-dev-setup">
-    Recover from common JDK 21, Spark, and clone failures.
-  </Card>
-</Columns>
-
-## For builders
-
-The engineering docs explain how the product surface maps to the backend engine: Moqui service contracts, tenant-scoped data access, Spark comparison, Drools RuleSets, and generated output.
-
-<Columns cols={2}>
-  <Card title="Backend engine" icon="server" href="/backend/overview">
-    Runtime architecture behind Darpan runs.
-  </Card>
-  <Card title="Engineering workflow" icon="code" href="/engineering/overview">
-    Repo boundaries and verification model used for Darpan development.
-  </Card>
-  <Card title="API reference" icon="terminal" href="/api-reference/overview">
-    Call the JSON-RPC services behind setup, execution, and review.
-  </Card>
   <Card title="Release updates" icon="tag" href="/releases/updates">
     Shipped tags and their major changes.
   </Card>
   <Card title="Troubleshooting" icon="wrench" href="/troubleshooting/login-and-session">
     Login, upload, connection, and run failure checks.
+  </Card>
+  <Card title="Developers" icon="code" href="https://developers.drpn.ai">
+    The GraphQL API, self-hosting, and engineering docs.
   </Card>
 </Columns>

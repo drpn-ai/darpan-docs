@@ -1,6 +1,6 @@
 # Darpan
 
-Mintlify documentation site for Darpan product, API, troubleshooting, and engineering guidance.
+Mintlify site for [docs.drpn.ai](https://docs.drpn.ai): Darpan product docs and release notes for the people who use the app. The GraphQL API, self-hosting, and engineering docs live in [darpan-developers](https://github.com/drpn-ai/darpan-developers) at [developers.drpn.ai](https://developers.drpn.ai).
 
 ## Content model
 
@@ -9,9 +9,7 @@ Mintlify documentation site for Darpan product, API, troubleshooting, and engine
 - `guides/**` holds task-oriented product guides.
 - `reference/**` holds stable product reference material.
 - `troubleshooting/**` captures symptom-first repair paths.
-- `api-reference/**` documents the JSON-RPC API surface and the generated OpenAPI entrypoint.
-- `backend/**` explains the Moqui backend engine, service layer, reconciliation processing, rules, schemas, and tenancy model. These pages appear under the Engineering navigation tab.
-- `engineering/**` captures frontend app architecture, page-surface contracts, repo ownership, implementation workflow, and release guidance that is safe to publish.
+- `releases/**` holds release updates, the roadmap, and the community boards.
 
 ## Local preview
 
@@ -38,11 +36,10 @@ mint broken-links
 mint validate
 ```
 
-If the CLI is not installed, at minimum validate `docs.json` and any OpenAPI JSON:
+If the CLI is not installed, at minimum validate `docs.json`:
 
 ```bash
 jq empty docs.json
-jq empty api-reference/openapi.json
 ```
 
 ## Publishing
@@ -54,7 +51,3 @@ Mintlify deploys from the connected GitHub repository after changes are pushed t
 Darpan uses Ask Darpan as the primary navigation model. Product pages should describe how users move from setup to reconciliation runs and result review.
 
 Connections, schemas, RuleSets, saved runs, and generated outputs are not separate product stories; they are the support structure for setting up, running, and reviewing reconciliation.
-
-Backend docs stay repo-grounded. They describe current Moqui XML services, entities, facade contracts, Spark/Drools processing, and tenant-scoped output behavior from the implementation.
-
-Frontend engineering docs stay repo-grounded too. They describe the current Vue shell, route metadata, static and workflow surfaces, shared CSS contracts, and the present PWA boundary without claiming offline or install behavior before it exists.

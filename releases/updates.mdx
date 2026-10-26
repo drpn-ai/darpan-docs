@@ -3,7 +3,7 @@ title: "Release updates"
 description: "Major Darpan updates grouped by release tag."
 ---
 
-Darpan releases from newest to oldest, with product and operator changes that affect upgrade, validation, or rollback decisions. Only tagged releases appear here. For release principles and review questions, see [Release discipline](/engineering/release-discipline).
+Darpan releases from newest to oldest, with product and operator changes that affect upgrade, validation, or rollback decisions. Only tagged releases appear here. For release principles and review questions, see [Release discipline](https://developers.drpn.ai/engineering/release-discipline).
 
 Version key: headings carry the backend version (`drpn-ai/darpan`); the app (`darpan-ui`) has its own tags, named in each entry: `v2.x` alongside backend `v1.x`, and `v3.x` from backend `v2.0.0`. Backend and app tags are cut together for major and minor releases. A patch can be backend-only or carry an app tag too, as `v1.5.1` did with app `v2.6.1`.
 
@@ -33,7 +33,7 @@ Cut together with app `v3.1.0`, `darpan-hotwax v0.10.0`, `netsuite-darpan v0.4.0
 
 **API**
 
-- Contract version stays `3`: 26 methods are added and none is removed or changed. See the [API changelog](/api-reference/changelog).
+- Contract version stays `3`: 26 methods are added and none is removed or changed.
 - GraphQL: read-only `auditReport`, `auditFinding` and `findings` (search, sort, paging), for agent keys that can be labelled, expired, listed, disabled and rotated.
 
 **Upgrade**
@@ -84,7 +84,7 @@ Cut together with app `v3.0.0`, `darpan-hotwax v0.9.0`, `shopify-darpan v0.7.0`,
 
 **API**
 
-- Contract version stays `3`: 29 public methods are added (86 to 115) and none is removed or changed, plus one operator-only method. See the [API changelog](/api-reference/changelog).
+- Contract version stays `3`: 29 public methods are added (86 to 115) and none is removed or changed, plus one operator-only method.
 - The breaking change for integrations is the method fence above: an integration that calls only published methods needs no change.
 - Run window boundaries in `get#GeneratedOutput` and `get#ReconciliationRunStatus` are ISO-8601 instants with a `timeZone` beside them.
 
@@ -147,7 +147,6 @@ Cut together with app `v2.6.1` and `shopify-darpan v0.6.1`. One section covers t
 - Administrative additions are the seven migration methods, which are not part of the public tenant surface.
 - The one removal: `list#TenantChatSpaces` no longer returns `chatSpaces[].googleChatWebhookUrlMasked`, dropped when chat webhooks moved to clear text — read `chatSpaces[].googleChatWebhookUrl` instead, or the provider-agnostic `chatSpaces[].webhookUrl` and `chatSpaces[].webhookConfigured`. No method was removed.
 - `returnsPageSize` is added to `save#HotWaxOmsRestSourceConfig` and `list#HotWaxOmsRestSourceConfig` as an additional field on existing methods, so integrations need no change for it.
-- See the [API changelog](/api-reference/changelog).
 
 **Before you deploy**
 
