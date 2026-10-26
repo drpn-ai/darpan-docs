@@ -1,0 +1,139 @@
+---
+title: "Audits"
+description: "Write down what must be true about your orders, returns, and refunds, check it every morning, and keep every finding on a ledger until a check sees it fixed."
+---
+
+Month close rarely breaks in one big place. It breaks in many small ones: an order shipped but never invoiced, a return refunded in one system and not the other. An audit lets you write those expectations down once, in plain English, and checks them every morning. Each problem it finds stays on a ledger until a later check sees it fixed, so nothing drops off the list because someone forgot about it.
+
+An audit is a run type. It holds statements, such as "every fulfilled order is invoiced in NetSuite", grouped into categories. Each statement is tested by one or more checks, and each check reads an existing Sync or one-system run. A record that breaks a statement becomes a finding. A finding keeps when it was first found, whether it is still open, when it was fixed, and its history. When the run's conclusions explain it, the finding names its cause, and the check's fix text says what to do.
+
+## Before you start
+
+Confirm:
+
+- You are a Tenant Admin for the active tenant to create an audit, change its settings, run it, or use **Resolve finding**. Anyone with access to the tenant can read it.
+- The runs your checks will read exist, or the connections they need do. See [Set up a reconciliation run](/guides/setup-reconciliation-run).
+
+## Create an audit
+
+<Steps>
+<Step title="Start an audit">
+
+On Home, choose **Create Run**, then answer **What kind of run?** with **Audit**.
+
+</Step>
+<Step title="Name it">
+
+Answer **What is the audit called?**. The name must be unique in the tenant.
+
+</Step>
+<Step title="Pick the period">
+
+Answer **What does one report cover?** with **A day**, **A month**, or **A quarter**, then choose **Create audit**. The audit's settings open, with the box for its first statement ready.
+
+</Step>
+</Steps>
+
+## Add statements
+
+Under **Statements**, choose **New statement**, type what must be true, and pick:
+
+| Field | Options |
+| --- | --- |
+| Category | **Orders**, **Refunds and credits**, **Returns**, or **Exchanges and warranty**. |
+| Weight | **Firm** (the business stated it) or **Derived** (awaiting the business's confirmation). |
+
+Choose **Save statement**, or press Enter. The statement is saved at once and gets the next code. It raises nothing until a check is added to it.
+
+## Add a check
+
+Under a statement, choose **Add check**:
+
+| Field | Sets |
+| --- | --- |
+| **Run** | The run the check reads. **New run** and **New one-system run** open Create Run to build one. |
+| **Name**, **Check ID** | The check's name. The ID follows the name until you edit it. |
+| **Statements** | The statements this check tests and, for each, which of the run's rows break it: **Missing in** *system*, **Field mismatch**, **Finding**, or **Duplicate in** *system*. With **Field mismatch**, you can narrow to the run's rules; with **Finding** or **Missing in**, to the run's conclusions. **Add statement** links one more. |
+| *System* **record** | The kind of record on each side, filled from the run. |
+| **Matched by** | How the run pairs records, filled from the run's keys. |
+| **Grace days** | How long a new finding stays **Pending** before it counts as **Open** (0 to 60). |
+| **Fix owner**, **Fix where** | Who fixes a finding, and in which system. |
+| **Money** | Optional. The currency, and where the expected and actual amounts come from, so a finding shows the gap. |
+| **Headline**, **Fix action**, **Passes when** | The words a finding reads with. `{name}` puts in the finding's field of that name. A blank headline reads as the record and the check's name. |
+
+Choose **Save check**. The check is saved on its own; the settings page's **Save** is not needed for it.
+
+What a check can find is set by its run. A NetSuite side can read a SuiteQL query you write and **Preview** for one day before saving it; see [Write a SuiteQL query](/guides/connect-netsuite#write-a-suiteql-query). The causes a finding names come from the run's conclusions; see [Edit a run's conclusions](/guides/review-results#edit-a-runs-conclusions). On the settings page, select a check's name to open its run's rules.
+
+## Run it and schedule it
+
+Choose the play icon (**Run audit**) beside the audit's name, answer **Which days should this run look at?** with **Previous Day**, **Previous Week**, **Previous Month**, or **Custom Dates**, then choose **Run**. Days before the audit's open period, and days after today, are not offered. Every check runs in the background, and findings arrive as each one finishes.
+
+<Warning>
+The first run creates the automations behind the audit's checks paused, at 06:00 in the tenant's time zone. The audit does not run every morning until you turn its schedule on.
+</Warning>
+
+To schedule it, choose the gear (**Audit settings**). Under **Schedule**, turn **Daily** on, set **Time** and **Timezone** (the tenant's time zone by default), and choose **Save**. One schedule covers every check; when they differ, the page says **Checks run at different times; a change here sets them all.** Turning **Daily** off pauses every check; their findings stay.
+
+The same page renames the audit, edits a statement's wording, and turns a statement off. A statement turned off is left out from the next run, and its findings so far stay on record.
+
+## Read the audit page
+
+Home lists each audit under **Audit**. The page shows the audit's period and dates, then today's line: new, fixed today, and the oldest open finding. The board takes the full width of the screen.
+
+| Toolbar | Does |
+| --- | --- |
+| **open**, **pending**, **unchecked**, **all** | Counts that filter the board. A finding is pending inside its check's grace days and open after them. **unchecked** lists statements no check has run for. |
+| **Order or record id** | Searches findings. |
+| **Any cause** | Keeps findings with one cause. |
+| **Any age** | Keeps findings at least **1 day+**, **7 days+**, or **30 days+** old. |
+| Period | On a monthly audit, the current month and the two before it. |
+
+Below the toolbar, the board drills down from left to right, with the path above it (audit › category › statement › finding). On a phone it shows one column at a time.
+
+| Column | Shows |
+| --- | --- |
+| Categories | **Run health** first, then each category with its open and pending counts. |
+| **Statements** | Each statement in the category, with its count. |
+| **Findings** | The statement's findings, each with its state and age. Findings on one order share a row; the rest are grouped under their cause. **N more** loads past the first 50. |
+| Detail | The open finding. With none open, the statement: each check's status (**Ran**, **Partial**, **Not run**), how many records each system read, **Matched by**, **Grace**, and **Read**. |
+
+**Run health** says whether the morning's checks are **Complete**, what each system read, and which statements are **Not covered** by any check.
+
+A finding reads verdict first. Its state (**Open**, **Pending**, **Fixed**) and statement come first, then what is wrong, **Stuck on** (what holds it up), and **Do this** (the fix, with its owner). Under that, one card per system and order shows each record's id and status, with the system the fix is in outlined. An order lists its **Lines**, and the details a person searches by follow: customer, dates, channel, totals, deposits. **Evidence** shows only when no conclusion explains the finding. **History** lists when it was found, still open, fixed, or reopened.
+
+| Export | Where | Saves |
+| --- | --- | --- |
+| **Export report** | Beside the audit's name | The morning's report, as JSON. |
+| **Export findings** | Findings column | Every finding of the statement under the picked filter, each with its order. |
+| **Export finding** | Open finding | The finding, as JSON. |
+| **Export** *system* **extract** | A check, in the statement detail | What that system's read wrote that morning. |
+
+## Resolve a finding
+
+You fixed the record and would rather not wait for tomorrow. **Resolve finding** re-checks one finding's record now; on an order, it re-checks the line holding the order up. Only that record is read, from each system by key. The finding then closes (**Resolved. The finding is closed.**) or stays open with today's cause (**Still open. The cause above is from this check.**). Resolve does not count as a check run, so **Run health** does not change.
+
+Resolve needs the check's automation, so run the audit once first.
+
+## How findings close
+
+A fix counts when a check sees it, not when someone says so. HotWax is read only from a check's last complete read, not across the whole period every morning, so a check that reads HotWax also reads its older open findings again by key, on both sides. A finding fixed in its own system closes on the next run without the whole period being read again. There is no control that marks a finding fixed by hand.
+
+## Digests
+
+An audit can send a daily or weekly digest to a chat space, by email, or both, at a set time in the tenant's time zone. A daily digest gives open, pending, new today, and fixed today, with the open and pending count per category. A weekly digest compares open and pending with a week before. When a morning's checks are not complete, the digest says why.
+
+Digests are set up by a Darpan administrator; there is no screen for them in the app. Ask your Darpan administrator to add one.
+
+## Read audits over the API
+
+The same report and findings the page shows are available read-only over GraphQL:
+
+- [GraphQL API overview](/graphql/overview): endpoint, API keys, and what you can read.
+- [`auditReport`](/graphql/queries/audit-report): an audit's report for one morning.
+- [`auditFinding`](/graphql/queries/audit-finding): one finding with its records, evidence, fix, and history.
+- [`findings`](/graphql/queries/findings) and [Search syntax](/graphql/search-syntax): every finding, filtered.
+
+## Next step
+
+To build a run a check can read, see [Set up a reconciliation run](/guides/setup-reconciliation-run). To follow NetSuite records through their stages instead, see [Lifecycle runs](/guides/lifecycle-runs).

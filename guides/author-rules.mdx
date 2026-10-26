@@ -45,6 +45,8 @@ The **Ruleset Manager** offers these comparison operators:
 | `<` | The file 1 value is less than the file 2 value. |
 | `>=` | The file 1 value is greater than or equal to the file 2 value. |
 | `<=` | The file 1 value is less than or equal to the file 2 value. |
+| `requires` | One-way presence: when the file 1 value is `Y`, the file 2 value must be `Y` too. A file 1 `N` passes whatever file 2 says. |
+| `required by` | The reverse of `requires`: when the file 2 value is `Y`, the file 1 value must be `Y` too. |
 
 ### Pre-actions
 
@@ -106,7 +108,7 @@ Back in the **Ruleset Manager**, confirm the rule list reflects every comparison
 Some records should never be compared, for example a channel or status that one system carries and the other does not. A filter on a field either drops the values you list or keeps only them.
 
 1. On the rules board, double-click a field pill on the side the records come from, or focus it and press Enter.
-2. Choose the mode: **Exclude these values** or **Only these values**. A new filter opens on **Exclude these values**.
+2. Choose the mode: **Exclude these values**, **Only these values** or **Only values starting with**. A new filter opens on **Exclude these values**.
 3. Type a value and press Enter. Repeat for each value.
 4. Choose **Save filter**. The pill shows `≠` for an exclude filter and `=` for an only-these filter. The trash icon in the same popup deletes it.
 5. Choose **Save** in the editor to store it with the rules.
@@ -115,6 +117,7 @@ Some records should never be compared, for example a channel or status that one 
 | --- | --- | --- |
 | **Exclude these values** | Every record whose value is not listed. | Kept. |
 | **Only these values** | Only records whose value is listed. | Left out. |
+| **Only values starting with** | Only records whose value starts with one of the listed values. | Left out. |
 
 Filters apply when the records are extracted, before matching and before any rule runs. A filter removes records from its own side only: if the same records exist in the other system, filter them there too, or they report as missing from this side. Filters work only on API sources whose connector supports filtering. On a file upload, or a source that cannot filter, the board says so instead of opening the editor.
 

@@ -85,7 +85,7 @@ Where both sides are the same system, run results label each side by its source 
 
 A run can also check a single system and report the rows that answer a question, for example "which NetSuite orders were never billed?". It has no second side, and its result shows one **Findings** bucket.
 
-The Sync flow does not build one. A one-system run is created through the API (`facade.ReconciliationFacadeServices.create#RuleSetRun` with `scopeMode` set to `EVALUATE`) or from run configuration data. Once it exists, it opens, runs, and shows results in the app like any other run, and Home files it under the one system it checks. One-system NetSuite runs can be turned into a run flowchart with **Import NetSuite Checks**; see [Lifecycle runs](/guides/lifecycle-runs#import-netsuite-checks).
+**Create Run** on Home does not offer one. To build one in the app, choose **New one-system run** while adding a check to an audit (see [Audits](/guides/audits#add-a-check)): the run builder opens with a single side. It can also be created through the API (`facade.ReconciliationFacadeServices.create#RuleSetRun` with `scopeMode` set to `EVALUATE`). Once it exists, it opens, runs, and shows results in the app like any other run, and Home files it under the one system it checks. One-system NetSuite runs can be turned into a run flowchart with **Import NetSuite Checks**; see [Lifecycle runs](/guides/lifecycle-runs#import-netsuite-checks).
 
 ## Choosing an API endpoint
 

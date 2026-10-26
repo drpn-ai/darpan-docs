@@ -15,6 +15,8 @@ Check:
 - Connection records were reachable.
 - The run or support logs show the first processing error, not only the final failure.
 
+A scheduled run whose source read fails ends failed and is retried. It does not report the window as having no data, so an empty result means the source had nothing to read.
+
 ## A run refuses to start
 
 A run that was archived, or switched off with `facade.ReconciliationFacadeServices.disable#SavedRun`, refuses to start, from the app and from a schedule alike. `enable#SavedRun` and `restore#SavedRun` bring it back; the app has no control for either.

@@ -6,7 +6,7 @@ description: "Save the NetSuite auth profiles and endpoints Darpan stores for a 
 NetSuite involves more moving parts than most connections: account IDs, role permissions, integration records, certificates. Confirming these with the NetSuite owner before you start means a failure gives you a useful error instead of a dead end.
 
 <Note>
-Runs read NetSuite over SuiteQL with an **OAuth2 M2M JWT** auth profile. A [lifecycle](/guides/lifecycle-runs) reads the account directly: you pick the account and Darpan builds its queries. A Sync run reads NetSuite through a saved NetSuite check, which defines the records to read. The app has no screen for creating checks; they are saved through the API (`facade.NetSuiteQueryFacadeServices.save#NsSuiteQlSourceQuery`). Otherwise, export the data and use a **File upload** source when you [set up a reconciliation run](/guides/setup-reconciliation-run).
+Runs read NetSuite over SuiteQL with an **OAuth2 M2M JWT** auth profile. A [lifecycle](/guides/lifecycle-runs) reads the account directly: you pick the account and Darpan builds its queries. A Sync run reads NetSuite through a saved NetSuite query, which defines the records to read; you can [write one from Create Run](#write-a-suiteql-query). Otherwise, export the data and use a **File upload** source when you [set up a reconciliation run](/guides/setup-reconciliation-run).
 </Note>
 
 ## Before you start
@@ -43,9 +43,33 @@ For OAuth 2.0, the **Client ID** comes from the NetSuite integration record and 
 
 Secrets are write-only on edit: leave the password, token, or private key blank to keep the stored value.
 
+## Open an auth profile
+
+Choose a profile under **Auth** to open its details page: its settings, the **Endpoints** that use it, and **Create Endpoint** to add one.
+
+- **Run connection diagnostics** checks an OAuth 2.0 profile from outside the run: Darpan asks NetSuite for a token and runs a one-row SuiteQL query, then lists each check with its result. Nothing is written to NetSuite.
+- **Delete NetSuite auth profile** (the trash button) removes the profile after you confirm. Darpan refuses while anything still signs in with it (an endpoint, a NetSuite query, or a saved run) and names what is in the way. Only the owning tenant can delete a profile, and only while it is not shared.
+
 ## Create an endpoint
 
 Choose **Create Endpoint** and answer the setup questions: the endpoint URL, the HTTP method (**POST**, **PUT**, or **GET**), the auth profile it uses, optional headers as JSON, connect and read timeouts in seconds, whether it is active, a label, and a name or ID.
+
+## Write a SuiteQL query
+
+A Sync run's NetSuite side reads the records a saved query selects. When you set up the run in **Create Run**, the NetSuite config card offers **New query**; the query you save there comes back to the run you were building.
+
+The query setup asks, one question at a time:
+
+| Question | What you choose |
+| --- | --- |
+| **Which NetSuite account should this query read?** | An auth profile. |
+| **What should the query ID be?** and **What label should Darpan show for this query?** | Its name. |
+| **Which record type?** | The NetSuite record type to read. |
+| **Which date puts a record on a day?** | The date column the run's window applies to. |
+| **Every record, or only matching ones?** | All records of that type, or only those matching rules you add (**Add match rule**). |
+| **Which columns should it read?** | The fields the run compares (**Add column**). |
+| **Which field is the key?** | The field that matches a NetSuite record to the other side. |
+| **Preview, then save.** | Pick a day and choose **Preview** to see the first rows NetSuite returns and the SuiteQL Darpan sent. Nothing is saved until you save. |
 
 ## Share with another tenant
 

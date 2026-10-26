@@ -107,6 +107,12 @@ Each automation stores its own timezone, and its schedule and date window run in
 
 To correct a wrong zone, edit the automation and pick the right one in **Timezone** on the schedule card. An edit you leave untouched saves the zone it loaded, so opening and saving an automation never moves it. Do not work around a wrong zone by shifting the clock hour: the window boundaries stay in the old zone.
 
+## Watch a run, or stop it
+
+An automation's run opens on its result page while it is still going. Each stage appears as it starts, and a stage that is reading a source shows how many records it has read so far, so a long read shows its progress rather than looking stuck.
+
+**Cancel run** stops it. Confirm, and the button reads **Stopping run…** until the run reaches its next checkpoint, which can be in the middle of a read. The run ends cancelled, not failed.
+
 ## Delete an automation
 
 The trash icon on an automation's dashboard, **Delete automation**, archives the automation. It asks for confirmation, leaves the automation list, and never fires again, scheduled or otherwise. Nothing is deleted: its source setup and execution history stay. The app has no control to bring it back; `facade.ReconciliationFacadeServices.restore#Automation` restores it with its history intact.

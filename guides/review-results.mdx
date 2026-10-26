@@ -37,7 +37,23 @@ When a run's scope has conclusion rules, the result names what each finding most
 - The **Conclusion** column names each finding. Expand a row to see each system's state, **How Darpan concluded** (the fields the deciding rule tested), and the **Raw record**.
 - Where a conclusion needs a decision, **Stop flagging in rules board ›** opens the rules board with a filter pre-filled. **Keep flagging** leaves the rules as they are.
 
-Conclusion rules are configured per tenant. A run whose scope has none shows the difference buckets as before.
+A run whose scope has no conclusion rules shows the difference buckets as before.
+
+### Edit a run's conclusions
+
+Tenant Admins edit a run's conclusions in its **Ruleset Manager**, in the **Conclusions** section. Each conclusion is a node in a tree: it applies to one kind of difference (missing from one side, a rule difference, a finding, or any row), carries a question, and holds conditions that must all hold for it to name a finding. **Add child conclusion** nests one under another; **Move up** and **Move down** set the order they are tried in.
+
+A condition reads a field on one side and tests it:
+
+| Test | Holds when the field |
+| --- | --- |
+| **is one of** / **is not one of** | Is, or is not, one of the comma-separated values. |
+| **is more than** | Is more than the number given. |
+| **is above zero** | Is above zero. |
+| **is within the last hours** | Holds a time within the given number of hours before the run. |
+| **is blank** / **has a value** | Is empty, or has a value. |
+
+Leave the test as **presence only** to check only whether the record is there. **Save conclusions** stores the tree; **Revert** drops unsaved edits. A conclusion's fix text, where the run's configuration gives one, is kept as it is.
 
 ## Run history
 
