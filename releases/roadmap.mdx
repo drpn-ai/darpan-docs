@@ -8,13 +8,13 @@ What we shipped most recently and what we are building next, in order. Shipped w
 ## Recently shipped
 
 <div className="rm-card">
-  <p><strong>v2.0.0 — runs as flowcharts, lifecycles, and a conclusion on every finding</strong> <span className="rm-pill">Shipped · Oct 2026</span></p>
-  <p className="rm-muted">A run can be a chart of yes/no questions, each answering only for the records that reached it, and existing NetSuite checks import as runs in one step. Lifecycles follow NetSuite records through their stages and show where each one stopped. The engine can check a single system, and every finding names what it most likely means and the evidence behind it. HotWax orders and returns over GraphQL, NetSuite checks over SuiteQL, and order-line units join the sources. Filters can include as well as exclude, and deleting an automation or a lifecycle archives it. Ships with app v3.0.0; see [Release updates](/releases/updates).</p>
+  <p><strong>v2.1.0 — audits, forgot password, and faster HotWax reads</strong> <span className="rm-pill">Shipped · Oct 2026</span></p>
+  <p className="rm-muted">Audits check a tenant's systems every morning against plain-English statements, keep a ledger of findings that close on their own once fixed, and explain each finding with its cause, its fix and the records a person searches by. Audits can be created, played and scheduled from the app, and report by digest and over a read-only GraphQL API. Sign-in offers a password reset by email. HotWax reads are shared between checks and paced to HotWax's cost limit. Ships with app v3.1.0; see [Release updates](/releases/updates).</p>
 </div>
 
 <div className="rm-card">
-  <p><strong>v1.5.1 — Slack alerts, database sources, and shared configuration</strong> <span className="rm-pill">Shipped · Aug 31, 2026</span></p>
-  <p className="rm-muted">Run-completion alerts post to Slack as well as Google Chat, and lead with a verdict instead of a table of counts. Databases become a first-class source — MySQL, PostgreSQL and Db2 — and a run can compare two instances of the same system. A source or auth connection can be shared with another tenant, schemas can be built from a CSV header row, and automations report and re-sync drift from their saved run. Scheduled runs verify their differences the way hand-started runs always have, so both report the same numbers, and a run that skips verification says why. Shopify return references can exclude in-progress returns, and every displayed time names its zone. Ships with app v2.6.1; see [Release updates](/releases/updates).</p>
+  <p><strong>v2.0.0 — runs as flowcharts, lifecycles, and a conclusion on every finding</strong> <span className="rm-pill">Shipped · Oct 2026</span></p>
+  <p className="rm-muted">A run can be a chart of yes/no questions, each answering only for the records that reached it, and existing NetSuite checks import as runs in one step. Lifecycles follow NetSuite records through their stages and show where each one stopped. The engine can check a single system, and every finding names what it most likely means and the evidence behind it. HotWax orders and returns over GraphQL, NetSuite checks over SuiteQL, and order-line units join the sources. Filters can include as well as exclude, and deleting an automation or a lifecycle archives it. Ships with app v3.0.0; see [Release updates](/releases/updates).</p>
 </div>
 
 ## Up next, in order
@@ -25,13 +25,6 @@ What we shipped most recently and what we are building next, in order. Shipped w
     <div>
       <p><strong>Fulfillment reconciliation</strong> <span className="rm-pill-next">Next up</span> <span className="rm-pill-surface">Engine · App</span></p>
       <p className="rm-muted">Check that items completed in Shopify are completed in HotWax OMS, the same way orders are reconciled today.</p>
-    </div>
-  </div>
-  <div className="rm-step">
-    <div className="rm-step-marker">2</div>
-    <div>
-      <p><strong>Reset your own password</strong> <span className="rm-pill-surface">Engine · App</span></p>
-      <p className="rm-muted">Request a single-use code by email and set a new password without asking an administrator.</p>
     </div>
   </div>
 </div>

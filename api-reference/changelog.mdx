@@ -7,7 +7,7 @@ The generated contract carries `info.x-darpan-contract-version`, decoupled from 
 
 | Contract version | Darpan releases | Public `facade.*` methods |
 | --- | --- | --- |
-| 3 (current) | 1.5.0, 1.5.1, 2.0.0 | 115 |
+| 3 (current) | 1.5.0, 1.5.1, 2.0.0, 2.1.0 | 141 |
 | 2 | 1.2.0, 1.3.0, 1.4.0 | 73 |
 | 1 | 1.0.0 to 1.1.0 | 66 |
 
@@ -20,6 +20,48 @@ Operator-only methods (`admin.*`) are listed in the [service catalog](/api-refer
 ## Contract version 3
 
 Darpan 1.5.0. Current.
+
+### Added in 2.1.0
+
+The facade contract stays at version 3: every 2.0.0 method, parameter and response field is unchanged, and 26 public methods are added (115 to 141).
+
+Audits:
+
+- `facade.AuditFacadeServices.get#Audits`
+- `facade.AuditFacadeServices.get#AuditReport`
+- `facade.AuditFacadeServices.get#AuditFinding`
+- `facade.AuditFacadeServices.get#AuditFindingsByOrder`
+- `facade.AuditFacadeServices.get#AuditCheckExtracts`
+- `facade.AuditFacadeServices.verify#AuditFinding`
+- `facade.AuditFacadeServices.create#Audit`
+- `facade.AuditFacadeServices.add#AuditStatement`
+- `facade.AuditFacadeServices.get#AuditSettings`
+- `facade.AuditFacadeServices.save#AuditSettings`
+- `facade.AuditFacadeServices.run#Audit`
+- `facade.AuditFacadeServices.get#AuditCheckOptions`
+- `facade.AuditFacadeServices.save#AuditCheck`
+
+Password reset and recovery email:
+
+- `facade.AuthFacadeServices.request#PasswordReset`
+- `facade.AuthFacadeServices.verify#PasswordResetCode`
+- `facade.AuthFacadeServices.complete#PasswordReset`
+- `facade.AuthFacadeServices.get#PasswordResetStatus`
+- `facade.AuthFacadeServices.save#RecoveryEmail`
+
+Conclusions and lifecycles:
+
+- `facade.RunConclusionFacadeServices.get#RunConclusions`
+- `facade.RunConclusionFacadeServices.save#RunConclusions`
+- `facade.RunConclusionFacadeServices.create#RunConclusionCode`
+- `facade.ReconciliationFacadeServices.get#LifecyclePlan`
+- `facade.ReconciliationFacadeServices.save#LifecycleConclusions`
+
+NetSuite:
+
+- `facade.NetSuiteQueryFacadeServices.get#NsSuiteQlQueryOptions`
+- `facade.NetSuiteQueryFacadeServices.preview#NsSuiteQlSourceQuery`
+- `facade.SettingsFacadeServices.delete#NsAuthConfig`
 
 ### Added in 2.0.0
 
