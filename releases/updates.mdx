@@ -7,45 +7,51 @@ Darpan releases from newest to oldest, with product and operator changes that af
 
 Version key: headings carry the backend version (`drpn-ai/darpan`); the app (`darpan-ui`) has its own tags, named in each entry: `v2.x` alongside backend `v1.x`, and `v3.x` from backend `v2.0.0`. Backend and app tags are cut together for major and minor releases. A patch can be backend-only or carry an app tag too, as `v1.5.1` did with app `v2.6.1`.
 
-## v2.1.0 — October 2026
+## v2.1.1 — October 2026
 
-Cut together with app `v3.1.0`, `darpan-hotwax v0.10.0`, `netsuite-darpan v0.4.0`, `shopify-darpan v0.8.0` and `moqui-gql v0.1.0`; `database-darpan` stays at `v0.2.1`. A minor release: the API contract only gains methods, and the components still deploy together.
+Cut together with app `v3.1.1`, `darpan-hotwax v0.10.1`, `netsuite-darpan v0.4.1`, `shopify-darpan v0.8.1`, `database-darpan v0.2.2` and `moqui-gql v0.1.1`. One section covers the 2.1 line: `v2.1.0` (October 26, with app `v3.1.0`, `darpan-hotwax v0.10.0`, `netsuite-darpan v0.4.0`, `shopify-darpan v0.8.0` and `moqui-gql v0.1.0`) and the `v2.1.1` patch. A minor line: the API contract only gains methods, and the components deploy together.
 
 **Product**
 
 - **Audits.** A new kind of run checks a tenant's systems every morning against a catalogue of plain-English statements, such as "every fulfilled order is invoiced in NetSuite". Each check keeps a ledger of findings: when one was first found, whether it is still open, when it was fixed. Every finding names its cause and the fix.
 - **Findings read verdict first.** What is stuck and what to do come first, then the records a person searches by in each system: order name and status, customer, dates, sales channel, ship method, totals, items by SKU with their fulfillment and location, and NetSuite records by their own numbers.
 - **Older findings close on their own.** Each morning re-checks open findings by key, so a finding fixed in its own system closes without a full re-read. **Resolve** re-checks one finding now.
-- **Audits from the app.** Create an audit and its statements, add checks (a SuiteQL query with a preview, the run's sides and its conclusions), play it over chosen days, and change its schedule and settings.
+- **Audits from the app.** Create an audit and its statements, add checks (a SuiteQL query with a preview, the run's sides and its conclusions), play it over chosen days, and change its schedule and settings. While a play runs, the audit page shows it in progress and reloads when the checks finish.
 - **Digests.** Daily and weekly audit digests to a chat space or by email, set up by a Darpan administrator.
+- **Forgot password.** **Forgot password?** under **Sign In** sends a six-digit code by email, and the page says what happened: sent (to a masked address), or why it could not be sent. Settings keep a recovery email. The link appears once the instance's email server is set up.
+- **Clean-run streaks.** An automation's streak of clean days keeps counting past 20, with badges at new milestones and side quests in its chat messages.
 - **Rules.** "requires" and "required by" for one-way presence rules; "is more than" and "within hours" in conclusions; starts-with source filters.
 - **NetSuite settings.** An auth profile opens a details page with its endpoints, connection diagnostics and delete.
+- **Shopify returns.** A returns read for completed returns, one row per order: refunded, exchanged, or refunded on the order.
 - **Faster HotWax reads.** Every HotWax read uses GraphQL, reads of the same days are shared between checks, and calls are paced to HotWax's cost limit. A full month's audit runs about a fifth faster.
-- **Edit run** offers every endpoint of a side's system family.
+- **Edit run** offers every endpoint of a side's system family. **Home** lists audits first, after the pins.
 
 **Operators**
 
-- All components deploy together; database-darpan is unchanged.
+- All components deploy together.
 - A scheduled run's extracts report how many records they have read, and Cancel run stops an automation mid-extract.
-- A failed extract fails its run and is retried, rather than reporting the window as empty.
+- A failed extract fails its run and is retried, rather than reporting the window as empty. A HotWax orders page that answers 429, 502, 503 or 504 is retried on its own.
+- A run that failed after its reads finished can run again over the same window from the files it already read, without reading the source systems again.
+- New connections, queries and configurations get ids minted by the server; another tenant's id answers exactly like a missing one.
+- Error messages and logs print an encrypted field as `***`.
 - Each outbound request to HotWax, NetSuite and Shopify writes one INFO log line (`oms gql call`, `oms rest call`, `netsuite call`, `shopify gql call`).
-- Audit digests send from `support@drpn.ai` (override with `DARPAN_MAIL_FROM`); the SYSTEM email server needs an `smtpHost`.
+- Audit digests and password resets send from `support@drpn.ai` (override with `DARPAN_MAIL_FROM`); the SYSTEM email server needs an `smtpHost`.
 
 **API**
 
-- Contract version stays `3`: 26 methods are added and none is removed or changed.
-- GraphQL: read-only `auditReport`, `auditFinding` and `findings` (search, sort, paging), for agent keys that can be labelled, expired, listed, disabled and rotated.
+- Contract version stays `3`: 30 methods are added across the line (26 in `v2.1.0`, 4 in `v2.1.1`) and none is removed or changed.
+- GraphQL: read-only `auditReport`, `auditFinding` and `findings` (search, sort, paging), for agent keys that can be labelled, expired, listed, disabled and rotated. Tenant administrators mint keys for the tenant they are signed into.
 
 **Upgrade**
 
-- Start the new image first: it creates the audit tables and the new columns.
-- Load `v2.1.0`'s 98 records with `./gradlew loadDarpanUpgradeData`, then `run#PendingMigrations`.
+- Start the new image first: it creates the new tables and columns.
+- Load the seed records with `./gradlew loadDarpanUpgradeData`, then `run#PendingMigrations`: 103 records from `v2.0.0`, or the 5 of `v2.1.1` from `v2.1.0`.
 - Audit catalogues and checks are tenant configuration: load them per tenant, one file at a time, with `DARPAN_UPGRADE_DATA_TYPES=darpan-tenant-config` and `DARPAN_UPGRADE_DATA_LOCATION=component://darpan/data/<file>`.
 - Play each audit once from its page to create its automations, then schedule and enable them.
 
 **Rollback**
 
-- Roll back as a set: backend `v2.0.0` with app `v3.0.0` and the `v2.0.0` connectors. The upgrade data is additive; delete the 12 audit tenant-filter rows before running `v2.0.0` on that database.
+- Roll back as a set. To `v2.1.0` (app `v3.1.0`): delete the `DARPAN_SCOPE_AUTOMATION_STREAK_BADGE`, `DARPAN_SCOPE_TENANT_STREAK_QUEST` and `DARPAN_SCOPE_TENANT_STREAK_FACT` entity filters first. To `v2.0.0` (app `v3.0.0` and the `v2.0.0` connectors): delete the 12 audit tenant-filter rows and the four filters of `v2.1.1`.
 
 ## v2.0.0 — October 2026
 
