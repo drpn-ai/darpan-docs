@@ -7,9 +7,9 @@ Darpan releases from newest to oldest, with product and operator changes that af
 
 Version key: headings carry the backend version (`drpn-ai/darpan`); the app (`darpan-ui`) has its own tags, named in each entry: `v2.x` alongside backend `v1.x`, and `v3.x` from backend `v2.0.0`. Backend and app tags are cut together for major and minor releases. A patch can be backend-only or carry an app tag too, as `v1.5.1` did with app `v2.6.1`.
 
-## v2.1.2 — October 2026
+## v2.1.5 — October 2026
 
-Cut together with app `v3.1.2`, `darpan-hotwax v0.10.2`, `netsuite-darpan v0.4.2` and `shopify-darpan v0.8.2`, with `database-darpan v0.2.2` and `moqui-gql v0.1.1`. One section covers the 2.1 line: `v2.1.0` (October 26, with app `v3.1.0`, `darpan-hotwax v0.10.0`, `netsuite-darpan v0.4.0`, `shopify-darpan v0.8.0` and `moqui-gql v0.1.0`) and the `v2.1.1` (October 27) and `v2.1.2` patches. A minor line: the API contract only gains methods, and the components deploy together.
+Cut together with `darpan-hotwax v0.10.4`, `netsuite-darpan v0.4.3` and `shopify-darpan v0.8.4`, with app `v3.1.2`, `database-darpan v0.2.2` and `moqui-gql v0.1.1`. One section covers the 2.1 line: `v2.1.0` (October 26, with app `v3.1.0`, `darpan-hotwax v0.10.0`, `netsuite-darpan v0.4.0`, `shopify-darpan v0.8.0` and `moqui-gql v0.1.0`) and the `v2.1.1` (October 27), `v2.1.2` with app `v3.1.2`, `v2.1.3` and `v2.1.4` (October 28) and `v2.1.5` (October 29) patches. A minor line: the API contract only gains methods, and the components deploy together.
 
 **Product**
 
@@ -22,7 +22,11 @@ Cut together with app `v3.1.2`, `darpan-hotwax v0.10.2`, `netsuite-darpan v0.4.2
 - **Digests.** Daily and weekly audit digests to a chat space or by email, set up by a Darpan administrator.
 - **Forgot password.** **Forgot password?** under **Sign In** sends a six-digit code by email, and the page says what happened: sent (to a masked address), or why it could not be sent. Settings keep a recovery email. The link appears once the instance's email server is set up.
 - **Clean-run streaks.** An automation's streak of clean days keeps counting past 20, with badges at new milestones and side quests in its chat messages. The streak line counts days from the first message.
-- **Rules.** "requires" and "required by" for one-way presence rules; "all in" and "contains all" for lists, such as every Shopify payment transaction on a HotWax payment; "is more than" and "within hours" in conclusions; starts-with source filters.
+- **Rules.** "requires" and "required by" for one-way presence rules; "all in" and "contains all" for lists, such as every HotWax payment reference among the order's Shopify transactions; "is more than" and "within hours" in conclusions; starts-with source filters.
+- **Payment checks.** Shopify orders carry their transaction ids: every successful authorization, capture, sale, void and refund. Compare them with HotWax's payment references (`paymentRefNums all in transactionIds`), so a store that captures at shipping or voids on cancel lines up.
+- **Sales channel exclusions.** A HotWax order read over GraphQL offers the **Sales channel** pill, so a run can leave out POS orders on the HotWax side.
+- **Chat names the field.** A run whose only differences are value mismatches says which field differs and what each system holds, such as "On isCompleted = isFulfilled, HotWax has Y and Shopify has N."
+- **HotWax products.** A HotWax products endpoint for checks that every active NetSuite item is a sellable HotWax product carrying its NetSuite id.
 - **NetSuite settings.** An auth profile opens a details page with its endpoints, connection diagnostics and delete.
 - **Shopify returns.** A returns read for completed returns, one row per order: refunded, exchanged, or refunded on the order.
 - **Faster HotWax reads.** Every HotWax read uses GraphQL, reads of the same days are shared between checks, and calls are paced to HotWax's cost limit. A full month's audit runs about a fifth faster.
@@ -34,7 +38,7 @@ Cut together with app `v3.1.2`, `darpan-hotwax v0.10.2`, `netsuite-darpan v0.4.2
 - Every run waits its turn in one queue: up to 8 at once, 5 per tenant, tenants taking turns, held while memory is short. A played run runs in its audit's tenant.
 - Search and run lists read each result's summary, not the whole document.
 - A scheduled run's extracts report how many records they have read, and Cancel run stops an automation mid-extract.
-- A failed extract fails its run and is retried, rather than reporting the window as empty. A HotWax orders page that answers 429, 502, 503 or 504 is retried on its own.
+- A failed extract fails its run and is retried, rather than reporting the window as empty. A HotWax orders page that answers 429, 502, 503 or 504 is retried on its own, and so is a transient HotWax GraphQL failure.
 - A run that failed after its reads finished can run again over the same window from the files it already read, without reading the source systems again.
 - New connections, queries and configurations get ids minted by the server; another tenant's id answers exactly like a missing one.
 - Error messages and logs print an encrypted field as `***`.
@@ -49,13 +53,13 @@ Cut together with app `v3.1.2`, `darpan-hotwax v0.10.2`, `netsuite-darpan v0.4.2
 **Upgrade**
 
 - Start the new image first: it creates the new tables and columns.
-- Load the seed records with `./gradlew loadDarpanUpgradeData`, then `run#PendingMigrations`: 103 records from `v2.0.0`, the 5 of `v2.1.1` from `v2.1.0`, and the 3 of `v2.1.2` from `v2.1.1`. `run#PendingMigrations` then folds every automation's history into its stored streak once.
+- Load the seed records with `./gradlew loadDarpanUpgradeData`, then `run#PendingMigrations`: 103 records from `v2.0.0`, the 5 of `v2.1.1` from `v2.1.0`, the 3 of `v2.1.2` from `v2.1.1`, the 1 of `v2.1.3` from `v2.1.2`, none for `v2.1.4`, and the 14 of `v2.1.5` from `v2.1.4`. `run#PendingMigrations` then folds every automation's history into its stored streak once.
 - Audit catalogues and checks are tenant configuration: load them per tenant, one file at a time, with `DARPAN_UPGRADE_DATA_TYPES=darpan-tenant-config` and `DARPAN_UPGRADE_DATA_LOCATION=component://darpan/data/<file>`.
 - Play each audit once from its page to create its automations, then schedule and enable them.
 
 **Rollback**
 
-- Roll back as a set. To `v2.1.1` (app `v3.1.1`): remove any "all in" or "contains all" rule first, and leave the `AUTOMATION_STREAKS` migration unrun. To `v2.1.0` (app `v3.1.0`): delete the `DARPAN_SCOPE_AUTOMATION_STREAK_BADGE`, `DARPAN_SCOPE_TENANT_STREAK_QUEST` and `DARPAN_SCOPE_TENANT_STREAK_FACT` entity filters first. To `v2.0.0` (app `v3.0.0` and the `v2.0.0` connectors): delete the 12 audit tenant-filter rows and the four filters of `v2.1.1`.
+- Roll back as a set. To `v2.1.4`: remove any rule on Shopify `transactionIds` first. To `v2.1.2`: remove any **Sales channel** filter on a HotWax GraphQL read first. To `v2.1.1` (app `v3.1.1`): remove any "all in" or "contains all" rule first, and leave the `AUTOMATION_STREAKS` migration unrun. To `v2.1.0` (app `v3.1.0`): delete the `DARPAN_SCOPE_AUTOMATION_STREAK_BADGE`, `DARPAN_SCOPE_TENANT_STREAK_QUEST` and `DARPAN_SCOPE_TENANT_STREAK_FACT` entity filters first. To `v2.0.0` (app `v3.0.0` and the `v2.0.0` connectors): delete the 12 audit tenant-filter rows and the four filters of `v2.1.1`.
 
 ## v2.0.0 — October 2026
 
