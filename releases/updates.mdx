@@ -7,9 +7,9 @@ Darpan releases from newest to oldest, with product and operator changes that af
 
 Version key: headings carry the backend version (`drpn-ai/darpan`); the app (`darpan-ui`) has its own tags, named in each entry: `v2.x` alongside backend `v1.x`, and `v3.x` from backend `v2.0.0`. Backend and app tags are cut together for major and minor releases. A patch can be backend-only or carry an app tag too, as `v1.5.1` did with app `v2.6.1`.
 
-## v2.1.5 — October 2026
+## v2.1.6 — October 2026
 
-Cut together with `darpan-hotwax v0.10.4`, `netsuite-darpan v0.4.3` and `shopify-darpan v0.8.4`, with app `v3.1.2`, `database-darpan v0.2.2` and `moqui-gql v0.1.1`. One section covers the 2.1 line: `v2.1.0` (October 26, with app `v3.1.0`, `darpan-hotwax v0.10.0`, `netsuite-darpan v0.4.0`, `shopify-darpan v0.8.0` and `moqui-gql v0.1.0`) and the `v2.1.1` (October 27), `v2.1.2` with app `v3.1.2`, `v2.1.3` and `v2.1.4` (October 28) and `v2.1.5` (October 29) patches. A minor line: the API contract only gains methods, and the components deploy together.
+Cut together with `darpan-hotwax v0.10.4`, `netsuite-darpan v0.4.3` and `shopify-darpan v0.8.5`, with app `v3.1.3`, `database-darpan v0.2.2` and `moqui-gql v0.1.1`. One section covers the 2.1 line: `v2.1.0` (October 26, with app `v3.1.0`, `darpan-hotwax v0.10.0`, `netsuite-darpan v0.4.0`, `shopify-darpan v0.8.0` and `moqui-gql v0.1.0`) and the `v2.1.1` (October 27), `v2.1.2` with app `v3.1.2`, `v2.1.3` and `v2.1.4` (October 28), `v2.1.5` (October 29) and `v2.1.6` (October 30, with app `v3.1.3` and `shopify-darpan v0.8.5`) patches. A minor line: the API contract only gains methods, and the components deploy together.
 
 **Product**
 
@@ -30,6 +30,8 @@ Cut together with `darpan-hotwax v0.10.4`, `netsuite-darpan v0.4.3` and `shopify
 - **NetSuite settings.** An auth profile opens a details page with its endpoints, connection diagnostics and delete.
 - **Shopify returns.** A returns read for completed returns, one row per order: refunded, exchanged, or refunded on the order.
 - **Faster HotWax reads.** Every HotWax read uses GraphQL, reads of the same days are shared between checks, and calls are paced to HotWax's cost limit. A full month's audit runs about a fifth faster.
+- **Retry from the failed step.** A failed run offers **Retry from** the step it stopped at. The retry is a new run over the same days that reuses what the failed run already read, so a long HotWax read is not repeated. It declines, and says why, if the run's setup changed since it started.
+- **Month-long Shopify reads.** Shopify order reads stream to disk as they arrive, so a month of orders reads in steady memory.
 - **Edit run** offers every endpoint of a side's system family. After **Run**, the live view opens at once. **Home** lists audits first, after the pins.
 
 **Operators**
@@ -47,19 +49,19 @@ Cut together with `darpan-hotwax v0.10.4`, `netsuite-darpan v0.4.3` and `shopify
 
 **API**
 
-- Contract version stays `3`: 32 methods are added across the line (26 in `v2.1.0`, 4 in `v2.1.1`, 2 in `v2.1.2`) and none is removed or changed.
+- Contract version stays `3`: 32 methods are added across the line (26 in `v2.1.0`, 4 in `v2.1.1`, 2 in `v2.1.2`) and none is removed. `v2.1.6` adds one optional parameter, `retryFromRunResultId`, to `run#SavedRunDiff`.
 - GraphQL: read-only `auditReport`, `auditFinding` and `findings` (search, sort, paging), for agent keys that can be labelled, expired, listed, disabled and rotated. Tenant administrators mint keys for the tenant they are signed into.
 
 **Upgrade**
 
 - Start the new image first: it creates the new tables and columns.
-- Load the seed records with `./gradlew loadDarpanUpgradeData`, then `run#PendingMigrations`: 103 records from `v2.0.0`, the 5 of `v2.1.1` from `v2.1.0`, the 3 of `v2.1.2` from `v2.1.1`, the 1 of `v2.1.3` from `v2.1.2`, none for `v2.1.4`, and the 14 of `v2.1.5` from `v2.1.4`. `run#PendingMigrations` then folds every automation's history into its stored streak once.
+- Load the seed records with `./gradlew loadDarpanUpgradeData`, then `run#PendingMigrations`: 103 records from `v2.0.0`, the 5 of `v2.1.1` from `v2.1.0`, the 3 of `v2.1.2` from `v2.1.1`, the 1 of `v2.1.3` from `v2.1.2`, none for `v2.1.4`, the 14 of `v2.1.5` from `v2.1.4`, and none for `v2.1.6`. `run#PendingMigrations` then folds every automation's history into its stored streak once.
 - Audit catalogues and checks are tenant configuration: load them per tenant, one file at a time, with `DARPAN_UPGRADE_DATA_TYPES=darpan-tenant-config` and `DARPAN_UPGRADE_DATA_LOCATION=component://darpan/data/<file>`.
 - Play each audit once from its page to create its automations, then schedule and enable them.
 
 **Rollback**
 
-- Roll back as a set. To `v2.1.4`: remove any rule on Shopify `transactionIds` first. To `v2.1.2`: remove any **Sales channel** filter on a HotWax GraphQL read first. To `v2.1.1` (app `v3.1.1`): remove any "all in" or "contains all" rule first, and leave the `AUTOMATION_STREAKS` migration unrun. To `v2.1.0` (app `v3.1.0`): delete the `DARPAN_SCOPE_AUTOMATION_STREAK_BADGE`, `DARPAN_SCOPE_TENANT_STREAK_QUEST` and `DARPAN_SCOPE_TENANT_STREAK_FACT` entity filters first. To `v2.0.0` (app `v3.0.0` and the `v2.0.0` connectors): delete the 12 audit tenant-filter rows and the four filters of `v2.1.1`.
+- Roll back as a set. To `v2.1.5` (app `v3.1.2`): nothing to undo. To `v2.1.4`: remove any rule on Shopify `transactionIds` first. To `v2.1.2`: remove any **Sales channel** filter on a HotWax GraphQL read first. To `v2.1.1` (app `v3.1.1`): remove any "all in" or "contains all" rule first, and leave the `AUTOMATION_STREAKS` migration unrun. To `v2.1.0` (app `v3.1.0`): delete the `DARPAN_SCOPE_AUTOMATION_STREAK_BADGE`, `DARPAN_SCOPE_TENANT_STREAK_QUEST` and `DARPAN_SCOPE_TENANT_STREAK_FACT` entity filters first. To `v2.0.0` (app `v3.0.0` and the `v2.0.0` connectors): delete the 12 audit tenant-filter rows and the four filters of `v2.1.1`.
 
 ## v2.0.0 — October 2026
 
