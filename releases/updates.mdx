@@ -5,7 +5,55 @@ description: "Major Darpan updates grouped by release tag."
 
 Darpan releases from newest to oldest, with product and operator changes that affect upgrade, validation, or rollback decisions. Only tagged releases appear here. For release principles and review questions, see [Release discipline](https://developers.drpn.ai/engineering/release-discipline).
 
-Version key: headings carry the backend version (`drpn-ai/darpan`); the app (`darpan-ui`) has its own tags, named in each entry: `v2.x` alongside backend `v1.x`, and `v3.x` from backend `v2.0.0`. Backend and app tags are cut together for major and minor releases. A patch can be backend-only or carry an app tag too, as `v1.5.1` did with app `v2.6.1`.
+Version key: headings carry the backend version (`drpn-ai/darpan`); the app (`darpan-ui`) has its own tags, named in each entry: `v2.x` alongside backend `v1.x`, `v3.x` from backend `v2.0.0`, and `v4.x` from backend `v3.0.0`. Backend and app tags are cut together for major and minor releases. A patch can be backend-only or carry an app tag too, as `v1.5.1` did with app `v2.6.1`.
+
+## v3.0.0 — November 2026
+
+Cut together with app `v4.0.0`, `darpan-hotwax v1.0.0`, `shopify-darpan v0.9.0`, `netsuite-darpan v0.5.0`, `database-darpan v0.3.0`, `moqui-gql v1.0.0` and the first `darpan-agent` tag, `v0.1.0`. A major release: the API contract moves to version `4`, and every component deploys together.
+
+**Product**
+
+- **An update after every audit run.** A short chat message says what the run found, and an email carries a CSV per rule.
+- **Findings are open or closed.** A finding inside its grace period is not reported yet; there is no pending state.
+- **One schedule per audit.** An audit runs all its checks on its own schedule.
+- **A running audit shows its reads.** Run health shows each system's read with its live record count, steps in order.
+- **Verify a finding.** Darpan re-checks that one record now, and closes the finding or says why it stays open.
+- **The finding panel leads with the record.** A held chain reads in lifecycle order, and an order finding lists every line of the order, a NetSuite store-credit line included. Records excused past a stage that later complete get their own place on the lifecycle board, dimmed, not counted as findings.
+- **Morning runs read the month so far,** so a fixed finding older than the recent read closes.
+- **The audit agent.** On the audit page, an agent tab beside the deepest column of the board answers questions about the open finding and drafts changes: a schedule, a statement, its wording, turning it on or off, or a new check. A person approves, rejects or reverts each draft, and drafts waiting for approval are marked on the board. Off until a Darpan administrator enables it for a tenant and grants a user AI access with a spend limit.
+- **The `darpan` CLI and MCP.** A tenant's own AI agents read everything the app shows and act within the user's permissions, an audit as fully as the audit page. CLI access is per user: off by default, requested from the app, approved by a Darpan administrator.
+- **Tenant scripts.** A tenant writes and runs a script in Darpan with no code change, and a saved script can run on a schedule and post to a chat space.
+- **New systems as data.** A REST JSON system can be read from a data definition, checked, saved and retired, with no code change. A read that stops records why.
+- **Config versions.** Each tenant's audits, scripts and deployments keep versions that can be previewed and restored, and config transfer carries scripts and deployments.
+- **Products and fulfillment.** NetSuite and HotWax products reconcile two-way across the whole catalogue, and a check confirms every order NetSuite fulfills is fulfilled in HotWax.
+- **Notifications name each rule,** with one mismatch row per rule, and a field mismatch carries both records.
+- **Shopify connection check covers bulk reads.** **Test connection** confirms the token can run the bulk reads every run uses, and a run whose token lacks a scope stops at once and names the access it needs.
+- **Chat spaces.** Slack sits beside Google Chat when adding a chat space, and the list shows whether each delivers by bot or by webhook.
+- **Plain labels.** Fields, endpoints and systems carry one-to-three-word labels, and every button has a hint.
+
+**Operators**
+
+- All components deploy together.
+- Before deploying, set `DARPAN_APP_BASE_URL` and confirm the SYSTEM email server: the run update emails every audit's recipients after each run, and its links use that base URL.
+- The audit agent needs `DARPAN_AGENT_ENABLED=true` and `ANTHROPIC_API_KEY` in the container environment, the tenant enabled, and a user's AI access grant.
+- Two scheduled jobs: due script deployments every 5 minutes, and a config version for each tenant whose audit config changed and has been quiet for a minute.
+- The run engine moves to Spark 4.2.1 and Drools 10.2.0. The image's JVM flags carry what they need.
+- Connections keep their stored secret only while their host is unchanged, and SFTP and database connections verify the server's identity, AWS RDS included. A database whose certificate cannot be verified needs its CA stored before it connects again.
+- The app moves to Vue 3.5.44.
+
+**API**
+
+- Contract version `4`. `list#HotWaxOmsRestSourceConfigs` and `save#HotWaxOmsRestSourceConfig` no longer take or return `ordersPath` and `returnsPageSize`: HotWax reads are GraphQL only. 66 methods are added, for the agent, CLI access, tenant scripts, config versions and data definitions.
+- GraphQL: a finding is `open` or `fixed`; `pending`, `pendingUntil` and `graceDays` are gone.
+
+**Upgrade**
+
+- Start the new image first: it creates the new tables and columns.
+- Load the seed records with `./gradlew loadDarpanUpgradeData` (150 records from `v2.1.12`, including the tenant filters for the new entities), then `run#PendingMigrations`, dry run first. Four migrations run once each: stored HotWax sources move from the retired REST endpoints to GraphQL (the dry run names any transfer-order or line-unit source with no GraphQL endpoint), statement links lose their expected-cause lists, each audit gets one schedule, and pending findings open.
+
+**Rollback**
+
+- Roll back as a set, to `v2.1.12` with app `v3.1.4` and the `v2.1` connectors. The migrations do not reverse: findings stay open or fixed, and each audit keeps the one schedule it was given. The new tables stay and are not read.
 
 ## v2.1.7 — October 2026
 
