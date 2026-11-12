@@ -9,7 +9,7 @@ Version key: headings carry the backend version (`drpn-ai/darpan`); the app (`da
 
 ## v3.0.0 — November 2026
 
-Cut together with app `v4.0.0`, `darpan-hotwax v1.0.0`, `shopify-darpan v0.9.0`, `netsuite-darpan v0.5.0`, `database-darpan v0.3.0`, `moqui-gql v1.0.0` and the first `darpan-agent` tag, `v0.1.0`. A major release: the API contract moves to version `4`, and every component deploys together.
+Cut together with app `v4.0.1`, `darpan-hotwax v1.0.0`, `shopify-darpan v0.9.0`, `netsuite-darpan v0.5.0`, `database-darpan v0.3.0`, `moqui-gql v1.0.0` and `darpan-agent v0.1.1`. One section covers the 3.0 line: `v3.0.0` (November 12, with app `v4.0.0` and the first `darpan-agent` tag, `v0.1.0`) and the November 12 patches, app `v4.0.1` and `darpan-agent v0.1.1`. A major release: the API contract moves to version `4`, and every component deploys together.
 
 **Product**
 
@@ -20,6 +20,7 @@ Cut together with app `v4.0.0`, `darpan-hotwax v1.0.0`, `shopify-darpan v0.9.0`,
 - **Verify a finding.** Darpan re-checks that one record now, and closes the finding or says why it stays open.
 - **The finding panel leads with the record.** A held chain reads in lifecycle order, and an order finding lists every line of the order, a NetSuite store-credit line included. Records excused past a stage that later complete get their own place on the lifecycle board, dimmed, not counted as findings.
 - **Morning runs read the month so far,** so a fixed finding older than the recent read closes.
+- **Execute starts a run once.** Pressing Execute again, or Enter, while the uploaded files are still being read no longer starts the run a second time; the button is disabled from the first press.
 - **The audit agent.** On the audit page, an agent tab beside the deepest column of the board answers questions about the open finding and drafts changes: a schedule, a statement, its wording, turning it on or off, or a new check. A person approves, rejects or reverts each draft, and drafts waiting for approval are marked on the board. Off until a Darpan administrator enables it for a tenant and grants a user AI access with a spend limit.
 - **The `darpan` CLI and MCP.** A tenant's own AI agents read everything the app shows and act within the user's permissions, an audit as fully as the audit page. CLI access is per user: off by default, requested from the app, approved by a Darpan administrator.
 - **Tenant scripts.** A tenant writes and runs a script in Darpan with no code change, and a saved script can run on a schedule and post to a chat space.
@@ -35,7 +36,8 @@ Cut together with app `v4.0.0`, `darpan-hotwax v1.0.0`, `shopify-darpan v0.9.0`,
 
 - All components deploy together.
 - Before deploying, set `DARPAN_APP_BASE_URL` and confirm the SYSTEM email server: the run update emails every audit's recipients after each run, and its links use that base URL.
-- The audit agent needs `DARPAN_AGENT_ENABLED=true` and `ANTHROPIC_API_KEY` in the container environment, the tenant enabled, and a user's AI access grant.
+- The audit agent runs when `DARPAN_AGENT_ENABLED=true`, the tenant is enabled, and the user holds an AI access grant.
+- The agent reaches Claude by workload identity federation, with no stored Anthropic key: the task mints a short-lived AWS-signed token (`sts:GetWebIdentityToken`, audience `https://api.anthropic.com`) and the Anthropic SDK exchanges it. Enable outbound web identity federation on the AWS account, allow the task role `sts:GetWebIdentityToken` for that audience, and set `ANTHROPIC_FEDERATION_RULE_ID`, `ANTHROPIC_ORGANIZATION_ID`, `ANTHROPIC_SERVICE_ACCOUNT_ID`, `ANTHROPIC_WORKSPACE_ID` and `ANTHROPIC_IDENTITY_TOKEN_FILE`. Leave `ANTHROPIC_API_KEY` unset: it takes precedence over federation.
 - Two scheduled jobs: due script deployments every 5 minutes, and a config version for each tenant whose audit config changed and has been quiet for a minute.
 - The run engine moves to Spark 4.2.1 and Drools 10.2.0. The image's JVM flags carry what they need.
 - Connections keep their stored secret only while their host is unchanged, and SFTP and database connections verify the server's identity, AWS RDS included. A database whose certificate cannot be verified needs its CA stored before it connects again.
@@ -53,7 +55,7 @@ Cut together with app `v4.0.0`, `darpan-hotwax v1.0.0`, `shopify-darpan v0.9.0`,
 
 **Rollback**
 
-- Roll back as a set, to `v2.1.12` with app `v3.1.4` and the `v2.1` connectors. The migrations do not reverse: findings stay open or fixed, and each audit keeps the one schedule it was given. The new tables stay and are not read.
+- Roll back as a set. To `v3.0.0` (app `v4.0.0`, `darpan-agent v0.1.0`): the agent then reads only `ANTHROPIC_API_KEY`, so set one or turn the agent off. To `v2.1.12` with app `v3.1.4` and the `v2.1` connectors: the migrations do not reverse, so findings stay open or fixed and each audit keeps the one schedule it was given. The new tables stay and are not read.
 
 ## v2.1.7 — October 2026
 
