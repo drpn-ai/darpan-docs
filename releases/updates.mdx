@@ -7,20 +7,22 @@ Darpan releases from newest to oldest, with product and operator changes that af
 
 Version key: headings carry the backend version (`drpn-ai/darpan`); the app (`darpan-ui`) has its own tags, named in each entry: `v2.x` alongside backend `v1.x`, `v3.x` from backend `v2.0.0`, and `v4.x` from backend `v3.0.0`. Backend and app tags are cut together for major and minor releases. A patch can be backend-only or carry an app tag too, as `v1.5.1` did with app `v2.6.1`.
 
-## v3.0.2 — November 2026
+## v3.0.3 — November 2026
 
-Cut together with app `v4.0.2`, `darpan-hotwax v1.0.1`, `shopify-darpan v0.9.1`, `netsuite-darpan v0.5.1`, `database-darpan v0.3.0`, `moqui-gql v1.0.0` and `darpan-agent v0.1.2`. One section covers the 3.0 line: `v3.0.0` (November 12, with app `v4.0.0` and the first `darpan-agent` tag, `v0.1.0`) and the November 12 patches: app `v4.0.1` and `v4.0.2`, `darpan-agent v0.1.1` and `v0.1.2`, and `v3.0.2` with `darpan-hotwax v1.0.1`, `shopify-darpan v0.9.1` and `netsuite-darpan v0.5.1`. There is no backend `v3.0.1`. A major release: the API contract moves to version `4`, and every component deploys together.
+Cut together with app `v4.0.3`, `darpan-hotwax v1.0.1`, `shopify-darpan v0.9.1`, `netsuite-darpan v0.5.1`, `database-darpan v0.3.0`, `moqui-gql v1.0.0` and `darpan-agent v0.1.2`. One section covers the 3.0 line: `v3.0.0` (November 12, with app `v4.0.0` and the first `darpan-agent` tag, `v0.1.0`) and the November 12 patches: app `v4.0.1`, `v4.0.2` and `v4.0.3`, `darpan-agent v0.1.1` and `v0.1.2`, `v3.0.2` with `darpan-hotwax v1.0.1`, `shopify-darpan v0.9.1` and `netsuite-darpan v0.5.1`, and `v3.0.3` with app `v4.0.3`. There is no backend `v3.0.1`. A major release: the API contract moves to version `4`, and every component deploys together.
 
 **Product**
 
 - **An update after every audit run.** A short chat message, in the chat space the audit's settings pick, says what the run found, and an email in the app's look carries a CSV per rule. With the agent on for the tenant, Claude writes the headline and the fix lines; every count and id is Darpan's.
-- **The earliest broken step counts.** An order with findings under several statements counts once, under its earliest statement; the later findings on that order are listed with it under **Also on this order**.
+- **The earliest broken step counts.** An order with findings under several statements counts once, under its earliest statement; the later findings on that order are listed with it under **Also on this order**, each named by its item.
+- **A check that moves to another statement takes its open findings with it,** history kept, so an order is never reported under both.
 - **Findings are open or closed.** A finding inside its grace period is not reported yet; there is no pending state.
 - **One schedule per audit.** An audit runs all its checks on its own schedule.
 - **A running audit shows its reads.** Run health shows each system's read with its live record count, steps in order.
 - **Verify a finding.** Darpan re-checks that one record now, and closes the finding or says why it stays open.
 - **The finding panel leads with the record.** A held chain reads in lifecycle order, and an order finding lists every line of the order, a NetSuite store-credit line included. Records excused past a stage that later complete get their own place on the lifecycle board, dimmed, not counted as findings.
 - **Morning runs read the month so far,** so a fixed finding older than the recent read closes.
+- **Month to Date.** The third window when starting a run reads from the 1st of the month through yesterday; on the 1st, the whole month just ended.
 - **Execute starts a run once.** Pressing Execute again, or Enter, while the uploaded files are still being read no longer starts the run a second time; the button is disabled from the first press.
 - **The audit agent.** On the audit page, an agent tab beside the deepest column of the board answers questions about the open finding and drafts changes: a schedule, a statement, its wording, turning it on or off, or a new check. A person approves, rejects or reverts each draft, and drafts waiting for approval are marked on the board. Off until a Darpan administrator enables it for a tenant and grants a user AI access with a spend limit; Darpan administrators have access in every enabled tenant.
 - **The `darpan` CLI and MCP.** A tenant's own AI agents read everything the app shows and act within the user's permissions, an audit as fully as the audit page. CLI access is per user: off by default, requested from the app, approved by a Darpan administrator.
@@ -52,12 +54,12 @@ Cut together with app `v4.0.2`, `darpan-hotwax v1.0.1`, `shopify-darpan v0.9.1`,
 **Upgrade**
 
 - Start the new image first: it creates the new tables and columns.
-- From `v3.0.0`: start the `v3.0.2` image; it adds one column. There are no seed records to load and no migrations.
-- From `v2.1.12`: load the seed records with `./gradlew loadDarpanUpgradeData` (150 records from `v2.1.12`, including the tenant filters for the new entities), then `run#PendingMigrations`, dry run first. Four migrations run once each: stored HotWax sources move from the retired REST endpoints to GraphQL (the dry run names any transfer-order or line-unit source with no GraphQL endpoint), statement links lose their expected-cause lists, each audit gets one schedule, and pending findings open.
+- From `v3.0.0` or `v3.0.2`: start the `v3.0.3` image. From `v3.0.0` it adds one column. Two seed records (the item quantity fields on the rules board) load at start, or with `./gradlew loadDarpanUpgradeData`. There are no migrations.
+- From `v2.1.12`: load the seed records with `./gradlew loadDarpanUpgradeData` (150 records from `v2.1.12`, including the tenant filters for the new entities, and the 2 of `v3.0.3`), then `run#PendingMigrations`, dry run first. Four migrations run once each: stored HotWax sources move from the retired REST endpoints to GraphQL (the dry run names any transfer-order or line-unit source with no GraphQL endpoint), statement links lose their expected-cause lists, each audit gets one schedule, and pending findings open.
 
 **Rollback**
 
-- Roll back as a set. To `v3.0.0` with app `v4.0.1` and `darpan-agent v0.1.1`: the new column stays unread, and runs reading the item count or ship groups find those fields empty. To `v3.0.0` with app `v4.0.0` and `darpan-agent v0.1.0`: the agent then reads only `ANTHROPIC_API_KEY`, so set one or turn the agent off. To `v2.1.12` with app `v3.1.4` and the `v2.1` connectors: the migrations do not reverse, so findings stay open or fixed and each audit keeps the one schedule it was given. The new tables stay and are not read.
+- Roll back as a set. To `v3.0.2` with app `v4.0.2`: findings that moved with their check stay under their new statement and read as ordinary open findings. To `v3.0.0` with app `v4.0.1` and `darpan-agent v0.1.1`: the new column stays unread, and runs reading the item count or ship groups find those fields empty. To `v3.0.0` with app `v4.0.0` and `darpan-agent v0.1.0`: the agent then reads only `ANTHROPIC_API_KEY`, so set one or turn the agent off. To `v2.1.12` with app `v3.1.4` and the `v2.1` connectors: the migrations do not reverse, so findings stay open or fixed and each audit keeps the one schedule it was given. The new tables stay and are not read.
 
 ## v2.1.7 — October 2026
 
