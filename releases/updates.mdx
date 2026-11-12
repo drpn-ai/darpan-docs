@@ -7,13 +7,14 @@ Darpan releases from newest to oldest, with product and operator changes that af
 
 Version key: headings carry the backend version (`drpn-ai/darpan`); the app (`darpan-ui`) has its own tags, named in each entry: `v2.x` alongside backend `v1.x`, `v3.x` from backend `v2.0.0`, and `v4.x` from backend `v3.0.0`. Backend and app tags are cut together for major and minor releases. A patch can be backend-only or carry an app tag too, as `v1.5.1` did with app `v2.6.1`.
 
-## v3.0.0 — November 2026
+## v3.0.2 — November 2026
 
-Cut together with app `v4.0.1`, `darpan-hotwax v1.0.0`, `shopify-darpan v0.9.0`, `netsuite-darpan v0.5.0`, `database-darpan v0.3.0`, `moqui-gql v1.0.0` and `darpan-agent v0.1.1`. One section covers the 3.0 line: `v3.0.0` (November 12, with app `v4.0.0` and the first `darpan-agent` tag, `v0.1.0`) and the November 12 patches, app `v4.0.1` and `darpan-agent v0.1.1`. A major release: the API contract moves to version `4`, and every component deploys together.
+Cut together with app `v4.0.2`, `darpan-hotwax v1.0.1`, `shopify-darpan v0.9.1`, `netsuite-darpan v0.5.1`, `database-darpan v0.3.0`, `moqui-gql v1.0.0` and `darpan-agent v0.1.2`. One section covers the 3.0 line: `v3.0.0` (November 12, with app `v4.0.0` and the first `darpan-agent` tag, `v0.1.0`) and the November 12 patches: app `v4.0.1` and `v4.0.2`, `darpan-agent v0.1.1` and `v0.1.2`, and `v3.0.2` with `darpan-hotwax v1.0.1`, `shopify-darpan v0.9.1` and `netsuite-darpan v0.5.1`. There is no backend `v3.0.1`. A major release: the API contract moves to version `4`, and every component deploys together.
 
 **Product**
 
-- **An update after every audit run.** A short chat message says what the run found, and an email carries a CSV per rule.
+- **An update after every audit run.** A short chat message, in the chat space the audit's settings pick, says what the run found, and an email in the app's look carries a CSV per rule. With the agent on for the tenant, Claude writes the headline and the fix lines; every count and id is Darpan's.
+- **The earliest broken step counts.** An order with findings under several statements counts once, under its earliest statement; the later findings on that order are listed with it under **Also on this order**.
 - **Findings are open or closed.** A finding inside its grace period is not reported yet; there is no pending state.
 - **One schedule per audit.** An audit runs all its checks on its own schedule.
 - **A running audit shows its reads.** Run health shows each system's read with its live record count, steps in order.
@@ -21,13 +22,13 @@ Cut together with app `v4.0.1`, `darpan-hotwax v1.0.0`, `shopify-darpan v0.9.0`,
 - **The finding panel leads with the record.** A held chain reads in lifecycle order, and an order finding lists every line of the order, a NetSuite store-credit line included. Records excused past a stage that later complete get their own place on the lifecycle board, dimmed, not counted as findings.
 - **Morning runs read the month so far,** so a fixed finding older than the recent read closes.
 - **Execute starts a run once.** Pressing Execute again, or Enter, while the uploaded files are still being read no longer starts the run a second time; the button is disabled from the first press.
-- **The audit agent.** On the audit page, an agent tab beside the deepest column of the board answers questions about the open finding and drafts changes: a schedule, a statement, its wording, turning it on or off, or a new check. A person approves, rejects or reverts each draft, and drafts waiting for approval are marked on the board. Off until a Darpan administrator enables it for a tenant and grants a user AI access with a spend limit.
+- **The audit agent.** On the audit page, an agent tab beside the deepest column of the board answers questions about the open finding and drafts changes: a schedule, a statement, its wording, turning it on or off, or a new check. A person approves, rejects or reverts each draft, and drafts waiting for approval are marked on the board. Off until a Darpan administrator enables it for a tenant and grants a user AI access with a spend limit; Darpan administrators have access in every enabled tenant.
 - **The `darpan` CLI and MCP.** A tenant's own AI agents read everything the app shows and act within the user's permissions, an audit as fully as the audit page. CLI access is per user: off by default, requested from the app, approved by a Darpan administrator.
 - **Tenant scripts.** A tenant writes and runs a script in Darpan with no code change, and a saved script can run on a schedule and post to a chat space.
 - **New systems as data.** A REST JSON system can be read from a data definition, checked, saved and retired, with no code change. A read that stops records why.
 - **Config versions.** Each tenant's audits, scripts and deployments keep versions that can be previewed and restored, and config transfer carries scripts and deployments.
-- **Products and fulfillment.** NetSuite and HotWax products reconcile two-way across the whole catalogue, and a check confirms every order NetSuite fulfills is fulfilled in HotWax.
-- **Notifications name each rule,** with one mismatch row per rule, and a field mismatch carries both records.
+- **Products and fulfillment.** NetSuite and HotWax products reconcile two-way across the whole catalogue, and a check confirms every order NetSuite fulfills is fulfilled in HotWax. NetSuite fulfillments are counted against HotWax ship groups location by location, and Shopify and HotWax orders carry their item count, so a run can check that the two line up.
+- **Notifications name each rule,** with one mismatch row per named rule; mismatches on unnamed rules share one **Field mismatches** line, and no notification prints a rule's formula. A field mismatch carries both records.
 - **Shopify connection check covers bulk reads.** **Test connection** confirms the token can run the bulk reads every run uses, and a run whose token lacks a scope stops at once and names the access it needs.
 - **Chat spaces.** Slack sits beside Google Chat when adding a chat space, and the list shows whether each delivers by bot or by webhook.
 - **Plain labels.** Fields, endpoints and systems carry one-to-three-word labels, and every button has a hint.
@@ -36,7 +37,7 @@ Cut together with app `v4.0.1`, `darpan-hotwax v1.0.0`, `shopify-darpan v0.9.0`,
 
 - All components deploy together.
 - Before deploying, set `DARPAN_APP_BASE_URL` and confirm the SYSTEM email server: the run update emails every audit's recipients after each run, and its links use that base URL.
-- The audit agent runs when `DARPAN_AGENT_ENABLED=true`, the tenant is enabled, and the user holds an AI access grant.
+- The audit agent runs when `DARPAN_AGENT_ENABLED=true`, the tenant is enabled, and the user holds an AI access grant or is a Darpan administrator. The same switch and tenant setting turn on Claude's words in the run update.
 - The agent reaches Claude by workload identity federation, with no stored Anthropic key: the task mints a short-lived AWS-signed token (`sts:GetWebIdentityToken`, audience `https://api.anthropic.com`) and the Anthropic SDK exchanges it. Enable outbound web identity federation on the AWS account, allow the task role `sts:GetWebIdentityToken` for that audience, and set `ANTHROPIC_FEDERATION_RULE_ID`, `ANTHROPIC_ORGANIZATION_ID`, `ANTHROPIC_SERVICE_ACCOUNT_ID`, `ANTHROPIC_WORKSPACE_ID` and `ANTHROPIC_IDENTITY_TOKEN_FILE`. Leave `ANTHROPIC_API_KEY` unset: it takes precedence over federation.
 - Two scheduled jobs: due script deployments every 5 minutes, and a config version for each tenant whose audit config changed and has been quiet for a minute.
 - The run engine moves to Spark 4.2.1 and Drools 10.2.0. The image's JVM flags carry what they need.
@@ -51,11 +52,12 @@ Cut together with app `v4.0.1`, `darpan-hotwax v1.0.0`, `shopify-darpan v0.9.0`,
 **Upgrade**
 
 - Start the new image first: it creates the new tables and columns.
-- Load the seed records with `./gradlew loadDarpanUpgradeData` (150 records from `v2.1.12`, including the tenant filters for the new entities), then `run#PendingMigrations`, dry run first. Four migrations run once each: stored HotWax sources move from the retired REST endpoints to GraphQL (the dry run names any transfer-order or line-unit source with no GraphQL endpoint), statement links lose their expected-cause lists, each audit gets one schedule, and pending findings open.
+- From `v3.0.0`: start the `v3.0.2` image; it adds one column. There are no seed records to load and no migrations.
+- From `v2.1.12`: load the seed records with `./gradlew loadDarpanUpgradeData` (150 records from `v2.1.12`, including the tenant filters for the new entities), then `run#PendingMigrations`, dry run first. Four migrations run once each: stored HotWax sources move from the retired REST endpoints to GraphQL (the dry run names any transfer-order or line-unit source with no GraphQL endpoint), statement links lose their expected-cause lists, each audit gets one schedule, and pending findings open.
 
 **Rollback**
 
-- Roll back as a set. To `v3.0.0` (app `v4.0.0`, `darpan-agent v0.1.0`): the agent then reads only `ANTHROPIC_API_KEY`, so set one or turn the agent off. To `v2.1.12` with app `v3.1.4` and the `v2.1` connectors: the migrations do not reverse, so findings stay open or fixed and each audit keeps the one schedule it was given. The new tables stay and are not read.
+- Roll back as a set. To `v3.0.0` with app `v4.0.1` and `darpan-agent v0.1.1`: the new column stays unread, and runs reading the item count or ship groups find those fields empty. To `v3.0.0` with app `v4.0.0` and `darpan-agent v0.1.0`: the agent then reads only `ANTHROPIC_API_KEY`, so set one or turn the agent off. To `v2.1.12` with app `v3.1.4` and the `v2.1` connectors: the migrations do not reverse, so findings stay open or fixed and each audit keeps the one schedule it was given. The new tables stay and are not read.
 
 ## v2.1.7 — October 2026
 
