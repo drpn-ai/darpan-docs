@@ -1,0 +1,18 @@
+# DAR-BE-197: gitleaks config. Default rules, plus reviewed false positives only.
+# Each allowlist is scoped to named rules and exact paths; add nothing broader.
+
+[extend]
+useDefault = true
+
+# forum.js carries the Firebase web client config of the darpan-forum project. A Firebase
+# web apiKey identifies the project to Google and ships to every browser by design; access
+# is governed by Firestore rules (wrapper tools/feature-forum/firestore.rules) and App Check.
+# Keep the key restricted to the docs domains in the Google Cloud console.
+# Both rules fire on the same line; the regex limits the allowance to a Google API key.
+[[allowlists]]
+description = "Firebase web client apiKey (public by design)"
+targetRules = ["gcp-api-key", "generic-api-key"]
+condition = "AND"
+regexTarget = "match"
+paths = ['''^forum\.js$''']
+regexes = ['''AIza[0-9A-Za-z_-]{35}''']
