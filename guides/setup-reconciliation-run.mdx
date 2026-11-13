@@ -26,6 +26,7 @@ Confirm:
 | Config and endpoint | For API sources, the saved connection and the endpoint to extract from. |
 | File types and schemas | For file uploads, how to read each input: a saved schema for JSON, or a column list for CSV. |
 | Primary IDs | One or more fields that match records across the two sources. |
+| Extract options | For API sources whose config declares any, the options the extract reads with. |
 | Rules and exclusions | The comparison logic applied to matched records. |
 
 ## Steps
@@ -33,7 +34,7 @@ Confirm:
 <Steps>
 <Step title="Open the create flow">
 
-On Home, choose **Create Run**. Answer **What kind of run?** with **Sync** (do two systems hold the same records?). **Lifecycle** builds a different kind of run; see [Lifecycle runs](/guides/lifecycle-runs).
+On Home, choose **Create Run**. Answer **What kind of run?** with **Sync** (do two systems hold the same records?). The other two choices build different kinds of run: **Lifecycle** (see [Lifecycle runs](/guides/lifecycle-runs)) and **Audit** (see [Audits](/guides/audits)).
 
 You can also open **Ask Darpan** with `Cmd/Ctrl+K` or by clicking Tara, the red panda in the corner, search for **Create Reconciliation Flow**, and open the result. That goes straight to the Sync flow.
 
@@ -47,16 +48,20 @@ Answer **What should this run be called?** with a stable, specific name. Add a s
 
 Answer **Which system provides the first source?**, then **How should … provide data?** with **File upload** or **API**.
 
-For **API**, choose the saved config for that system, then the endpoint when the config enables more than one. If no config exists yet, use **Add a … config** on the same card.
+For **API**, answer **Which … config should this source use?** with the saved config for that system, then choose the endpoint when the config enables more than one. If no config exists yet, use **Add a … config** on the same card. For NetSuite, the config card also offers **New query**; see [Write a SuiteQL query](/guides/connect-netsuite#write-a-suiteql-query).
 
 For **File upload**, choose which data the file holds when the system offers more than one kind, then the file type. For JSON, pick the saved schema that describes it, or use **Create New Schema**. For CSV, a schema is optional: pick a saved column list, or skip and type the column names.
 
 Then choose the primary ID. The picker accepts more than one field: pick several to match on a composite key, such as order ID plus line number. See [Composite matching keys](/reference/composite-matching-keys).
 
+The next card asks **What happens when a key repeats in …?** and offers **Fail the run** or **Report each as a finding**. The answer no longer changes anything: a two-system run reports every record under a repeated key as a finding and finishes with the rest of its results. See [Repeated keys](/reference/reconciliation-runs#repeated-keys).
+
+When the API config declares extract options, a last card, **Which options should … use?**, offers them as checkboxes or text fields.
+
 </Step>
 <Step title="Configure the second source">
 
-Repeat for the second source. The app requires a different system on each side; choosing the same one shows **Source 2 must use a different system than source 1.**
+Repeat for the second source. The two sides must read from different endpoints; choosing the same endpoint again shows **Source 2 must use a different system than source 1.** Two endpoints of one system, such as HotWax orders against HotWax returns, are allowed.
 
 </Step>
 <Step title="Add rules and save the run">
@@ -75,9 +80,9 @@ Open **Ask Darpan**, search for **Open Runs Settings**, and confirm the saved ru
 
 ## Comparing two instances of one system
 
-The Sync create flow in the app always compares two different systems. The service layer is less strict: it accepts the same system on both sides when the two sides use different source configurations, for example staging against production, or two regional instances that should line up. Runs like that are set up through the API.
+In the app, the Sync create flow refuses the same endpoint on both sides, even through two different configs. The service layer is less strict: it accepts the same endpoint on both sides when the two sides use different source configurations, for example staging against production, or two regional instances that should line up. Runs like that are set up through the API.
 
-The same source on both sides is always rejected, because a source compared against itself has nothing to find. Runs built from file uploads carry no source configuration, so they always need two different systems.
+The same source on both sides is always rejected, because a source compared against itself has nothing to find. Runs built from file uploads carry no source configuration, so their two sides always need different endpoints.
 
 Where both sides are the same system, run results label each side by its source rather than by the system name alone, so the two instances stay distinguishable when you review differences.
 
@@ -93,7 +98,7 @@ When a source system exposes more than one endpoint, Darpan asks which one to ex
 
 If only one endpoint is available, the question is skipped — a choice with a single option is not a choice. Endpoints that a source cannot use, and endpoints only reachable through the API rather than a file upload, are filtered out rather than offered and then rejected.
 
-Which endpoints a source offers is controlled per source configuration; see [Manage users and access](/guides/manage-users-and-access).
+Which endpoints a source offers is controlled per source configuration; see [Endpoint access per source configuration](/guides/manage-users-and-access#endpoint-access-per-source-configuration).
 
 ## Expected result
 

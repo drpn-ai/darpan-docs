@@ -31,9 +31,9 @@ Confirm:
 1. From **Ask Darpan**, open **Run Reconciliation**.
 2. At **Select a Run**, choose the saved run. Opening the page from a run skips this card.
 3. If Darpan asks, confirm the first and second systems for the run.
-4. When a side reads from an API, answer **Which API time period should we use?** with **Previous Day**, **Previous Week**, **Previous Month**, or **Custom Dates**. Custom dates asks for a start and end date next.
+4. When a side reads from an API, answer **Which API time period should we use?** with **Previous Day**, **Previous Week**, **Month to Date**, or **Custom Dates**. Each of the first three names the dates it covers; **Custom Dates** opens **Select custom dates**, a calendar for the start and end date. See [Run window](/reference/reconciliation-runs#run-window).
 5. For each side that is a file upload, choose the file when Darpan asks **Upload the … file**. Darpan checks that the file matches the type the run expects, and refuses a JSON Schema in place of data.
-6. Choose **Execute**. Darpan opens the run so you can watch it work.
+6. Choose **Execute**. The button reads **Running…** until the run starts, so a second press does not start a second run. Darpan opens the run so you can watch it work.
 
 If the run setup does not exist yet, start with [Set up a reconciliation run](/guides/setup-reconciliation-run).
 
@@ -48,6 +48,7 @@ A run moves through a fixed sequence of stages, and the stage it is on tells you
 | **Preparing run** | Working out what to compare: the saved run, its sources, and the date window. |
 | **Extracting** *first system* | Pulling records from the first source. |
 | **Extracting** *second system* | Pulling records from the second source. |
+| **Re-checking older findings** | Reading an audit's older open findings again on each side, before the compare judges them. |
 | **Comparing records** | Matching records and applying rules. |
 | **Verifying differences** | Rechecking missing records against sources that support point lookups, so an export timing skew is not reported as a real difference. Shown as **Verifying** *system*'s diffs when it names the system it rechecked. |
 | **Verifying exchange pairs** | Looking up one system's exchanges in the other. Shown as **Verifying** *system*'s exchange pairs. |
@@ -56,7 +57,7 @@ A run moves through a fixed sequence of stages, and the stage it is on tells you
 | **Writing results** | Writing the result you will review, after verification has corrected it. |
 | **Sending notifications** | Sending run-completion alerts. |
 
-Stages that do not apply are skipped: a file upload has no extract stage, a run that checks one system has no second extract, each verification pass runs only for sources that support it, and **Drawing conclusions** runs only when the run has conclusion rules. The stage codes behind these labels are listed in [Reconciliation runs](/reference/reconciliation-runs#stage-sequence).
+Stages that do not apply are skipped: a file upload has no extract stage, a run that checks one system has no second extract, **Re-checking older findings** runs only on an audit window that has older open findings, each verification pass runs only for sources that support it, and **Drawing conclusions** runs only when the run has conclusion rules. The stage codes behind these labels are listed in [Reconciliation runs](/reference/reconciliation-runs#stage-sequence).
 
 To be told when it finishes instead of watching, choose **Notify me** — see [Run-completion alerts](/guides/run-completion-alerts).
 
@@ -69,6 +70,10 @@ Stopping is cooperative rather than instant. Darpan records the request and the 
 <Warning>
 Any work completed so far is discarded. A stopped run finishes as cancelled and produces no reviewable output — it is not a pause, and it cannot be resumed.
 </Warning>
+
+## Retrying a failed run
+
+A failed run does not have to start over. Once the cause is fixed, or if it was transient, choose **Retry from** *step* on the run page, named after the step that failed (**Retry** when no single step is marked failed). The retry is a new run over the same days that reuses what the failed run already read. When Darpan refuses a retry, and why, is covered in [Failed run](/troubleshooting/reconciliation-runs#failed-run).
 
 ## Expected result
 

@@ -3,7 +3,7 @@ title: "Darpan documentation"
 description: "Product docs and release notes for Darpan."
 ---
 
-Darpan is a reconciliation workspace. It connects source systems, describes source data with schemas, executes reconciliation runs, applies RuleSets, and preserves the output needed to explain each difference.
+Darpan is a reconciliation workspace. It connects source systems, describes source data with schemas, executes reconciliation runs, applies RuleSets, audits what must stay true, and preserves the output needed to explain each difference.
 
 Most of the work in Darpan is front-loaded: connections, schemas, and a saved run are set up once and reused. The docs follow that shape — set up your sources, build a run, then review output and handle the admin around it. If this is your first time, the quickstart walks the full path end to end.
 
@@ -12,7 +12,7 @@ Most of the work in Darpan is front-loaded: connections, schemas, and a saved ru
 </Card>
 
 <Card title="Tenant Admin quickstart" icon="user-gear" href="/getting-started/tenant-admin-quickstart" horizontal>
-  Manage one tenant's settings, connections, saved runs, automations, and results.
+  Manage one tenant's settings, connections, saved runs, audits, automations, and results.
 </Card>
 
 ## Set up sources
@@ -59,6 +59,9 @@ Most of the work in Darpan is front-loaded: connections, schemas, and a saved ru
   <Card title="Lifecycle runs" icon="diagram-project" href="/guides/lifecycle-runs">
     See where NetSuite records stop on their way through.
   </Card>
+  <Card title="Audits" icon="clipboard-check" href="/guides/audits">
+    Write down what must be true, check it on a schedule, and track each finding until it is fixed.
+  </Card>
 </Columns>
 
 ## Admin & alerts
@@ -76,6 +79,9 @@ Most of the work in Darpan is front-loaded: connections, schemas, and a saved ru
   <Card title="Run-completion alerts" icon="bell" href="/guides/run-completion-alerts">
     Get a Google Chat or Slack message when a run finishes flagging differences.
   </Card>
+  <Card title="AI provider settings" icon="microchip" href="/guides/configure-ai">
+    What the AI provider settings in Tenant Settings store.
+  </Card>
 </Columns>
 
 ## Find your way around
@@ -86,6 +92,9 @@ Most of the work in Darpan is front-loaded: connections, schemas, and a saved ru
   </Card>
   <Card title="Ask Darpan navigation" icon="magnifying-glass" href="/getting-started/ask-darpan-navigation">
     Open pages, setup records, saved runs, and generated outputs from one search surface.
+  </Card>
+  <Card title="Darpan CLI" icon="terminal" href="/getting-started/set-up-darpan-cli">
+    Read your tenant's runs, results, and audit findings from a terminal.
   </Card>
 </Columns>
 

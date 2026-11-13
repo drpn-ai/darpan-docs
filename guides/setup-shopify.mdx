@@ -38,9 +38,9 @@ Choose **Create Shopify Config**. Answer the setup questions:
 4. **Access Token**
 5. Shopify label
 
-Save the connection. Darpan creates it as active and derives the connection ID from the label. If the ID, active state, or endpoint access needs to change later, open the saved connection from **Open Shopify Settings** and edit it.
+Save the connection. Darpan creates it as active and gives it a **Config ID**. The ID is set by Darpan and cannot be edited.
 
-The edit form also carries **Available Endpoints**, where you choose which endpoints this connection may be read through, and the **Shared with** panel.
+To change the connection later, open it from **Open Shopify Settings** and choose **Edit Shopify Config**. The edit form holds **Description**, **Shop/API URL**, **API Version**, **Timezone**, **Active**, **Access Token (leave blank to keep existing)**, **Available Endpoints**, where you choose which endpoints this connection may be read through, and the **Shared with** panel.
 
 </Step>
 <Step title="Confirm the connection is reusable">
@@ -66,7 +66,7 @@ Each connection enables endpoints separately under **Available Endpoints**. An e
 
 ## Validation
 
-Open the saved connection from **Open Shopify Settings** and choose **Run connection diagnostics**. Darpan checks the credentials against Shopify and lists each check with its result, without running a reconciliation.
+Open the saved connection from **Open Shopify Settings** and choose **Run connection diagnostics**. Darpan checks the credentials against Shopify and lists each check with its result, without running a reconciliation. The last check, **Bulk reads allowed**, confirms the token can run the bulk reads every run uses. A token can read orders and still fail it.
 
 Then run one small reconciliation with a narrow date range and confirm Shopify returns records before you schedule it.
 
@@ -79,13 +79,18 @@ Open the saved connection's edit form. The **Shared with** panel shows the ownin
 - **+ Add tenant** opens a picker of tenants you can share with. Choosing one grants it access.
 - The × on a peer chip revokes that tenant's access. The chip turns into **… removed** with an **undo** link for a few seconds.
 
-Only a Tenant Admin (or a Super Admin) can change sharing. Peers use the connection; they do not take it over, and the credential itself is never shown to them. Revoking access stops runs in that tenant from resolving the source, so check which of its runs depend on it first.
+Only a Tenant Admin (or a Super admin) can change sharing. Peers use the connection; they do not take it over, and the credential itself is never shown to them. Revoking access stops runs in that tenant from resolving the source, so check which of its runs depend on it first.
 
 The same panel appears on HotWax connections and on NetSuite auth profiles and endpoints.
+
+## Remove a connection
+
+On the saved connection's page, choose **Delete Shopify config** and confirm. Only the tenant that owns the connection can delete it, and not while it is shared with other tenants. Stop sharing it first. Darpan does not check whether runs still read through the connection, so check which runs depend on it before you delete it.
 
 
 ## Troubleshooting
 
 - If Shopify fails, run the connection diagnostics first, then check the shop URL, API version, token validity, and order-read permission.
+- If **Bulk reads allowed** fails, the token cannot run bulk queries even though it reads orders. [Connections troubleshooting](/troubleshooting/connections#shopify) says how to turn them on.
 - If Shopify does not appear as an API source, confirm the connection is active and that the endpoint you need is enabled under **Available Endpoints**.
 - If records return outside the expected window, confirm the timezone used for Shopify date windows.

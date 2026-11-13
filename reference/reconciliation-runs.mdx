@@ -105,7 +105,7 @@ A run that checks one system has no second side: every row it reports is a findi
 
 A compare ID should identify exactly one record on each side. When a side of a two-system run produces the same compare ID more than once after normalization:
 
-- Every record under the repeated key becomes a finding (`DUPLICATE_IN_FILE_1` or `DUPLICATE_IN_FILE_2`), listed under **Duplicates** on the run page.
+- Every record under the repeated key becomes a finding (`DUPLICATE_IN_FILE_1` or `DUPLICATE_IN_FILE_2`) for the side it repeats on. It counts toward the difference count.
 - The key is left out of the compare on both sides, so the other side's record is not reported missing.
 - The run finishes with the rest of its results and records a processing warning naming how many keys repeated.
 

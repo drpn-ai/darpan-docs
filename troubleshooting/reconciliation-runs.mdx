@@ -46,7 +46,7 @@ A scheduled run whose source read fails ends failed and is retried. It does not 
 
 ## Wrong window or setup, mid-run
 
-A run started against the wrong window or setup does not have to finish. Choose **Cancel run** and confirm. The run ends at its next step boundary and finishes as cancelled; work completed so far is discarded. See [Stopping a run](/guides/run-reconciliation#stopping-a-run).
+A run started against the wrong window or setup does not have to finish. Choose **Cancel run** and confirm. The run ends at its next checkpoint (a stage boundary, or a progress tick during a long paged read) and finishes as cancelled; work completed so far is discarded. See [Stopping a run](/guides/run-reconciliation#stopping-a-run).
 
 ## Zero or too few matches
 
@@ -58,7 +58,7 @@ Check:
 - Identifiers use the same formatting.
 - The selected schema reads the intended columns.
 - Both sides cover the same business period. **Month to Date** reads the 1st of yesterday's month through yesterday, so a run started on the 1st reads the whole previous month.
-- The run page's **Duplicates**. A key that repeats on either side is left out of the compare on both sides, so its records count as duplicates rather than matches. If a source legitimately has several rows per key, use a [composite matching key](/reference/composite-matching-keys).
+- Repeated keys. A key that repeats on either side is left out of the compare on both sides, so its records count as duplicates rather than matches. If a source legitimately has several rows per key, use a [composite matching key](/reference/composite-matching-keys).
 
 ## Difference count is higher than expected
 
@@ -72,5 +72,5 @@ Classify each difference before changing configuration:
 - Schema parsing issue
 - Mapping or normalization issue
 - Rule classification issue
-- Repeated key (listed under **Duplicates**)
+- Repeated key (a duplicate finding for the side it repeats on)
 - Expected business variance

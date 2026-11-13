@@ -33,9 +33,12 @@ Inside a workflow, Escape can return you to the surface that launched the workfl
 
 Ask Darpan searches app destinations and selected records. The table below shows what it covers and what to search for each destination.
 
+Ask Darpan also lists a row that names you and the active tenant, as **&lt;you&gt; · &lt;tenant&gt;**. It is the fastest way to confirm which tenant you are in; choose it to open **User Settings**.
+
 | What you want | Search for | Result to open |
 | --- | --- | --- |
 | Main workspace | **Go to Dashboard** | **Go to Dashboard** |
+| Every run, on Home | **Runs** | **Runs** (opens Home) |
 | Active tenant and account settings | **Open User Settings** | **Open User Settings** |
 | Tenant settings | **Open Tenant Settings** | **Open Tenant Settings** |
 | Run-completion notifications | **Configure Notifications** | **Configure Notifications** |
@@ -48,12 +51,16 @@ Ask Darpan searches app destinations and selected records. The table below shows
 | Schema library | **Open Schema Library** | **Open Schema Library** |
 | Schema creation | **Create Schema** | **Create Schema** |
 | Sync run setup | **Create Reconciliation Flow** | **Create Reconciliation Flow** |
-| Lifecycle run setup | **Create Run** | **Create Run** (opens the Lifecycle builder; **Create Run** on Home asks Sync or Lifecycle first) |
+| Lifecycle run setup | **Create Run** | **Create Run** (opens the Lifecycle builder; **Create Run** on Home asks Sync, Lifecycle, or Audit first) |
 | Saved runs and their settings | **Open Runs Settings** | **Open Runs Settings** |
 | Run a comparison | **Run Reconciliation** | **Run Reconciliation** |
 | Automation setup | **Open Automations** | **Open Automations** |
 | Saved result output | Run name or output file name | **Open Result: ...** |
 | Roadmap and requests | **Open Requests and Roadmap** | **Open Requests and Roadmap** |
+
+Ask Darpan shows only what your role allows. **Create Schema**, **Create Reconciliation Flow**, **Create Run**, and **Edit SFTP: ...** need edit rights on the active tenant; **Run Reconciliation** needs permission to run. See [Auth and access](/reference/auth-and-access#roles).
+
+Audits, scripts, and config history have no Ask Darpan destination. Open an audit from its tile in Home's **Audit** section, and scripts and config history from **Open Tenant Settings**.
 
 ## Search behavior
 
@@ -106,4 +113,4 @@ These run as soon as you choose them; they take no argument. There is no user me
 
 Opening a link that belongs to another tenant switches the active tenant to match, so the link resolves to the record it names rather than failing.
 
-Because that changes a setting shared by every tab, Darpan shows a banner saying which tenant you were moved into. The banner stays rather than fading — it describes a condition that is still true while you read it.
+Because that changes a setting shared by every tab, Darpan says which tenant you were moved into, in the notice pill at the top of the screen. The notice shows once, for a few seconds, and does not come back on later pages. Ask Darpan's tenant row shows the active tenant at any time.

@@ -3,7 +3,7 @@ title: "Review results"
 description: "Interpret generated reconciliation output."
 ---
 
-The results page is where a reconciliation earns its keep. It shows which records matched cleanly, which are missing from one side, and which pairs have field-level differences — organized so you can act on what you find, not just download a file.
+The results page is where a reconciliation earns its keep. It shows which records matched cleanly, which are missing from one side, and which pairs have field-level differences — organized so you can act on what you find rather than dig through a downloaded file.
 
 ## Review order
 
@@ -22,7 +22,7 @@ The results page is where a reconciliation earns its keep. It shows which record
 | **Run steps** | The stages the run went through and how each ended. Collapse it once you have read it. |
 | Difference buckets | **Missing from** *system* for each side, and **Rule differences** when any rule failed. A run that checks one system shows a single **Findings** bucket. Select a bucket to filter the list to it. |
 | Conclusion tiles | Shown in place of the difference buckets when the run's scope has conclusion rules. See [Conclusions](#conclusions). |
-| Rule selector | The panel at the side lists **All** plus each rule with its count. Pick a rule to see only the pairs that failed it. |
+| Rule selector | The panel at the side lists **All** plus each rule with its count. Pick a rule to see only the pairs that failed it; the buckets give way to one **Total results** count. |
 | **Record search** | Type a record ID to find it in the differences. |
 | Download | **Download saved result** saves the full result file. |
 | **Notify me** | Sends a message to your chat space when this run finishes. See [Run-completion alerts](/guides/run-completion-alerts). |
@@ -53,25 +53,26 @@ A condition reads a field on one side and tests it:
 | **is within the last hours** | Holds a time within the given number of hours before the run. |
 | **is blank** / **has a value** | Is empty, or has a value. |
 
-Leave the test as **presence only** to check only whether the record is there. **Save conclusions** stores the tree; **Revert** drops unsaved edits. A conclusion's fix text, where the run's configuration gives one, is kept as it is.
+A condition can also set the record's presence on that side (**any**, **kept**, **excluded** or **absent**), with **full key** or **first key field** as its key scope, and, once it names a field, whether **all values** or **any value** must pass. Leave the test as **presence only** to check only whether the record is there. **New** beside a conclusion names a conclusion that is not in the list yet. **Save conclusions** stores the tree; **Revert** drops unsaved edits. A conclusion's fix text, where the run's configuration gives one, is kept as it is.
 
 ## Run history
 
 **View previous runs** opens the history for one saved run, grouped into:
 
 - **In Progress**: runs still working. Open one to watch it.
-- **Needs Attention**: runs that failed.
+- **Needs Attention**: runs that failed. Open one to retry it from the step that failed; see [Retrying a failed run](/guides/run-reconciliation#retrying-a-failed-run).
 - **Most Recent**: the latest result.
 - **Previous Results**: earlier results, newest first.
 
 ## Common result categories
 
-| Category | Meaning |
+| Category | Where it shows |
 | --- | --- |
-| Matched | Darpan found corresponding records with no relevant difference. |
-| Missing in source | A record appears in one source but not the other. |
-| Value mismatch | A matched record has field-level differences. |
-| Processing error | The run could not parse, compare, or output part of the data. |
+| Matched | Not listed. A matched pair that passes every rule is not a difference. |
+| Missing from one side | The **Missing from** *system* bucket for the side that lacks it. |
+| Value mismatch | The **Rule differences** bucket, and under each failed rule in the rule selector. |
+| Repeated key | Each record under the key is a finding. See [Repeated keys](/reference/reconciliation-runs#repeated-keys). |
+| Processing error | The run fails. The run page shows the error, and **Run steps** marks the step that failed. See [Failed run](/troubleshooting/reconciliation-runs#failed-run). |
 
 ## Where the numbers come from
 

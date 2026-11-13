@@ -1,15 +1,15 @@
 ---
 title: "Manage users and access"
-description: "Create users, grant tenant access, and assign roles."
+description: "Create users, grant tenant access, assign roles, and turn on CLI and AI access."
 ---
 
-User management is a Super Admin task — it sits outside the Tenant Admin scope entirely. Knowing where that line is saves time when a Tenant Admin asks why they cannot add someone to their tenant, or when a new team member cannot see the right data after signing in.
+User management is a Darpan admin task — it sits outside the Tenant Admin scope entirely. Knowing where that line is saves time when a Tenant Admin asks why they cannot add someone to their tenant, or when a new team member cannot see the right data after signing in.
 
-If you are a Tenant Admin who needs a user added or a role changed, ask a Super Admin. See [When to ask a Super Admin](/getting-started/tenant-admin-quickstart#when-to-ask-a-super-admin).
+If you are a Tenant Admin who needs a user added or a role changed, ask a Darpan admin. See [When to ask a Darpan admin](/getting-started/tenant-admin-quickstart#when-to-ask-a-darpan-admin).
 
 ## Where users are managed
 
-Users, tenants, and tenant membership are managed in the **Darpan admin app**, a separate console for platform operators. Only Super Admins can sign in to it. The Darpan app itself has no user-management screens, and **Ask Darpan** has no user-management commands.
+Users, tenants, and tenant membership are managed in the **Darpan admin app**, a separate console for platform operators. Only Darpan admins can sign in to it. The Darpan app itself has no user-management screens, and **Ask Darpan** has no user-management commands. The one access step a user starts in the app is a CLI access request; see [CLI access](#cli-access).
 
 ## Access model
 
@@ -28,12 +28,12 @@ Each tenant membership carries one of four roles:
 | Tenant user | Yes | Yes | No | No |
 | Company view only | Yes | No | No | No |
 
-**Super Admin** is a platform role, not a tenant role. It manages users, tenants, and membership across every tenant from the admin app.
+**Darpan admin** is a platform role, not a tenant role. It manages users, tenants, membership, and CLI and AI access across every tenant from the admin app. The exact groups behind it are in [Auth and access](/reference/auth-and-access#roles).
 
 ## Create a user and grant access
 
 <Note>
-These steps are for Super Admins. If you are a Tenant Admin, ask a Super Admin to do them.
+These steps are for Darpan admins. If you are a Tenant Admin, ask a Darpan admin to do them.
 </Note>
 
 <Steps>
@@ -64,11 +64,21 @@ The user signs in, sets a new password, and lands in a tenant they belong to. Wh
 
 ## Changing access
 
-In the admin app, a Super Admin can:
+In the admin app, a Darpan admin can:
 
 - On the tenant's page, change a member's role or **Remove** them from the tenant. Removing access from one tenant does not affect their other tenants.
 - On the user's page, **Reset Password**: sets a new temporary password, signs the user out everywhere, and forces a password change at their next sign-in.
-- **Disable** the account: the user can no longer sign in and is signed out everywhere. **Enable** reverses it. A Super Admin cannot disable their own account.
+- **Disable** the account: the user can no longer sign in and is signed out everywhere. **Enable** reverses it. A Darpan admin cannot disable their own account.
+
+## CLI access
+
+The Darpan CLI is off by default and set per user, per tenant. A user asks for it in **User settings** under **CLI sessions**: the **CLI in &lt;tenant&gt;** card has **Request access in &lt;tenant&gt;**, then reads **Requested &lt;date&gt;. A Darpan admin will turn it on.** until a Darpan admin approves or declines the request in the admin app. A grant can carry an end date and can be paused or revoked. Darpan admins use the CLI without a grant.
+
+Setup steps for the user: [Set up the Darpan CLI](/getting-started/set-up-darpan-cli). Sign-in lengths and limits: [Auth and access](/reference/auth-and-access#cli-access).
+
+## AI access
+
+The audit agent answers a user only when it is on for the tenant and that user has AI access there. A Darpan admin grants AI access per user, per tenant, for a period and with a spend limit; access pauses on its own when spend reaches the limit. Darpan admins have AI access in every tenant where the agent is on. See [The audit agent](/guides/audits#the-audit-agent) and [Auth and access](/reference/auth-and-access#ai-access).
 
 ## Endpoint access per source configuration
 

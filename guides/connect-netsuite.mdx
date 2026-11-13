@@ -19,10 +19,7 @@ Confirm:
 
 ## Open NetSuite settings
 
-From **Ask Darpan**, open **Open NetSuite Settings**. The page has two sections:
-
-- **Auth**: authentication profiles. **Create Auth Profile** adds one.
-- **Endpoints**: NetSuite URLs that use an auth profile. **Create Endpoint** adds one.
+From **Ask Darpan**, open **Open NetSuite Settings**. The **NetSuite** page lists your auth profiles under **Auth**; **Create Auth Profile** adds one. Endpoints are not on this page: they live on each auth profile's details page.
 
 ## Create an auth profile
 
@@ -35,10 +32,10 @@ Choose **Create Auth Profile**, then answer **How should this NetSuite auth prof
 | **Bearer** | An API token. |
 | **OAuth2 M2M JWT** | Token URL, **Client ID**, **Cert ID**, scopes (**RESTlets**, **REST Web Services**), and the **Private Key PEM**. |
 
-Every profile also asks whether it is active, a label, and a name or ID.
+Every profile also asks **Should this auth profile be active?** and, last, the label Darpan shows for it. Darpan gives the profile its ID; the ID cannot be edited.
 
 <Note>
-For OAuth 2.0, the **Client ID** comes from the NetSuite integration record and is 64 hexadecimal characters. The **Cert ID** comes from the certificate mapping and is a 43-character value. They are easy to swap; check them before saving.
+For OAuth 2.0, the **Client ID** comes from the NetSuite integration record and is 64 hexadecimal characters. The **Cert ID** comes from the certificate mapping and is a 43-character value. They are often pasted into each other's fields; check them before saving.
 </Note>
 
 Secrets are write-only on edit: leave the password, token, or private key blank to keep the stored value.
@@ -52,7 +49,7 @@ Choose a profile under **Auth** to open its details page: its settings, the **En
 
 ## Create an endpoint
 
-Choose **Create Endpoint** and answer the setup questions: the endpoint URL, the HTTP method (**POST**, **PUT**, or **GET**), the auth profile it uses, optional headers as JSON, connect and read timeouts in seconds, whether it is active, a label, and a name or ID.
+Open the auth profile the endpoint will use, choose **Create Endpoint** under **Endpoints**, and answer the setup questions: the endpoint URL, the HTTP method (**POST**, **PUT**, or **GET**), the auth profile it uses (the one you came from is already selected), optional headers as JSON, connect and read timeouts in seconds, whether it is active, and a label. Darpan gives the endpoint its ID.
 
 ## Write a SuiteQL query
 
@@ -63,13 +60,18 @@ The query setup asks, one question at a time:
 | Question | What you choose |
 | --- | --- |
 | **Which NetSuite account should this query read?** | An auth profile. |
-| **What should the query ID be?** and **What label should Darpan show for this query?** | Its name. |
+| **What label should Darpan show for this query?** | Its name. |
 | **Which record type?** | The NetSuite record type to read. |
 | **Which date puts a record on a day?** | The date column the run's window applies to. |
-| **Every record, or only matching ones?** | All records of that type, or only those matching rules you add (**Add match rule**). |
+| **Every record, or only matching ones?** | All records of that type, or only matching ones. |
+| **Which records match?** | Asked only for matching ones. The rules a record must meet (**Add match rule**). |
 | **Which columns should it read?** | The fields the run compares (**Add column**). |
 | **Which field is the key?** | The field that matches a NetSuite record to the other side. |
 | **Preview, then save.** | Pick a day and choose **Preview** to see the first rows NetSuite returns and the SuiteQL Darpan sent. Nothing is saved until you save. |
+
+## Import existing NetSuite checks
+
+If the tenant already has NetSuite checks, Home shows **Import NetSuite Checks** beside **Create Run** to users who can edit the tenant. It turns the checks into runs in one step and reports how many it imported and skipped, with the reason for each skip. Running it again adds only checks that are not yet in a run.
 
 ## Share with another tenant
 
@@ -77,7 +79,11 @@ When the same NetSuite account serves several tenants, the owning tenant can sha
 
 ## Expected result
 
-The auth profile and endpoint appear under **Open NetSuite Settings** with the labels you gave them.
+The auth profile appears under **Auth** on the **NetSuite** page with the label you gave it, and its endpoints appear under **Endpoints** on the profile's details page.
+
+## Troubleshooting
+
+Run the diagnostics on the auth profile first. [Connections troubleshooting](/troubleshooting/connections#netsuite) lists each failed check and its fix, including a **Client ID** and **Cert ID** pasted into each other's fields.
 
 ## Next step
 

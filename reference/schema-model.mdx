@@ -12,7 +12,7 @@ A schema is a saved JSON Schema document that describes the shape of one source'
 | Name | Unique within a tenant. Two tenants can each have a schema with the same name. |
 | Schema text | The JSON Schema document. |
 | Description | Optional free text. |
-| System | Optional source system the schema belongs to. |
+| System | The source system the schema belongs to. The schema wizard requires one; the API leaves it optional. |
 
 Every saved schema is active. There is no draft, review, or adoption state: a saved schema can be used by a run as soon as it exists.
 
@@ -26,6 +26,13 @@ Every saved schema is active. There is no draft, review, or adoption state: a sa
 | Refine | You adjust an existing or inferred schema and save the result. |
 
 Inference is deterministic: the same sample produces the same schema.
+
+## Limits
+
+| Limit | Value |
+| --- | --- |
+| Saved schema text | 5 MB by default, set by the `darpan.jsonschema.maxSchemaTextBytes` property. |
+| CSV header sample | The header row must fit in the first 64 KB of the file. A longer header, or a file with no header row, is refused. |
 
 ## How runs use a schema
 

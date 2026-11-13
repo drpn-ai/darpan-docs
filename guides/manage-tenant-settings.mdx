@@ -1,9 +1,9 @@
 ---
 title: "Manage tenant settings"
-description: "Set the shared tenant timezone and register the Google Chat or Slack spaces that reconciliation runs report to."
+description: "Set the shared tenant timezone, register the Google Chat or Slack spaces runs report to, and find config history and tenant scripts."
 ---
 
-Two settings define how your tenant behaves for everyone on it: the shared timezone and the chat spaces runs report to. Neither takes long to configure — but getting both right before your first automated run saves your team from reading timestamps in the wrong zone and having to open the app to find out whether a sync failed.
+Two settings define how your tenant behaves for everyone on it: the shared timezone and the chat spaces runs report to. Neither takes long to configure — but getting both right before your first automated run saves your team from reading timestamps in the wrong zone and having to open the app to find out whether a sync failed. The same page also holds the streaks space, config history, and tenant scripts.
 
 <Note>
 Confirm the active tenant before saving. Tenant settings apply to the selected tenant, not every tenant you can access.
@@ -20,11 +20,14 @@ Confirm:
 
 ## What Tenant Settings controls
 
-| Setting | Use it for | Tenant Admin access |
-| --- | --- | --- |
-| Timezone | The tenant's default date and time interpretation for workflows, schedules, and date windows. | View and edit |
-| Notifications | The registry of named Google Chat or Slack spaces that finished runs report to. | View and edit |
-| AI configuration | Stored AI provider settings. No feature uses them yet; see [AI provider settings](/guides/configure-ai). | Darpan Admin only |
+| Section | Tile | Use it for | Tenant Admin access |
+| --- | --- | --- | --- |
+| **AI Configuration** | The selected provider | Stored AI provider settings. No run reads them; see [AI provider settings](/guides/configure-ai). | Darpan admin only |
+| **Localization** | **Timezone** | The tenant's default date and time interpretation for workflows, schedules, and date windows. | View and edit |
+| **Localization** | **Streaks space** | The chat space that gets tenant-wide streak messages. | View and edit |
+| **Operations** | **Notifications** | The registry of named Google Chat or Slack spaces that finished runs report to. | View and edit |
+| **Operations** | **Config history** | Saved versions of the tenant's config, and restoring one. | View and restore |
+| **Operations** | **Scripts** | JEXL scripts the tenant writes, runs, and can post to a chat space on a schedule. | View and edit |
 
 ## Steps
 
@@ -49,20 +52,27 @@ Select the timezone for the tenant and save. Use the timezone that operators exp
 
 The tenant timezone leads: when it is set, everyone on the tenant sees times in it, whatever their personal setting. See [Timezones and how dates resolve](#timezones-and-how-dates-resolve) below.
 
-Changing it does not move existing automations. Each automation keeps the zone it was saved with; see [Set up an automation](/guides/setup-automation#timezone).
+Changing it does not move existing automations. Each automation keeps the zone it was saved with; see [Set up an automation](/guides/setup-automation#timezone). An audit with no zone of its own is different: it uses the tenant's zone for its schedule and its day window.
+
+</Step>
+<Step title="Pick a streaks space (optional)">
+
+In **Localization**, choose **Streaks space**. Darpan asks **Which chat space gets streaks?** Pick an active space, or **None** to send no tenant-wide streak messages, and choose **Save Streaks Space**.
+
+This space gets the streaks every automation earns together. A streak one automation earns posts to that automation's own space.
 
 </Step>
 <Step title="Register chat spaces">
 
 In **Operations**, choose **Notifications**.
 
-Add one entry per destination: a name that is unique within the tenant, the chat product (**Google Chat** or **Slack**), and either the space's incoming webhook URL or, for a connected Slack workspace, a channel. Darpan validates a webhook URL on save.
+Add one entry per destination: a name that is unique within the tenant, the chat product (**Google Chat** or **Slack**), and either the space's incoming webhook URL or, for a connected Slack workspace, a channel. Darpan validates a webhook URL on save. The list shows each space's chat product and whether it delivers by **bot** or **webhook**.
 
 <Warning>
 Webhook URLs are stored in clear text and returned to members of the tenant who can read its chat spaces. Anyone holding the URL can post into the space. If one leaks, create a new webhook in the chat product and update the space.
 </Warning>
 
-Automations link to a space, and individual users pick one of these spaces as their personal default. For the end-to-end alert flow, see [Run-completion alerts](/guides/run-completion-alerts).
+Automations link to a space, and individual users pick one of these spaces as their personal default. The same spaces receive an audit's update after each run, scheduled script messages, and streaks. For the end-to-end alert flow, see [Run-completion alerts](/guides/run-completion-alerts).
 
 </Step>
 <Step title="Verify the change">
@@ -84,9 +94,25 @@ The tenant leads because reconciliation dates describe the tenant's business day
 
 This affects more than formatting. Run date windows and API day ranges are anchored to midnight in the resolved timezone. Set the tenant timezone to the one your operations actually run on.
 
-Scheduled automations are the exception: each one runs in its own saved zone. See [Set up an automation](/guides/setup-automation#timezone).
+Scheduled automations are the exception: each one runs in its own saved zone. See [Set up an automation](/guides/setup-automation#timezone). An audit with no zone of its own runs in the tenant's zone; see [Audits](/guides/audits#audit-settings).
 
 Times in the app carry no zone code. Rest on one and Tara names its zone and offset. A run's date window is shown in the zone the run was anchored in, which can differ from the resolved zone above, and Tara gives the exact instants the run covered.
+
+## Config history
+
+**Operations** > **Config history** lists versions of the tenant's config. A version is kept a minute after an audit, check, run or connection changes. **Keep a version now** saves one at once.
+
+Choose an older version to **Restore** it. Restoring and keeping a version need tenant edit access; others can read the list.
+
+## Tenant scripts
+
+**Operations** > **Scripts** holds the tenant's JEXL scripts. A script reads `input` and the `d:` functions listed on the page, nothing else, and runs in Darpan's sandbox with no code change.
+
+1. Choose **New script**, give it a **Name**, and pick a **Profile**: **Script (loops, variables)** or **Expression (one line)**.
+2. Pick the **Input**: **Sample JSON** you paste, or **A run result** you choose.
+3. Choose **Run** to see the result and any log lines, then **Save script**.
+
+A saved script gets a **Deploy** section: **Every day at** a time, **Post to** a chat space, and the **Run on schedule** switch, then **Save deployment**. **Preview message** shows what would post; **Send now** posts it once. Writing, running, and deploying scripts need tenant edit access.
 
 ## Share a source configuration with another tenant
 
@@ -101,4 +127,4 @@ Sharing is set on the connection itself, not in Tenant Settings. Open the Shopif
 | A space is registered but no message arrives | Confirm the space is active and still has a webhook, and that an automation is linked to it or someone subscribed with **Notify me**. Registering a space does not by itself route any run to it. |
 | A space cannot be deleted | An automation or an active run subscription still references it. Deactivate it instead. |
 | Timestamps differ between two people on the same tenant | The tenant has no timezone set, so each person's **User Settings** timezone applies. Set the tenant timezone. |
-| AI configuration shows **Darpan admin only** | AI provider settings are Darpan Admin only. No feature uses them yet. |
+| AI configuration shows **Darpan admin only** | AI provider settings are Darpan admin only. No run reads them; see [AI provider settings](/guides/configure-ai). |

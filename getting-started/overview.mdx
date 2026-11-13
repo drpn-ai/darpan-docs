@@ -3,7 +3,7 @@ title: "Product overview"
 description: "How Darpan turns setup records into reviewable reconciliation output."
 ---
 
-Most of Darpan's work is front-loaded: you build connections, schemas, and rules once, then attach them to a saved run. After that, running and reviewing is the repeatable part. This page maps the product objects and how they connect — [Core concepts](/getting-started/core-concepts) has the vocabulary definitions if you need them.
+Most of Darpan's work is front-loaded: you build connections, schemas, and rules once, then attach them to a saved run. After that, running and reviewing is the repeatable part, and an audit can run its checks for you on a schedule. This page maps the product objects and how they connect — [Core concepts](/getting-started/core-concepts) has the vocabulary definitions if you need them.
 
 ## Story of a run
 
@@ -11,7 +11,7 @@ Most of Darpan's work is front-loaded: you build connections, schemas, and rules
 2. Darpan opens the home page, **Let's Investigate**, where saved runs are visible as operational work items.
 3. The user selects an existing run or creates a new one.
 4. The run points to source systems, schemas, primary ID fields, and optional RuleSets.
-5. Darpan stages source data from uploaded files, text payloads, or configured connections.
+5. Darpan stages source data from uploaded files or configured connections.
 6. The backend compares records, applies rules, and writes generated output.
 7. The user reviews counts, differences, and output files.
 8. The next action is explicit: fix source data, adjust schema selection, change rules, or accept the variance.
@@ -20,14 +20,19 @@ Most of Darpan's work is front-loaded: you build connections, schemas, and rules
 
 | Object | Role |
 | --- | --- |
-| Home (**Let's Investigate**) | Work queue for saved and pinned runs. |
+| Home (**Let's Investigate**) | Work queue: pinned runs first, then audits, then runs grouped by the systems they compare, then lifecycles. |
 | Ask Darpan | Search-first navigation for pages, workflows, records, runs, and outputs. Opens from Tara or `Cmd/Ctrl+K`. |
 | Tara | The red panda in the corner: the launcher, the explainer for whatever you rest on, and the channel for warnings. |
 | Connection | Saved access details for systems such as SFTP, Shopify, HotWax, NetSuite, and databases. |
 | Schema | Field and type contract for a source file or record payload. |
 | RuleSet | Rules-backed classification and decision model for matched records. |
-| Saved run | Saved configuration for a reconciliation run: source, schema, key, and rules. A run is a **Sync** (do two systems hold the same records?) or a **Lifecycle** (where do records stall on their way through?). |
+| Saved run | Saved configuration for a reconciliation run: source, schema, key, and rules. A run is a **Sync** (do two systems hold the same records?), a **Lifecycle** (where do records stall on their way through?), or an **Audit** (is what must be true still true?). |
 | Generated output | Persisted result metadata and files from a completed run. |
+| Audit | A tenant's statements of what must be true, and the checks that test them, run on one schedule. |
+| Finding | A record a run reports for attention. In an audit, a finding is **Open** until a complete check stops reporting it, then **Fixed**. |
+| Automation | A schedule that runs a saved run unattended. Search **Open Automations**. |
+| Script | JEXL a tenant writes and runs in Darpan, under **Tenant Settings** > **Scripts**. A saved script can run on a schedule and post to a chat space. |
+| Config version | A saved copy of a tenant's setup, under **Tenant Settings** > **Config history**, that can be previewed and restored. |
 
 ## Related docs
 
@@ -36,6 +41,8 @@ Most of Darpan's work is front-loaded: you build connections, schemas, and rules
 - [Run reconciliation](/guides/run-reconciliation): execution flow for an existing setup.
 - [Review results](/guides/review-results): generated output and next actions.
 - [Lifecycle runs](/guides/lifecycle-runs): where NetSuite records stop on their way through, and run flowcharts.
+- [Audits](/guides/audits): statements, checks, and the findings they keep open until fixed.
+- [Glossary](/reference/glossary): every term the app puts on screen.
 
 ## What Darpan is not
 

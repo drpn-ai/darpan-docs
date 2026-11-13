@@ -7,13 +7,17 @@ Tenant Settings has an **AI Configuration** section. It stores AI provider setti
 
 This page describes what the section stores, so the record is accurate if you keep one.
 
+<Note>
+The AI features Darpan does have take a separate path. The audit agent, and the lines Claude writes in an audit's update after each run, are turned on per tenant by a Darpan admin, and the agent answers only users a Darpan admin has given AI access with a spend limit. Neither reads the settings on this page. See [The audit agent](/guides/audits#the-audit-agent) and [AI access](/guides/manage-users-and-access#ai-access).
+</Note>
+
 ## Who can edit it
 
-Only a Darpan admin (the DARPAN_ADMIN group) can view or change the section. Tenant Admins see **Darpan admin only** in its place.
+Only a Darpan admin can view or change the section; the exact groups are in [Auth and access](/reference/auth-and-access#roles). Tenant Admins see **Darpan admin only** in its place.
 
 ## What is stored
 
-From **Ask Darpan**, open **Open Tenant Settings** (it also matches ai, llm, and api key), then choose the **AI Configuration** tile.
+From **Ask Darpan**, open **Open Tenant Settings**, then choose the provider tile under **AI Configuration**.
 
 | Field | Notes |
 | --- | --- |
@@ -22,7 +26,7 @@ From **Ask Darpan**, open **Open Tenant Settings** (it also matches ai, llm, and
 | **Model** | The model name, for example `gpt-4.1-mini`. |
 | **Timeout (seconds)** | Request timeout for the provider. |
 | **Base URL** | The provider's API base URL. Only `api.openai.com` and `generativelanguage.googleapis.com` are accepted; leave it blank to keep the provider default. |
-| **API Key** | The raw provider key. Leave it blank on edit to keep the stored key. |
+| **API Key** | The raw provider key. On edit the field reads **API Key (leave blank to keep existing)**; leave it blank to keep the stored key. |
 
 The same settings are available through `facade.SettingsFacadeServices.get#LlmSettings` and `save#LlmSettings`.
 

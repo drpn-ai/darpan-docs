@@ -3,7 +3,7 @@ title: "Core concepts"
 description: "Common terms used across Darpan."
 ---
 
-Six terms appear on almost every Darpan screen. Learn them here — the rest of the docs assume you know them.
+A handful of terms appear on almost every Darpan screen. Learn them here — the rest of the docs assume you know them. The [Glossary](/reference/glossary) has the full list.
 
 ## Schema
 
@@ -11,15 +11,31 @@ A schema describes the structure Darpan expects from source data. It gives a rec
 
 ## Connection
 
-A connection is saved setup for an external system. Reconciliation runs use connection records for SFTP file access and for reading records from Shopify, HotWax, and databases.
+A connection is saved setup for an external system. Reconciliation runs use connection records for SFTP file access and for reading records from NetSuite, Shopify, HotWax, and databases.
 
 ## Reconciliation run
 
 A reconciliation run is one execution of a reconciliation. It records the selected setup, source inputs, processing outcome, and generated output.
 
+## Run type
+
+Every run has a type, chosen at **Create Run** under **What kind of run?**:
+
+- **Sync**: do two systems hold the same records? Healthy is zero differences.
+- **Lifecycle**: where do records stall on their way through? Every record lands in one named place.
+- **Audit**: is what must be true still true? An audit holds statements and the checks that test them, and runs every check on one schedule. See [Audits](/guides/audits).
+
 ## Result
 
 A result is the reviewable output from a run. Results can include matched rows, mismatches, generated files, and links back to the run history.
+
+## Finding
+
+A finding is a record a run reports for attention. In an audit, a finding is one record breaking one statement. It is **Open** until a complete check stops reporting it, then **Fixed**.
+
+## Automation
+
+An automation runs a saved run on a schedule, unattended. See [Set up automation](/guides/setup-automation).
 
 ## RuleSet
 
@@ -28,3 +44,5 @@ A RuleSet is the rules-backed model for configurable reconciliation behavior, in
 ## Active company or tenant
 
 Darpan scopes user activity through an active company or tenant context. When multi-company access is enabled, reads and writes use the active context.
+
+The active tenant is stored on your user account, not on the browser tab, so switching it re-points every tab you have open. Switch it with `/switch-tenant` in [Ask Darpan](/getting-started/ask-darpan-navigation), or in **User Settings** under **Tenant Context**.

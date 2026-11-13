@@ -21,6 +21,8 @@ Open Darpan and sign in with the credentials provided for your company or test e
 
 A new account starts with a temporary password. On your first sign-in Darpan asks for a new password twice, then signs you in. The new password needs at least 8 characters, one number, and one symbol.
 
+If you have no email on file, Darpan asks **Where should password reset codes go?** after you sign in. Save a recovery email there, or choose **Not now**; Darpan asks again at the next sign-in. With a recovery email saved, **Forgot password?** under **Sign In** emails you a 6-digit code. The link appears only when your Darpan instance can send email.
+
 If login fails, start with [login and session troubleshooting](/troubleshooting/login-and-session).
 
 </Step>
@@ -28,9 +30,10 @@ If login fails, start with [login and session troubleshooting](/troubleshooting/
 
 Darpan opens the home page, **Let's Investigate**, after login. **Go to Dashboard** in Ask Darpan brings you back to it. Treat it as the work queue for saved reconciliation runs.
 
-- **Pinned Runs** shows the reconciliation runs you want quickest access to.
-- The other runs in the active company are grouped by the systems they compare, for example **HotWax ↔ Shopify**, with a count on each heading. Lifecycle runs have their own **Lifecycle** section.
-- **Create Run** starts new run setup. It asks **What kind of run?** first: **Sync** or **Lifecycle**.
+- **Pinned Runs** shows the reconciliation runs you want quickest access to. Drag a Sync run's tile here to pin it.
+- Audits come next, in their own **Audit** section.
+- The other runs in the active company are grouped by the systems they compare, for example **HotWax ↔ Shopify**, with a count on each heading. Groups run alphabetically and show six tiles, then an **N more** tile for the rest. Lifecycle runs have their own **Lifecycle** section, last.
+- **Create Run** starts new run setup. It asks **What kind of run?** first: **Sync**, **Lifecycle**, or **Audit**. You need edit rights on the tenant to create a run.
 
 The home page opens at once from your last visit, then refreshes. It works best when the run is already known. **Ask Darpan** is faster for jumping to setup, execution, or results.
 
@@ -47,7 +50,7 @@ The home page opens at once from your last visit, then refreshes. It works best 
 </Step>
 <Step title="Confirm reusable setup">
 
-Create or confirm the records the run will reuse. Search for the official setup surface you need: **Open SFTP Servers**, **Open NetSuite Settings**, **Open Shopify Settings**, **Open HotWax Settings**, **Open Tenant Settings**, **Create Schema**, or **Open Schema Library**.
+Create or confirm the records the run will reuse. Search for the setup surface you need: **Open SFTP Servers**, **Open NetSuite Settings**, **Open Shopify Settings**, **Open HotWax Settings**, **Open Tenant Settings**, **Create Schema**, or **Open Schema Library**.
 
 - SFTP for file exchange
 - NetSuite, Shopify, and HotWax for source-system integration flows
@@ -73,11 +76,18 @@ Search by run name or output file name, then open **Open Result: ...**. Review t
 </Step>
 </Steps>
 
+Ask Darpan shows **Create Schema**, **Create Reconciliation Flow**, **Create Run**, and **Run Reconciliation** only to roles that can use them. If one is missing, your role in the active tenant does not allow it; see [Auth and access](/reference/auth-and-access#roles).
+
+Once runs are in place, an audit turns them into a standing check: its checks read those runs on one schedule, and each finding stays **Open** until a later check sees it **Fixed**. See [Audits](/guides/audits).
+
 ## What to read next
 
 <Columns cols={2}>
   <Card title="Tenant Admin quickstart" icon="user-gear" href="/getting-started/tenant-admin-quickstart">
     Manage one tenant's settings, setup records, runs, and automation.
+  </Card>
+  <Card title="Audits" icon="clipboard-check" href="/guides/audits">
+    Check what must be true on a schedule and track each finding.
   </Card>
   <Card title="Set up automation" icon="clock" href="/guides/setup-automation">
     Schedule or manually trigger a saved reconciliation run.

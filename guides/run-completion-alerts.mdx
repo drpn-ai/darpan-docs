@@ -31,8 +31,16 @@ The message leads with a verdict rather than a table of numbers, because the fir
 | Warnings | Problems Darpan hit during the run that did not stop it. |
 
 <Warning>
-These are three separate axes, not one total. A run's difference count covers records present on only one source; it does **not** include value mismatches. A run where every record matched but many values disagreed has a difference count of zero and is not a clean run. The alert reports mismatches on their own line for exactly this reason.
+The alert keeps these apart, even though a saved run's difference count may not. For a run with rules, the difference count adds rule differences and duplicate ids to the missing records. The alert splits them back out so you can see which kind you have.
 </Warning>
+
+Under the verdict, a **Details** block lists the counts:
+
+- **Missing from &lt;system&gt;: N**, one line per side. Both lines print, even at zero, since a zero says that side came back complete.
+- **&lt;rule name&gt; Mismatch: N**, one line per named rule, busiest first. Past eight rules, the rest share one **+N more rules** line.
+- **Field mismatches: N** pools mismatches from rules with no name.
+
+Mismatch lines appear only when there are mismatches. No alert prints a rule's formula.
 
 The verdict names the situation:
 
@@ -136,13 +144,13 @@ If a workspace is not connected, a Slack space falls back to a Slack incoming we
 If the channel you pick is private, invite the Darpan app to it. Slack will not let the app post to a private channel it has not joined, and the first run is where you would find out.
 </Warning>
 
-Repeat for each destination. A tenant can hold as many spaces as it needs — one for operations, one for a client-facing channel, one for a single team — and they can mix chat products freely.
+Repeat for each destination. The list shows each space's chat product and whether it delivers by **bot** or **webhook**. A tenant can hold as many spaces as it needs — one for operations, one for a client-facing channel, one for a single team — and they can mix chat products freely.
 
 ## Route alerts to a space
 
-There are three ways a message reaches a space, and they stack.
+There are three ways a run alert reaches a space, and they stack.
 
-**An automation's linked space.** When you create or edit an [automation](/guides/setup-automation), the chat-space step offers your default space, any existing space, a new space, or none. Every run that automation starts reports to the space it is linked to. An automation can link only a space of its own tenant: saving one that names another tenant's space, or an inactive one, is refused with **Chat space '…' was not found or is inactive.**
+**An automation's linked space.** When you create or edit an [automation](/guides/setup-automation), the chat-space step offers **My default space (&lt;name&gt;)**, any other active space, a new space, or none. Every run that automation starts reports to the space it is linked to. An automation can link only a space of its own tenant: saving one that names another tenant's space, or an inactive one, is refused with **Chat space '…' was not found or is inactive.**
 
 **Your personal default.** In **User Settings**, the **Notifications** card sets which space your own alerts go to. This is a personal preference — it needs no tenant write access, and it does not change anyone else's alerts. A default pointing at a space that was deleted or deactivated reads as not configured.
 
@@ -151,6 +159,14 @@ There are three ways a message reaches a space, and they stack.
 <Note>
 **Notify me** needs a default chat space to snapshot. If you have not set one, Darpan says so instead of subscribing you silently — set the default in **User Settings** first.
 </Note>
+
+### Other messages a space receives
+
+Run alerts are not the only thing that posts to a chat space. A space can also receive:
+
+- An audit's update after each run, when the audit's settings pick it under **Chat space**. See [Audits](/guides/audits#audit-settings).
+- A tenant script's scheduled message, when a script deployment posts to it. See [Tenant scripts](/guides/manage-tenant-settings#tenant-scripts).
+- Tenant-wide streak messages, when it is the **Streaks space** in **Tenant Settings**. A streak one automation earns posts to that automation's own space.
 
 ## Expected result
 
@@ -187,6 +203,6 @@ The one change worth making afterwards is renaming **Default space** to somethin
 | Message arrives but the link does not open the result | Confirm the run produced a saved result and that the app base URL for the environment is reachable. |
 | Saving is refused with a view-access message | Your active tenant grants you view access only. Connecting chat products and editing spaces need tenant write access. |
 | Alerts stopped after a tenant switch | Chat spaces are per tenant. Confirm the active tenant matches the runs you expect alerts for. |
-| A clean-looking alert hid real differences | Check the value-mismatch line. Records can match on both sides and still disagree on values; that is not counted as a difference. |
+| The alert's counts do not add up to the run's difference count | For a run with rules, the difference count adds rule differences and duplicate ids to the missing records. The alert lists missing records and mismatches on separate lines. |
 
 See [Manage tenant settings](/guides/manage-tenant-settings) for the full tenant settings surface and [Author reconciliation rules](/guides/author-rules) for the rules that produce the mismatches these alerts report.

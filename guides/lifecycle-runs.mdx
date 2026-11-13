@@ -34,11 +34,6 @@ Answer **Which account?** with the NetSuite connection. With only one account, D
 Answer **What happens to** *a record*? with the stages that should follow, in any order; Darpan orders them as the data does. The stages that at least half of these records go on to are chosen for you.
 
 </Step>
-<Step title="Leave records out">
-
-Answer **Leave out any** *records*? with a field, then a value, to leave out records that should not be judged. Repeat for each rule, and choose **Nothing** (or **Nothing else**) to move on.
-
-</Step>
 <Step title="Say when a record is late">
 
 Answer **When is** *a record* **late?** with a day count, or **Same day**. The default is the first day by which at least 90% of records have reached the last stage. Choose **Save lifecycle**.
@@ -48,11 +43,13 @@ Answer **When is** *a record* **late?** with a day count, or **Same day**. The d
 
 Darpan names the lifecycle, orders its stages, and names every place a record can stop. The new run opens on its own page, and Home lists it under **Lifecycle**.
 
+To leave out records that should not be judged, add a **+ except** rule in the run's settings; see [Tune it](#tune-it).
+
 ## Run it
 
-On the run's page, choose the play icon (**Open run**) and answer **Which days should this run look at?** with **Previous day** or **Last** *N* **days**, then choose **Run**.
+On the run's page, choose the play icon (**Open run**) and answer **Which days should this run look at?** with **Previous Day**, **Previous Week**, **Month to Date** or **Custom Dates**, the same choices a Sync run offers, then choose **Run**. **Custom Dates** opens **Select custom dates**, a calendar for the start and end date.
 
-A lifecycle's window ends the late-after period back from today, so records too new to have finished are not judged. The result's **This Run** section shows the **Window** it covered, in the zone the run was anchored in.
+A lifecycle's window ends the late-after period back from today, so records too new to have finished are not judged: the choices count back from there, and the calendar stops the day before. The result's **This Run** section shows the **Window** it covered, in the zone the run was anchored in.
 
 ## Read the run page
 
@@ -61,7 +58,7 @@ A lifecycle's window ends the late-after period back from today, so records too 
 | **How It Works** | The lifecycle as one line: the starting records and account, what is left out, each stage and the places records stop there, each place marked **Finding** or *not a finding*. Read only; the gear changes it. |
 | **In Progress** | Executions still running. |
 | **Most Recent** | The latest execution and its summary. |
-| **Previous Results** | Earlier executions, newest first. |
+| **Previous Results** | Earlier executions, newest first, each with the **Days** it covered. |
 
 Open an execution to see its result:
 

@@ -16,6 +16,19 @@ Getting locked out of your own tool is the worst kind of broken — you can't ev
 - An expired password blocks sign-in.
 - Sign-in is refused even with the right password.
 - A JSON-RPC call or `/rest/login` answers HTTP 403.
+- You forgot your password.
+
+## What the message means
+
+| Message | What it means |
+| --- | --- |
+| Your session has ended. Sign in again to continue. | The session expired or was refused. Sign in again. |
+| Darpan stepped out for chai. Try again in a moment. | The app could not reach the backend. Check 1 below. |
+| Invalid username or password | A wrong password, a locked account, and a disabled account all get this one message, so it does not say which. See [Lockouts and session length](#lockouts-and-session-length). |
+| Your password must be changed before you can sign in. | The account needs a new password. The sign-in page asks for one; then sign in again. |
+| Your password has expired and must be changed before you can sign in. | Same, for an expired password. |
+
+The Darpan CLI has its own sign-in messages. See [Set up the Darpan CLI](/getting-started/set-up-darpan-cli#if-sign-in-fails).
 
 ## Checks
 
@@ -46,6 +59,23 @@ If a fresh tab shows the login page while another tab is still working, you are 
 
 After three wrong passwords, the account refuses sign-in for five minutes even with the right password. Wait it out rather than retrying, because each retry during the lockout gets the same refusal.
 
+## Forgot password
+
+**Forgot password?** appears under the **Sign In** button only when the instance can send email. If it is missing, ask your Darpan administrator to reset the password.
+
+The reset emails a 6-digit code to the account's recovery email. The code expires in 15 minutes, and **Send a new code** replaces it. The reset can stop with one of these:
+
+| Message | What to do |
+| --- | --- |
+| No account with that username or email. | Check the spelling, or try the other one. |
+| That account has no email on file. Ask your Darpan administrator to add one. | The account has no recovery email. An administrator resets the password or adds an email. |
+| That account is locked. Ask your Darpan administrator. | The account is disabled or in a lockout. |
+| That's 3 codes this hour. Use the newest one in your inbox, or try again in an hour. | Use the latest code you received. |
+| That code didn't work. Request a new one. | The code is wrong, expired, or replaced by a newer one. Request another. |
+| The email didn't send. Try again in a few minutes. | The instance could not send the email. Try again later. |
+
+If you sign in without a recovery email on file, Darpan asks **Where should password reset codes go?** after sign-in, every time until one is saved. **Not now** skips it for that sign-in. Saving can be refused with "Enter a valid email address." or "That email is already in use by another account." Details: [Auth and access](/reference/auth-and-access#forgot-password).
+
 ## Records changed after you switched tenant in another tab
 
 The active tenant is stored on your user account on the server, not in the browser tab. Switching tenant in one tab re-points every other tab signed in as the same user, including tabs in other browsers. The next call from those tabs reads and writes the newly selected tenant, even though the page may still show the old one.
@@ -73,7 +103,7 @@ A 403 here is not a session problem: signing in again does not change it.
 
 A sign-in that eventually succeeds after a long pause is a different failure from one that is rejected quickly. A slow sign-in points at contention on the account record rather than at the credentials, and it affects everyone signing in against that record, not one person.
 
-A fast rejection points at the account state instead: an expired password, a required password change, a lockout, or a disabled account. Darpan has a dedicated path for changing an expired password, so an expired credential is recoverable without an administrator resetting it.
+A fast rejection points at the account state instead: an expired password, a required password change, a lockout, or a disabled account. An expired or must-change password is changed on the sign-in page, and a forgotten one through [Forgot password](#forgot-password), so neither needs an administrator.
 
 <Note>
 Sharing one account across several people makes the slow-sign-in case much more likely, and makes it look intermittent. It also means one person's tenant switch moves everyone else's tabs. Give each person their own account.

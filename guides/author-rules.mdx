@@ -30,6 +30,7 @@ file1.<field>  <operator>  file2.<field>
 | Operator | The comparison applied between the two values. |
 | File 2 field | The field path selected from the second source. |
 | Pre-actions | Optional value conversions applied before comparison, per field side. |
+| Name | Optional. Run-completion alerts list mismatches under this name. |
 
 A matched pair passes the RuleSet when every active rule holds. If any rule fails, the pair is recorded as a difference.
 
@@ -47,6 +48,8 @@ The **Ruleset Manager** offers these comparison operators:
 | `<=` | The file 1 value is less than or equal to the file 2 value. |
 | `requires` | One-way presence: when the file 1 value is `Y`, the file 2 value must be `Y` too. A file 1 `N` passes whatever file 2 says. |
 | `required by` | The reverse of `requires`: when the file 2 value is `Y`, the file 1 value must be `Y` too. |
+| `all in` | Every comma-separated value in the file 1 field is also in the file 2 field. |
+| `contains all` | The reverse of `all in`: every comma-separated value in the file 2 field is also in the file 1 field. |
 
 ### Pre-actions
 
@@ -77,6 +80,8 @@ In the **Rules** section, choose **Edit Rules**. This opens the rule editor, whe
 To add a rule, connect a field from the first source to its matching field on the second source: press and drag from one field pill to the other to draw a line between them. To edit an existing rule, select its operator box.
 
 In the rule popover that opens, choose the **Operator**. Pre-actions and the sequence number are set here too.
+
+Give the rule a **Name** of up to 60 characters; the field shows the rule's formula until you type one. Run-completion alerts list mismatches by rule name, and mismatches on rules with no name share one **Field mismatches** line.
 
 Pick fields that should always line up when the two systems are in sync. A price field on one side maps to the price field on the other; a quantity to a quantity.
 
@@ -110,7 +115,7 @@ Some records should never be compared, for example a channel or status that one 
 1. On the rules board, double-click a field pill on the side the records come from, or focus it and press Enter.
 2. Choose the mode: **Exclude these values**, **Only these values** or **Only values starting with**. A new filter opens on **Exclude these values**.
 3. Type a value and press Enter. Repeat for each value.
-4. Choose **Save filter**. The pill shows `≠` for an exclude filter and `=` for an only-these filter. The trash icon in the same popup deletes it.
+4. Choose **Save filter**. The pill shows `≠` for an exclude filter, `=` for an only-these filter, and `^` for a starts-with filter. The trash icon in the same popup deletes it.
 5. Choose **Save** in the editor to store it with the rules.
 
 | Mode | Keeps | A record with no value for the field |

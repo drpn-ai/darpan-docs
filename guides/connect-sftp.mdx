@@ -3,7 +3,7 @@ title: "Connect SFTP"
 description: "Create or maintain an SFTP connection record."
 ---
 
-An SFTP connection is a one-time record — set it up once and every run or automation that needs files from that server can use it without re-entering credentials.
+An SFTP connection is a one-time record. Set it up once, and every automation that picks up files from that server can use it without re-entering credentials.
 
 ## Before you start
 
@@ -12,7 +12,7 @@ Confirm these values with the server owner:
 - Host and port
 - Username
 - Password, private key, or both
-- The remote folders and file paths runs will read from
+- The remote folders and file paths automations will read from
 
 ## Create the connection
 
@@ -21,15 +21,16 @@ From **Ask Darpan**, open **Open SFTP Servers**, then choose **Create New Server
 | Field | Notes |
 | --- | --- |
 | Host | The server hostname, for example `sftp.example.com`. |
-| Port | The SFTP port. |
+| Port | The SFTP port. Defaults to `22`. |
 | Username | The login name on the server. |
 | Remote attributes | **Yes** or **No**. Defaults to **Yes**; change it only when the server owner says the server needs it. |
 | Password | Optional. Leave blank when the server uses a key. |
 | Private key | Optional. Paste the private key when the server uses key authentication. |
 | Label | The name Darpan shows for this server. |
-| Server name / ID | A stable ID for the record, for example `primary_sftp`. |
 
-Save the record. Passwords and keys are write-only: on edit, leave them blank to keep the stored values.
+Save the record. Darpan gives the server its ID; the ID cannot be edited.
+
+Passwords and keys are write-only. On edit, **Password (optional)** and **Private Key (optional)** can be left blank to keep the stored values, but only while the host and port stay the same. If you change either, enter the password or key again.
 
 ## Edit an existing connection
 
@@ -38,9 +39,15 @@ Save the record. Passwords and keys are write-only: on edit, leave them blank to
 3. Select the **Edit SFTP: ...** result.
 4. Update the record and save it.
 
+## Server key
+
+Darpan saves the server's key the first time it connects, and checks it on every connection after that, so a server that changes identity is not trusted silently. The edit form shows the saved key's fingerprint under **Server key**, or **Saved on first connection** until Darpan has connected once.
+
+If the server was replaced or rebuilt on purpose, tick **Forget saved key** and save. The new key is saved on the next connection. Changing the host or port also clears the saved key.
+
 ## Validation
 
-After saving, create a test automation with **SFTP scheduled file pickup** that reads a known file from the server, and use **Run automation now**. If it fails, check the remote path, the password or key, and whether the Darpan deployment can reach the host.
+SFTP servers have no connection diagnostics button. After saving, create a test automation with **SFTP scheduled file pickup** that reads a known file from the server, and use **Run automation now**. If it fails, check the remote path, the password or key, and whether the Darpan deployment can reach the host. [Connections troubleshooting](/troubleshooting/connections#sftp) covers a changed server key and other SFTP failures.
 
 <Warning>
 Private keys, passwords, and customer hostnames belong in secure configuration, not public docs.
@@ -48,8 +55,8 @@ Private keys, passwords, and customer hostnames belong in secure configuration, 
 
 ## Expected result
 
-The connection appears in **Open SFTP Servers** and can be selected by any reconciliation run or automation that reads from or writes to that server.
+The connection appears on the **SFTP Servers** page (**Open SFTP Servers**) and can be selected in any automation that uses **SFTP scheduled file pickup**. Runs built in **Create Run** do not read SFTP.
 
 ## Next step
 
-Use the connection in [Set up a reconciliation run](/guides/setup-reconciliation-run) or [Set up an automation](/guides/setup-automation).
+Use the connection in [Set up an automation](/guides/setup-automation).

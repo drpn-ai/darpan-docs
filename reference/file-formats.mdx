@@ -10,7 +10,7 @@ These requirements apply to CSV and JSON source files used in Darpan reconciliat
 | Rule | Detail |
 | --- | --- |
 | File types | `.csv` and `.json`. The upload control for a run side accepts only the type that side expects. |
-| Size | 500 MB per file by default. A deployment can change the cap with the `darpan.upload.reconciliation.maxBytes` property. |
+| Size | 500 MB per run file by default. A deployment can change the cap with the `darpan.upload.reconciliation.maxBytes` property. A larger file is refused with "Uploaded reconciliation file exceeds the 500 MB limit." Schema uploads have their own limits; see [Schema files](#schema-files). |
 | Content check | Before parsing, Darpan reads the start of each file. A CSV side rejects a file that looks like JSON, a JSON side rejects a file that does not look like JSON, and either side rejects a JSON Schema document uploaded in place of data. The error names the file and what it looks like. |
 
 ## General requirements
@@ -30,7 +30,7 @@ These requirements apply to CSV and JSON source files used in Darpan reconciliat
 | Quoting | Quote values that contain commas. A quoted value may span more than one line. |
 | Header row | Optional. When present, it names the fields. |
 
-Darpan can build a flat schema directly from the header row — see [Create a schema](/guides/create-schema). Building a schema from a header rejects a file that looks like JSON, an empty file, a header with a blank or repeated column name, and a header that appears to use semicolons, tabs, or pipes as the delimiter.
+Darpan can build a flat schema directly from the header row — see [Create a schema](/guides/create-schema). Building a schema from a header rejects a file that looks like JSON, an empty file, a file with no header row, a header row longer than 64 KB, a header with a blank or repeated column name, and a header that appears to use semicolons, tabs, or pipes as the delimiter.
 
 ### Blank cells
 
@@ -41,7 +41,7 @@ A blank CSV cell is read as an **empty value**, not as a missing field. The dist
 | Column present, cell blank | The field is present with an empty value. |
 | Column absent from the file | The field is absent. |
 
-A CSV cell holds text or holds nothing; the format has no way to express a null. Reporting a blank cell as an empty value keeps "this column was blank" distinguishable from "this column was not in the file", which would otherwise produce a difference whose one side simply looked absent.
+A CSV cell holds text or holds nothing; the format has no way to express a null. Reporting a blank cell as an empty value keeps "this column was blank" distinguishable from "this column was not in the file", which would otherwise produce a difference whose one side looked absent.
 
 The compare path and the schema-inference header parser read CSV with the same options, so a file that parses one way in the wizard parses the same way in a run.
 
@@ -50,6 +50,16 @@ The compare path and the schema-inference header parser read CSV with the same o
 A JSON file is read whole, as one JSON value: either an array of records or a single object. It is not read as one record per line.
 
 Use predictable object keys and arrays. Avoid changing object nesting between runs unless the schema is updated with the change.
+
+## Schema files
+
+The schema wizard has its own limits, separate from the run-file cap:
+
+| Rule | Detail |
+| --- | --- |
+| Schema file | JSON only. A CSV can be a sample, never a schema file. |
+| Sample file | `.json` or `.csv`. For a CSV, Darpan reads only the first 64 KB, so the header row must fit in that. |
+| Saved schema size | 5 MB by default, set by the `darpan.jsonschema.maxSchemaTextBytes` property. A larger schema is refused with "schemaText exceeds the maximum of 5 MB (received N MB)." |
 
 ## Troubleshooting
 

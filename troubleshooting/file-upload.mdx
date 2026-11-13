@@ -10,6 +10,7 @@ Upload problems are usually about the file, not the app. Format mismatch, a sche
 - Upload does not start.
 - Upload completes but parsing fails.
 - Fields appear shifted or missing.
+- A CSV cannot be picked when uploading a schema file.
 - A run completes with unexpected zero matches. (If the file uploaded cleanly but the run shows zero matches, see [Reconciliation runs](/troubleshooting/reconciliation-runs) for join-key and business-period checks.)
 
 ## Checks
@@ -20,11 +21,22 @@ Upload problems are usually about the file, not the app. Format mismatch, a sche
 4. Check encoding and delimiter. CSV files must be comma-delimited UTF-8; semicolon-, tab- and pipe-delimited files are not split into columns.
 5. Remove blank leading rows and summary footer rows.
 6. Confirm identifiers have not been converted to numbers by a spreadsheet tool.
+7. In **Create Schema**, a CSV is accepted only as a **Sample file**. A **Schema file** must be JSON.
+
+## Size limits
+
+| Upload | Limit | Message when exceeded |
+| --- | --- | --- |
+| Run file | 500 MB by default | Uploaded reconciliation file exceeds the 500 MB limit. |
+| Saved schema | 5 MB by default | schemaText exceeds the maximum of 5 MB (received N MB). |
+| CSV sample in **Create Schema** | Header row within the first 64 KB | The header row is longer than the 65536-byte sample read from this file, so it cannot be read reliably. |
+
+A CSV sample with no header row is refused with "No header row was found in the uploaded file." For the other schema-wizard messages, see [Create a schema](/guides/create-schema#troubleshooting).
 
 ## Common fixes
 
 - Save CSV files as UTF-8 with commas as the delimiter.
-- Keep each file under the upload cap, 500 MB by default, and upload `.csv` or `.json` only. See [File formats](/reference/file-formats).
+- Keep each run file under the upload cap, 500 MB by default, and upload `.csv` or `.json` only. See [File formats](/reference/file-formats).
 - Preserve leading zeros in identifier columns.
 - Normalize date formats before upload.
 - Use a schema that matches the current source shape.

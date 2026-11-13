@@ -19,7 +19,7 @@ Confirm:
 - The database is **MySQL**, **PostgreSQL**, or **IBM Db2**. Darpan rejects any other dialect.
 - The database is reachable from the Darpan deployment, and you have a username and password for it.
 - You have a read-only account. Darpan only ever issues `SELECT`, but a read-only credential means a mistake in a query cannot become a mistake in your database.
-- You know which TLS posture the server needs, and have the CA certificate in PEM form if the server requires verifying one.
+- You know whether the server offers TLS, and, if its certificate is signed by a private certificate authority, you have that authority's certificate in PEM form.
 
 ## Create the connection
 
@@ -35,14 +35,20 @@ Save the connection with `facade.DatabaseFacadeServices.save#DatabaseSourceConfi
 | `host` | Hostname or address of the server. Required. |
 | `port` | Optional. Left blank, Darpan uses the dialect default: 3306 for MySQL, 5432 for PostgreSQL, 50000 for Db2. |
 | `databaseName` | The database to connect to. Required. |
-| `username` / `password` | The credential. The password is stored encrypted and is never readable back. |
+| `username` / `password` | The credential. `username` is required. The password is stored encrypted and is never readable back. On update, a blank password keeps the stored one only while `host`, `port` and `dialect` stay the same; change any of them and the save is refused until you send the password again. |
 
 </Step>
 <Step title="Set the TLS posture">
 
 `requireTls` is `Y` by default. Leave it on unless the server cannot offer TLS.
 
-If the server presents a certificate that must be verified against a private authority, pass that authority's certificate in PEM form as `caCertPem`. Darpan then verifies the server's certificate against it rather than accepting whatever the server presents.
+With TLS on, Darpan verifies the server's certificate and hostname, not only that the connection is encrypted. It trusts the public certificate authorities, AWS RDS included, so a managed database with a public certificate needs nothing more.
+
+If the server's certificate is signed by a private authority, pass that authority's certificate in PEM form as `caCertPem`. Darpan then verifies the server against that certificate instead of the public authorities.
+
+<Note>
+Verification applies to connections saved before it shipped too. A connection whose certificate cannot be verified stops connecting until its CA is stored as `caCertPem`.
+</Note>
 
 </Step>
 <Step title="Set the limits">
@@ -72,21 +78,21 @@ A query belongs to a connection and holds the `SELECT` that produces the records
 <Steps>
 <Step title="Write a single SELECT">
 
-The statement must be a single `SELECT`, or a `WITH … SELECT`. Nothing else is accepted.
+The statement must be a single `SELECT`, or a `WITH … SELECT`, with no semicolons. Nothing else is accepted.
 
 Return the fields you intend to reconcile, named as you want them to appear. Column names become the field names Darpan compares on, so alias them into the shape your schema expects rather than reshaping later.
 
 </Step>
 <Step title="Add the window placeholders, if the query is time-bounded">
 
-A query may use the named placeholders `:windowStart` and `:windowEnd`. Darpan fills them with the run's window. Both are optional — a query that reconciles a full table needs neither.
+A query may use the named placeholders `:windowStart` and `:windowEnd`. Darpan fills them with the run's window. Both are optional — a query that reconciles a full table needs neither. Any other `:name` placeholder is rejected when the query is validated.
 
 Use them for anything scheduled. A query with no window re-reads the whole table on every run, which gets slower as the table grows and usually compares far more than the run needs.
 
 </Step>
 <Step title="Preview it">
 
-`facade.DatabaseFacadeServices.preview#DatabaseQuery` runs the query capped at 10 rows and returns the columns and rows. Check the column names and a few values before saving: the preview is where a wrong alias or an unexpected null is cheap to notice.
+`facade.DatabaseFacadeServices.preview#DatabaseQuery` runs the query capped at 10 rows, with a 30-second timeout, and returns the columns and rows. Without a window, the preview reads the last 7 days. Check the column names and a few values before saving: the preview is where a wrong alias or an unexpected null is cheap to notice.
 
 </Step>
 </Steps>
@@ -109,12 +115,13 @@ The connection passes its diagnostics check, the query previews the rows you exp
 | --- | --- |
 | The dialect is rejected | Only `MYSQL`, `POSTGRES` and `DB2` are supported. |
 | Connection times out | The host and port, and whether the Darpan deployment can reach the server at all. Raise the connect timeout only after confirming reachability. |
-| TLS fails to negotiate | Whether the server offers TLS, and whether it needs a CA certificate you have not supplied in `caCertPem`. |
+| TLS fails, or a connection that worked before now fails on TLS | Whether the server offers TLS, and whether its certificate is signed by a private authority whose certificate you have not stored in `caCertPem`. |
 | The extraction fails on row count | The query returned more than the max-rows cap. Narrow the query — the cap never truncates. |
-| The query is rejected | It must be a single `SELECT` or `WITH … SELECT`. |
+| The query is rejected | It must be a single `SELECT` or `WITH … SELECT`, with no semicolons. The error names the rule it broke. |
 | A long query is cut off | Raise the query timeout, or narrow the query with the window placeholders. |
-| Placeholders are not substituted | They must be named exactly `:windowStart` and `:windowEnd`. |
+| "Unknown placeholder :x (only :windowStart and :windowEnd are supported)." | Rename the placeholder to `:windowStart` or `:windowEnd`. |
+| The save asks for the password again | You changed `host`, `port` or `dialect`, so Darpan will not send the stored password to the new server. Send it again. |
 | Fields do not line up with the schema | Alias the columns in the `SELECT` to the names the schema expects. |
 | The source does not appear for another tenant | Connections and queries are tenant-scoped. Create them in the tenant that will run the reconciliation. |
 
-See [Set up a reconciliation run](/guides/setup-reconciliation-run) for pairing the source into a run, and [Create a schema](/guides/create-schema) for the schema it needs.
+For the exact error messages, see [Connections troubleshooting](/troubleshooting/connections#database-sources). See [Set up a reconciliation run](/guides/setup-reconciliation-run) for pairing the source into a run, and [Create a schema](/guides/create-schema) for the schema it needs.
