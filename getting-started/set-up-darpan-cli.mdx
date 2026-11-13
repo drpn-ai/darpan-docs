@@ -41,10 +41,11 @@ The card shows **Requested &lt;date&gt;. A Darpan admin will turn it on.** When 
 
 ```bash
 brew tap drpn-ai/tap
+brew trust --formula drpn-ai/tap/darpan
 brew install darpan
 ```
 
-Check the install with `darpan version`.
+Homebrew 7 and later refuse formulas from a tap you have not trusted, so `brew install` alone stops with **Refusing to load formula drpn-ai/tap/darpan from untrusted tap**. The `brew trust` line trusts only the darpan formula. Check the install with `darpan version`.
 
 ## Sign in
 
