@@ -1,0 +1,82 @@
+---
+title: "Audits and findings"
+description: "Troubleshoot audits that did not run, checks that did not run, findings that stay open or are missing, and updates that did not arrive."
+---
+
+When an audit looks wrong, the cause is usually one of a few things: the schedule is off, a check did not run, or a finding is listed somewhere you did not expect. The audit page keeps the evidence for each, and most fixes take one choice. Find your symptom below.
+
+For how audits work, see [Audits](/guides/audits).
+
+## The audit did not run this morning
+
+- **Daily is off.** A new audit's schedule starts off, set to 06:00 in the tenant's time zone. Open the gear (**Audit settings**) and turn **Daily** on.
+- **Its automations were changed one by one.** The audit owns its schedule. The automations behind its checks show **Set by audit** *name* under **Schedule** and follow the audit's **Daily**, **Time**, and **Timezone**. Change the schedule in **Audit settings**, not on an automation.
+- **The run is waiting.** Audit runs wait in a queue when the instance is busy. **Run health** shows **Queued**, or **Queued · retry, attempt** *N* when a failed run is trying again. A queued run starts on its own. See [the run queue](/reference/reconciliation-runs#run-queue).
+
+To run it now, choose the play icon (**Run audit**) beside the audit's name.
+
+## A check did not run
+
+**Run health** says how many checks ran and whether each system's read was complete. A complete morning reads "Every configured check ran over complete reads." Otherwise it names what is missing, for example "Not complete: the *system* read was partial; check *code* did not run." In the statement's detail, each check shows **Ran**, **Partial**, or **Not run**.
+
+On today's report, choose **Retry from last read** on the check. It runs again from what that morning's run already read, so no system is read again. **Retry** *N* **not run** retries every check that did not run. These retries are offered on today's report only.
+
+| Darpan says | What to do |
+| --- | --- |
+| "Check *code* already ran on *date*." | Nothing to retry. Refresh the page to see its result. |
+| "Check *code* has no run on *date* to retry from; play the audit instead." | That morning's run never read anything for this check. Choose **Run audit**. |
+| "… did not finish reading *system*, so there is no complete extract to retry from; run it again instead." | A read stopped part way, so there is nothing complete to retry from. Choose **Run audit**. |
+
+A check marked **Partial** ran over a read that was not complete, so it may have missed records. Play the audit again once the system is reachable.
+
+## A statement says Not covered
+
+No check tests the statement yet, so it cannot have findings. **Run health** lists these statements. In **Audit settings**, choose **Add check** under the statement.
+
+## A finding stays open after you fixed it
+
+A fix counts when a check sees it, not when someone says so. Each morning run re-checks open findings by key, so a record fixed in its own system closes on the next run.
+
+To check one finding now, open it and choose **Resolve finding**. Darpan reads that record from each system by key.
+
+| Darpan says | Meaning |
+| --- | --- |
+| **Resolved. The finding is closed.** | The check no longer sees the problem. |
+| **Still open. The cause above is from this check.** | The problem is still there. The cause shown is from this check, so read it again: the fix may be in a different system than you expected. |
+| "Finding *id* cannot be re-checked: its check has no automation yet (play the audit once)." | The check has never run. Choose **Run audit** once, then try again. |
+
+There is no control that marks a finding fixed by hand. Resolve does not count as a check run, so **Run health** does not change.
+
+## A finding you expected is not listed
+
+- **It is listed under an earlier statement.** An order with findings under several statements counts once, under its earliest statement. Open that finding and look under **Also on this order**. The later statement's counts say how many sit **under an earlier step**.
+- **The board is filtered.** **open** lists only statements with open findings, and **not checked** only statements whose checks did not run. Choose **all** to list every statement.
+- **The statement is turned off.** A statement turned off in **Audit settings** is left out of runs. Its earlier findings stay on record.
+- **The check has not run for that day.** See [A check did not run](#a-check-did-not-run).
+
+A new finding is **Open** from the run that finds it. Findings are either **Open** or **Fixed**; there is no waiting period before one is listed.
+
+## The update after a run did not arrive
+
+- **After each run is off.** Turn it on in **Audit settings**. Only a Tenant Admin can change this group; others see **Only tenant admins can change this.**
+- **No chat message.** The chat space must still exist, belong to this tenant, and be active. If it was removed or switched off, the run sends no chat message. Pick a space again under **Chat space**, and check it in **Tenant Settings** under **Notifications**.
+- **No email.** The update goes to the people with access to the tenant, plus any address under **Also send to**. Email needs the Darpan instance to be able to send mail. If **Forgot password?** does not appear on the sign-in page, the instance cannot send email; ask a Darpan admin.
+
+## The Agent tab is missing
+
+The **Agent** tab appears only when the agent is on for your tenant and a Darpan admin has given you AI access. Ask a Darpan admin for both. See [Auth and access](/reference/auth-and-access).
+
+## Saving an audit is refused
+
+| Darpan says | What to do |
+| --- | --- |
+| "There is already an audit by that name." | Choose another name. |
+| "Name the audit with a letter or a digit." | The name needs at least one letter or digit. |
+| "Call the audit something other than new." | `new` is reserved. Choose another name. |
+| "Say what must be true." | A statement cannot be empty. Write what must hold, such as "every shipped order is invoiced". |
+| "Audit *code* was not found" | No audit with that code exists in the active tenant. Check the active tenant in **User Settings**. |
+| "Finding *id* was not found" | The finding belongs to another tenant, or the link is out of date. Check the active tenant. |
+
+## Next step
+
+If a run under the audit failed rather than skipped a check, see [Reconciliation runs](/troubleshooting/reconciliation-runs).

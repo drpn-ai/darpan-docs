@@ -81,6 +81,7 @@
               "troubleshooting/file-upload",
               "troubleshooting/connections",
               "troubleshooting/reconciliation-runs",
+              "troubleshooting/audits",
               "troubleshooting/automations-and-alerts"
             ]
           }
