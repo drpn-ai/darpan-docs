@@ -1,0 +1,146 @@
+---
+title: "Set up the Darpan CLI"
+description: "Turn on the CLI for your tenant, install it, sign in, and use it from your terminal or Claude Code."
+---
+
+The Darpan CLI puts your tenant's runs, results, and audit findings one command away, so you or an AI assistant such as Claude Code can read them without clicking through the app. Setup takes about five minutes. The only step you cannot do alone is the first one: a Darpan admin has to turn the CLI on for you.
+
+The CLI acts as you. It reaches only the tenants you belong to and only what your role there allows.
+
+## Before you start
+
+- A Darpan account you can sign in to at [app.drpn.ai](https://app.drpn.ai).
+- The CLI turned on for you in each tenant you want to use it in. See [Turn on the CLI](#turn-on-the-cli).
+- A Mac with [Homebrew](https://brew.sh). The CLI needs Node 22.18 or newer; Homebrew installs it for you.
+
+## Turn on the CLI
+
+CLI access is off by default and set per tenant. A Darpan admin turns it on for you in a tenant, with an end date. Darpan admins need no access of their own.
+
+To ask for it:
+
+<Steps>
+<Step title="Open User settings">
+
+Open **Ask Darpan** with `Cmd/Ctrl+K` and search for **Open User Settings**, or go to `/settings/user`. Check that the active tenant is the one you want the CLI in.
+
+</Step>
+<Step title="Request access">
+
+In **CLI sessions**, the **CLI in &lt;tenant&gt;** card says whether the CLI is on for you. If it is not, add what you need it for in **What it is for (optional)** and choose **Request access in &lt;tenant&gt;**.
+
+</Step>
+<Step title="Wait for a Darpan admin">
+
+The card shows **Requested &lt;date&gt;. A Darpan admin will turn it on.** When the request is approved, the card shows the CLI as on and when it ends. If it is declined, the card shows the date and the admin's note, and you can ask again.
+
+</Step>
+</Steps>
+
+## Install
+
+```bash
+brew tap drpn-ai/tap
+brew install darpan
+```
+
+Check the install with `darpan version`.
+
+## Sign in
+
+Signing in links the CLI on this machine to your Darpan user. You approve it in the browser, so your password never goes through the terminal.
+
+<Steps>
+<Step title="Start the sign-in">
+
+```bash
+darpan login
+```
+
+The terminal prints **Enter this code in your browser:** followed by a code like `BCDF-GHJK`, and opens the **Approve CLI** page at `app.drpn.ai/cli-login`. Sign in to the app if it asks.
+
+</Step>
+<Step title="Enter the code">
+
+Type the code into **Code from your terminal** and choose **Continue**. The code works for 10 minutes.
+
+</Step>
+<Step title="Check and approve">
+
+The **Sign-in request** shows the computer name the CLI sent, when the code was started, and when it expires. Approve only a code you just started in your own terminal, then choose **Approve**.
+
+The page shows **CLI approved. Return to your terminal.** The terminal prints your username and when the sign-in ends.
+
+</Step>
+</Steps>
+
+If the page says **The Darpan CLI is not turned on for you in &lt;tenant&gt;**, the request card appears on the same page. Ask for access there, then run `darpan login` again once it is approved.
+
+## Choose a tenant
+
+Every command runs in one tenant. List yours and pick one:
+
+```bash
+darpan tenants
+darpan tenant use <tenant-id>
+```
+
+The choice is saved on this machine. To use a different tenant for one command, add `--tenant <tenant-id>`. Check who and where you are with `darpan whoami`.
+
+## First commands
+
+| Command | What it does |
+| --- | --- |
+| `darpan runs` | The saved runs you can start. |
+| `darpan run start <id>` then `darpan run wait <id>` | Start a saved run and wait for it to finish. |
+| `darpan result <id>` | A run's result, or only its differences. |
+| `darpan audits` and `darpan report` | Your tenant's audits, and one morning's audit report as the audit page shows it. |
+| `darpan findings list` and `darpan findings show <id>` | Audit findings, filtered and paged; one finding in full. |
+| `darpan guide` | The usual path, limits, and what each role can do. |
+| `darpan help` | Every command. |
+
+Commands print JSON. `darpan api` lists every Darpan method the CLI may call. The CLI reads data, starts and cancels runs, plays audits and re-checks findings, asks a connected system a fresh read-only question, and saves and schedules tenant scripts. It cannot change users, connections, saved runs, or tenant settings.
+
+## Use it from Claude Code
+
+Add the CLI as an MCP server and every command becomes a tool Claude Code can call:
+
+```bash
+claude mcp add darpan -- darpan mcp
+```
+
+Claude Code then works with the same access you have: your tenants, your role, and the same list of allowed methods.
+
+## How long a sign-in lasts
+
+| You are | A sign-in lasts |
+| --- | --- |
+| Tenant Admin in that tenant | 30 days |
+| Any other role in that tenant | 7 days |
+
+A sign-in also stops working when your CLI access for the tenant ends, is paused, or is revoked. When it does, commands say **Your CLI session has expired.** Run `darpan login` again.
+
+## See and end your sign-ins
+
+**User settings** → **CLI sessions** lists each machine signed in to the CLI, with when it signed in and when it expires. Choose **Revoke** to end one, for example on a machine you no longer use.
+
+To sign out on the machine you are on:
+
+```bash
+darpan logout
+```
+
+The CLI keeps its key in `~/.config/darpan`. Signing out removes it.
+
+## If sign-in fails
+
+| The terminal says | What to do |
+| --- | --- |
+| **The sign-in was denied in the browser.** | Someone chose **Deny** on the **Approve CLI** page. Run `darpan login` again and approve. |
+| **The sign-in code expired before it was approved.** | The 10 minutes ran out, or the CLI is not on for you in that tenant. Check **User settings** → **CLI sessions**, then run `darpan login` again. |
+| **You are not signed in.** | Run `darpan login`. |
+| **Your CLI session has expired.** | The sign-in reached its end, or your access ended. Run `darpan login`; if it fails, ask for access again. |
+
+## Next step
+
+See [Manage users and access](/guides/manage-users-and-access) for how roles decide what you can see and do in each tenant.

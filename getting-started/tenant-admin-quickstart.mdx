@@ -1,15 +1,16 @@
 ---
 title: "Tenant Admin quickstart"
-description: "The operating path for managing one Darpan tenant."
+description: "The operating path for managing one Darpan tenant: settings, connections, runs, audits, and automations."
 ---
 
-You manage your tenant's connections, schemas, saved runs, automations, and results — and the boundary is clear: users, permissions, and platform settings are outside your scope.
+Running a tenant sounds like a lot to hold, but the boundary is clear. You manage the tenant's settings, connections, schemas, runs, audits, automations, and results. Users, roles, and platform settings belong to a Darpan admin.
 
-A Tenant Admin manages the setup records and reconciliation workflows for one active tenant. The role can edit tenant-owned settings, connections, schemas, saved runs, automations, and results for the active tenant.
+The steps below follow the order that matters: confirm the active tenant first, then build setup records, then run, audit, and review.
 
-Tenant Admins do not manage Darpan users, tenant membership, permission assignments, AI provider settings, global settings, or platform diagnostics.
+## Before you start
 
-The steps below follow the order that matters: confirm the active tenant context first, then build setup records, then run and review.
+- You are a Tenant Admin in the tenant you want to manage.
+- You can sign in. If you forget your password, choose **Forgot password?** under **Sign In**; it appears once your instance's email is set up. Keep a **Recovery email** in **User Settings** so the reset code has somewhere to go.
 
 ## Daily operating path
 
@@ -18,14 +19,22 @@ The steps below follow the order that matters: confirm the active tenant context
 
 Open **Ask Darpan** with `Cmd/Ctrl+K` or by clicking Tara, the red panda in the corner. Search for **Open User Settings**.
 
-In **Tenant Context**, confirm the active tenant before changing setup records or running reconciliation. If you have access to more than one tenant, select the tenant you want to manage.
+In **Tenant Context**, confirm the active tenant before changing setup records or running anything. If you have access to more than one tenant, select the tenant you want to manage.
 
 </Step>
 <Step title="Review tenant settings">
 
-Search for **Open Tenant Settings**. Confirm the tenant timezone and the registered Google Chat or Slack spaces.
+Search for **Open Tenant Settings** and check:
 
-Use [Manage tenant settings](/guides/manage-tenant-settings) when the timezone or the chat-space registry needs to change.
+| Section | Setting | What it holds |
+| --- | --- | --- |
+| **Localization** | **Timezone** | The tenant's time zone. |
+| **Localization** | **Streaks space** | The chat space that gets clean-run streaks. |
+| **Operations** | **Notifications** | The tenant's registered Google Chat and Slack spaces. |
+| **Operations** | **Config history** | Versions of the tenant's config. A version is kept a minute after an audit, check, run, or connection changes. Choose **Keep a version now**, or open a version and choose **Restore**; your current config is kept as a version first. |
+| **Operations** | **Scripts** | JEXL scripts kept as data. Write one, run it against a sample input or a run result, and choose **Save script**. A saved script's **Deploy** section posts it to a chat space on a schedule. |
+
+**AI Configuration** reads **Darpan admin only**. Use [Manage tenant settings](/guides/manage-tenant-settings) when the timezone or the chat-space registry needs to change.
 
 </Step>
 <Step title="Confirm reusable connections">
@@ -39,11 +48,18 @@ Create or update the connection records the tenant uses:
 Use active records with clear names so runs and automations stay identifiable later.
 
 </Step>
-<Step title="Maintain schemas and saved runs">
+<Step title="Maintain schemas and runs">
 
 Use **Create Schema** or **Open Schema Library** when source file structure changes.
 
-Use **Create Reconciliation Flow** for a new saved run setup. Use **Open Runs Settings** when an existing saved run needs source, schema, primary ID, or rule changes.
+To make a new run, choose **Create Run** on Home and answer **What kind of run?** with **Sync**, **Lifecycle**, or **Audit**. **Create Reconciliation Flow** in Ask Darpan goes straight to a new Sync run. Use **Open Runs Settings** when an existing saved run needs source, schema, primary ID, or rule changes.
+
+</Step>
+<Step title="Set up audits">
+
+Audits lead Home. An audit holds plain-English statements about your records, checks them on its own schedule, and keeps each finding **Open** until a check sees it **Fixed**. You can create an audit, run it with the play icon (**Run audit**), and change its statements, checks, schedule, and **After each run** update with the gear (**Audit settings**).
+
+See [Audits](/guides/audits).
 
 </Step>
 <Step title="Execute and review">
@@ -57,22 +73,37 @@ Classify differences as source data, schema selection, rule behavior, or expecte
 
 Use **Open Automations** after the saved run and source setup are stable. Create an automation only after a manual run proves the setup returns useful output.
 
+An automation behind an audit check shows **Set by audit** *name* under **Schedule**. Change its schedule in that audit's settings; it is not scheduled or paused on its own.
+
 </Step>
 </Steps>
 
-## Tenant Admin checklist
+## Expected result
 
-- Active tenant is correct before setup changes.
-- Timezone reflects the tenant's operating context.
-- Run-completion notifications are configured when the team needs alerts.
-- SFTP, NetSuite, Shopify, and HotWax records use clear tenant-specific names.
+- The active tenant is correct before setup changes.
+- The timezone reflects the tenant's operating context.
+- Chat spaces are registered when the team needs alerts.
+- SFTP, NetSuite, Shopify, and HotWax records use clear, tenant-specific names.
 - Schemas match the current source files or API payloads.
-- Saved run names identify the two systems being compared.
+- Saved run names identify the systems being compared.
+- Each audit's statements have checks, and its schedule is on once a manual run looks right.
 - Automations have a clear schedule, input mode, and history after testing.
 - Result review produces a next action: fix source data, adjust schema, change rules, rerun, or accept the variance.
 
-## When to ask a Super Admin
+## When to ask a Darpan admin
 
-Super Admins manage users, tenants, and tenant membership in the Darpan admin app, a separate console for platform operators. Tenant Admins have no screen for this in Darpan.
+Darpan admins manage users, tenants, and tenant membership in the Darpan admin app, a separate console for platform operators. Tenant Admins have no screen for this in Darpan.
 
-Ask a Super Admin to create a user, add someone to your tenant or change their role, reset a password, disable an account, or investigate private operational diagnostics. See [Manage users and access](/guides/manage-users-and-access) for what each role can do.
+Ask a Darpan admin to:
+
+- Create a user, add someone to your tenant, or change their role.
+- Reset a password or disable an account.
+- Turn on CLI access for someone. Each person requests it from **User Settings**; see [Set up the Darpan CLI](/getting-started/set-up-darpan-cli).
+- Turn on the audit agent for your tenant, or give someone AI access.
+- Change AI provider settings.
+
+See [Manage users and access](/guides/manage-users-and-access) for what each role can do.
+
+## Next step
+
+Build your first audit with [Audits](/guides/audits), or set up the run it will read with [Set up a reconciliation run](/guides/setup-reconciliation-run).

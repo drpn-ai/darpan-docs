@@ -14,8 +14,8 @@ There are two checks:
 
 Confirm:
 
-- A Shopify connection with **Returns** enabled, and a token that can read returns. See [Set up Shopify](/guides/setup-shopify).
-- A HotWax connection with **Refunded returns** or **Returns** enabled for returns, and **Orders** for exchanges. See [Set up HotWax](/guides/setup-hotwax).
+- A Shopify connection with **Returns** enabled, and a token that can read returns. For exchanges, **Orders** too. See [Set up Shopify](/guides/setup-shopify).
+- A HotWax connection with **Returns** enabled. For exchanges, **Orders** too. See [Set up HotWax](/guides/setup-hotwax).
 
 ## Set up a returns run
 
@@ -23,51 +23,57 @@ Create the run as in [Set up a reconciliation run](/guides/setup-reconciliation-
 
 | Side | Source | Primary ID |
 | --- | --- | --- |
-| Shopify | **Shopify returns** | **Refund or return ID** (`refundOrReturnId`) |
-| HotWax | **HotWax refunded returns** or **HotWax returns** | **Refund or return ID** (`externalId`) |
+| Shopify | **Shopify returns** | **Refund/return ID** (`refundOrReturnId`) |
+| HotWax | **HotWax returns** | **Shopify refund ID** (`externalId`) |
 
-**Shopify returns** emits one record per refund or return event, keyed by the Shopify refund ID or return ID. HotWax books each return under the same ID as its `externalId`, so the two sides match one-to-one. On the HotWax side the key card offers **Shopify return ID** and **Refund or return ID**.
+**Shopify returns** emits one record per refund or return. A return that has been refunded is listed by its refund ID; a return with no refund yet is listed by its return ID. HotWax's **Shopify refund ID** follows the same pattern: it holds the refund ID, and when a return has no refund yet Darpan fills it with the Shopify return ID. The two sides match one-to-one.
 
-### Choose the HotWax returns source
-
-| Source | Transport | Sees |
-| --- | --- | --- |
-| **HotWax refunded returns** | REST | Refunded returns only. A pending return reads as missing in HotWax. |
-| **HotWax returns** | GraphQL | Refunded and pending returns. Slower: one live 6-hour window took 258 s against 17 s on REST. Needs the HotWax GraphQL upgrade. |
-
-The two carry the same fields, so moving a run from one to the other is a source switch.
+The HotWax key card also offers **Shopify return ID** (`shopifyReturnId`). It holds only the return ID, so a refunded return, which Shopify lists by its refund, does not match on it. Not every HotWax instance carries it; a run keyed on a field the records lack stops and names the missing field.
 
 ### Leave in-progress returns out
 
 A Shopify return that has not finished usually has no HotWax return yet. On the Shopify side, add an exclusion on **Return status** with the value `IN_PROGRESS`. This is Shopify's own order return status, so it describes the whole order: excluding `IN_PROGRESS` drops an in-progress order's refund rows as well as its return. See [Leave records out with exclusions](/guides/author-rules#leave-records-out-with-exclusions).
 
 <Note>
-Before 2.0.0 this exclusion used a **Return workflow status** field with `REQUESTED` and `OPEN`. That field is withdrawn, and a rule saved on it matches nothing. Re-add the rule on **Return status** with `IN_PROGRESS`.
+An exclusion saved on the withdrawn **Return workflow status** field matches nothing. Re-add it on **Return status** with `IN_PROGRESS`.
 </Note>
 
 ## What a returns run does not report
 
-Several kinds of one-sided record are expected, not gaps. Darpan removes them before the result is written and says how many it removed.
+Several kinds of one-sided record are expected, not gaps. Darpan removes them before the result is written and counts how many it removed.
 
 | Rule | Why it is not reported |
 | --- | --- |
-| Sync grace | An event younger than the grace period may still be syncing into HotWax. It is held as pending, not missing. |
+| Sync grace | An event younger than 3 hours may still be syncing into HotWax. It is not reported yet. |
 | Before the window | Shopify is read a little before the window start so late HotWax returns can still match. A Shopify event dated before the window is never reported missing in HotWax. |
 | Whole-order cancellation | A refund on a cancelled order is booked in HotWax as a cancellation, not a return. |
 | Superseded return draft | Shopify keeps every draft return; HotWax books one return per settled outcome. A draft on an order that already has a HotWax return is not a gap. |
 | Cancelled-item refund | A refund for lines that were never shipped is booked as an item cancellation, not a return. |
+| Return on an older order | See [Returns on orders older than 60 days](#returns-on-orders-older-than-60-days). |
 
-Records still reported missing in HotWax are then checked one by one with a point lookup, by both `externalId` and `shopifyReturnId`. Records found that way are dropped. See [Verification passes](/guides/review-results#verification-passes).
+Records still reported missing in HotWax are then checked one by one with a point lookup, by Shopify refund ID and Shopify return ID. Records found that way are dropped. See [Verification passes](/guides/review-results#verification-passes).
 
 <Note>
 A rule only removes a record when the record's own data proves it. Where the evidence is incomplete, the record stays reported.
 </Note>
 
+### Returns on orders older than 60 days
+
+A Shopify token without `read_all_orders` cannot read orders older than 60 days. Their returns still appear, but Darpan has to rebuild them from Shopify's return events, and a rebuilt return carries no refund ID to match on.
+
+Darpan pairs each rebuilt return with the HotWax return on the same order and lines instead, before any lookups. A pair needs all of the following:
+
+- The HotWax return was entered no more than 30 days before the Shopify return.
+- Every line the Shopify return touched is covered by a HotWax return line.
+- The HotWax return is not cancelled.
+
+A paired Shopify return is dropped, and the HotWax return is dropped once every one of its lines is accounted for. A rebuilt return that does not pair stays reported. To match these returns by ID instead, give the Shopify token `read_all_orders`. See [Set up Shopify](/guides/setup-shopify).
+
 ## Exchanges
 
-An exchange in Shopify becomes a separate exchange order in HotWax, carrying the same Shopify order ID as the original. Order extracts from HotWax leave exchange orders out by default, so they do not show up as extra orders in an orders run.
+An exchange in Shopify becomes a separate exchange order in HotWax, carrying the same Shopify order ID as the original. HotWax **Orders** reads leave exchange orders out, so they do not show up as extra orders in an orders run.
 
-When an orders run compares Shopify orders with the HotWax **Orders** endpoint, Darpan also runs an exchange presence check:
+When an orders run compares **Shopify orders** with **HotWax orders**, Darpan also runs an exchange presence check:
 
 1. It lists the Shopify exchanges created in the run window.
 2. It matches them against the exchange orders HotWax returned in the extract.
@@ -77,21 +83,21 @@ When an orders run compares Shopify orders with the HotWax **Orders** endpoint, 
 | Exchange state | Result |
 | --- | --- |
 | Found in HotWax | Matched. |
-| Return not yet closed | In transit. Counted in the run note, not reported. |
+| Return not yet closed | In transit. Counted, not reported. |
 | Less than 3 hours old | Pending. Not reported. |
 | Return cancelled | Ignored. |
 | Closed, older than 3 hours, absent from HotWax | Reported as missing from HotWax. |
 
-Each run looks up at most 200 exchanges in HotWax. Any beyond that are deferred to a later run rather than reported, and the run note says how many.
+Each run looks up at most 200 exchanges in HotWax. Any beyond that are deferred to a later run rather than reported.
 
 ## Reading the result
 
-The run note on a returns or exchange run lists what each rule removed, and how many exchanges were matched, pending, or in transit. A count that moved between runs can be traced to these numbers rather than guessed at.
+Each check records its counts on the run, in a note that starts **Return presence check:**, **Rebuilt return pairing:**, or **Exchange presence check:**. The notes say what each rule removed and how many exchanges were matched, pending, in transit, or deferred, so a count that moved between runs can be traced rather than guessed at.
 
 When a record is reported:
 
-- Missing from HotWax: the refund, return, or exchange was not imported. Check the HotWax import for that order.
-- Missing from Shopify: HotWax holds a return that Shopify does not list in the window. Check the return's dates first; a return near the window edge may belong to the next window.
+- **Missing from HotWax**: the refund, return, or exchange was not imported. Check the HotWax import for that order.
+- **Missing from Shopify**: HotWax holds a return that Shopify does not list in the window. Check the return's dates first; a return near the window edge may belong to the next window.
 
 ## Next step
 

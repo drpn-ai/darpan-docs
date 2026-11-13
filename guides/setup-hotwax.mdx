@@ -1,86 +1,97 @@
 ---
 title: "Set up HotWax"
-description: "Create the HotWax connection used by API-backed reconciliation runs and automations."
+description: "Create the HotWax connection that reconciliation runs, audits, and automations read orders, order lines, returns, and products through."
 ---
 
-HotWax setup is a one-time task — save the connection once and every reconciliation run or automation that reads HotWax order data can use it from then on.
+HotWax setup is a one-time task. Save the connection once, and every reconciliation run or automation that reads HotWax can use it from then on. Darpan reads HotWax over GraphQL, so the only things you need are your HotWax URL and a way to sign in.
 
 <Note>
-Keep passwords, JWT bearer tokens, API keys, customer hostnames, and account-specific values in secure configuration. The docs should describe the sequence, not store credentials.
+Keep passwords, API tokens, and API keys in secure configuration. These docs describe the sequence, not the credentials.
 </Note>
 
 ## Before you start
 
 Confirm:
 
-- You are signed in to the correct active company or active tenant.
+- You are signed in to the correct active tenant.
 - Your user can edit connection settings.
-- The HotWax Moqui API URL is known.
-- The HotWax authentication type is known: none, basic, bearer, or API key.
-- The required username, password, JWT bearer token, or API key is available in secure configuration.
-- You know which HotWax data you will reconcile: orders, transfer orders, or returns.
+- You know the base URL of your HotWax instance, for example `https://your-instance.hotwax.io`. Darpan sends every read to `<base URL>/rest/s1/graphql`, so the instance must serve GraphQL there.
+- You know the auth type: **None**, **Basic**, **Bearer**, or **API Key**.
+- The username and password, API token, or API key for that auth type is available.
 
 ## Steps
 
 <Steps>
 <Step title="Open HotWax settings">
 
-Open **Ask Darpan** with `Cmd/Ctrl+K` or by clicking Tara, the red panda in the corner. Search for **Open HotWax Settings** and open the result.
+Open **Ask Darpan** with `Cmd/Ctrl+K` or by clicking Tara, the red panda in the corner. Search for **Open HotWax Settings** and open the result. The **HotWax** page lists your saved connections under **Auth**.
 
 </Step>
 <Step title="Create the HotWax connection">
 
-Choose **Create Auth Profile**. Answer the setup questions:
+Choose **Create Auth Profile** and answer the setup questions:
 
-1. **Base URL**: use the HotWax Moqui API URL, not the storefront, admin app, or another system URL
-2. **Timezone**: which timezone Darpan should use for HotWax date windows
-3. **Auth Type**
-4. Username and password for basic auth, a JWT token retrieved from HotWax when **Bearer** is selected, or an API key when the auth type requires it
-5. HotWax label
+1. **What HotWax base URL should Darpan use?** Use the HotWax instance URL, not a storefront or another system's URL.
+2. **Which timezone should Darpan use for HotWax date windows?**
+3. **Which HotWax auth type should Darpan use?** Choose **None**, **Basic**, **Bearer**, or **API Key**.
+4. The credentials for that auth type: a username and password for **Basic**, an API token for **Bearer**, or an API key for **API Key**.
+5. **What label should Darpan show for this HotWax source?**
 
-For bearer authentication, use the JWT token value from HotWax. Darpan sends it as the HTTP `Authorization: Bearer <jwt-token>` header.
+For **Bearer**, Darpan sends the token as the `Authorization: Bearer <token>` header. For **API Key**, it sends the key in an `api_key` header.
 
-Save the connection. Darpan creates it as active and derives the connection ID from the label. If the ID, active state, auth details, or endpoint access needs to change later, open the saved connection from **Open HotWax Settings** and edit it.
-
-The edit form also carries **Available Endpoints**, where you choose which endpoints this connection may be read through, and the **Shared with** panel. See [Share the connection with another tenant](/guides/setup-shopify#share-the-connection-with-another-tenant).
+Darpan saves the connection as active and gives it a **Config ID**. The ID is set by Darpan and cannot be edited.
 
 </Step>
-<Step title="Confirm the connection is reusable">
+<Step title="Choose the endpoints">
 
-Return to **Open HotWax Settings**. The saved connection should appear on the settings surface.
+Open the saved connection and choose **Edit HotWax Auth**. Under **Available Endpoints**, turn on the endpoints this connection may be read through, then save.
 
-The connection is ready when a reconciliation run or automation can select HotWax as an API source.
+The edit form also holds **Description**, **Base URL**, **Auth Type**, **Timezone**, **Active**, the credential fields, and the **Shared with** panel. See [Share the connection with another tenant](/guides/setup-shopify#share-the-connection-with-another-tenant).
+
+Credential fields read "leave blank to keep existing". A blank field keeps the stored value only while **Base URL** and **Auth Type** stay the same. If you change either, enter the credentials again.
 
 </Step>
 </Steps>
 
+## Expected result
+
+The connection appears under **Auth** on the **HotWax** page. Its page shows **Config ID**, **Base URL**, **Active**, and **Timezone**, and lists the enabled endpoints under **Endpoints**. HotWax is now offered as an API source when you build a run.
+
 ## Endpoints
 
-One HotWax connection can serve several endpoints, because they share the same base URL and credentials:
+One HotWax connection serves every endpoint, because they share the same base URL and credentials:
 
-| Endpoint | Reads |
-| --- | --- |
-| **Orders** | Sales orders, over the REST orders API. |
-| **Orders and payments** | Sales orders with payment fields, over GraphQL. |
-| **Sales orders** | Sales orders, served with a fixed set of fields. Use **Orders** when your rules need fields outside that set. |
-| **Transfer orders** | Transfer orders, from the same orders API. |
-| **Order lines** | One record per order-line unit, so a quantity shortfall on a line is visible. No point lookup. |
-| **Order lines (NetSuite)** | Order items for NetSuite line-level checks. Items without a Shopify line ID are kept. |
-| **Refunded returns** | Returns, over REST. Sees refunded returns only. For [returns reconciliation](/guides/returns-and-exchanges). |
-| **Returns** | Returns, over GraphQL, including pending returns. Slower than **Refunded returns**. Needs the HotWax GraphQL upgrade; without it the extract fails rather than returning an empty file. |
+| Endpoint | Source name in runs | Reads |
+| --- | --- | --- |
+| **Orders** | **HotWax orders** | One record per sales order. Exchange orders are left out. Carries **Sales channel**, so a run can leave out orders from a channel such as POS, and **Item quantity**. |
+| **Order lines** | **HotWax order lines** | One record per order-line unit, so a quantity shortfall on a line is visible. Items without a Shopify line ID are kept. |
+| **Returns** | **HotWax returns** | One record per return, refunded and pending alike. For [returns reconciliation](/guides/returns-and-exchanges). |
+| **Products** | **HotWax products** | One record per sellable product, keyed by its NetSuite item ID, for NetSuite and HotWax product checks. Reads the whole catalogue and ignores the run's date window. |
 
-Run pickers and results name these by source: **HotWax refunded returns**, **HotWax returns**, **HotWax orders and payments**, **HotWax order lines**, and so on. **Returns** mirrors **Refunded returns** field for field, so moving a returns run to GraphQL is a source switch.
+An endpoint that is not enabled under **Available Endpoints** is not offered when you build a run.
 
-Each connection enables endpoints separately under **Available Endpoints**. An endpoint that is not enabled is not offered when you build a run. The saved connection's page lists the enabled endpoints under **Endpoints**.
+<Note>
+HotWax reads are GraphQL only. Runs and automations saved on the older REST endpoints were moved to the matching endpoint above during the upgrade. Transfer orders have no GraphQL endpoint.
+</Note>
 
 ## Validation
 
-Open the saved connection from **Open HotWax Settings** and choose **Run connection diagnostics**. Darpan checks the base URL and credentials and lists each check with its result, without running a reconciliation.
+Open the saved connection and choose **Run connection diagnostics**. Darpan sends one read-only GraphQL query for a single order and lists each check with its result. Nothing is reconciled.
 
 Then run one small reconciliation with a narrow date range and confirm HotWax returns records before you schedule it.
 
+## Remove a connection
+
+On the saved connection's page, choose **Delete HotWax source** and confirm. Only the tenant that owns the connection can delete it, and not while it is shared with other tenants. Stop sharing it first. A tenant the connection is shared with stops sharing instead of deleting.
+
 ## Troubleshooting
 
-- If HotWax fails, run the connection diagnostics first, then check the Moqui API URL, auth type, bearer token validity, API key header behavior, and tenant context.
-- If HotWax does not appear as an API source, confirm the connection is active and that the endpoint you need is enabled under **Available Endpoints**.
-- If the request succeeds but returns no records, test a wider date range and confirm the tenant has orders for that period.
+- **Diagnostics fail.** Check the base URL, the auth type, and that the token or key is still valid.
+- **HotWax is not offered as a source.** Confirm the connection is **Active** and the endpoint you need is turned on under **Available Endpoints**.
+- **Saving asks you to enter the password or token again.** You changed **Base URL** or **Auth Type**, so Darpan will not send the stored credential to the new address. Enter it again.
+- **A run returns no records.** Try a wider date range and confirm the tenant has orders in HotWax for that period.
+- **A long read is slow.** Darpan paces its calls to HotWax's GraphQL cost limit, and retries a page that answers 429, 502, 503, or 504, so a long window reads slower rather than failing.
+
+## Next step
+
+Build a run that reads HotWax in [Set up a reconciliation run](/guides/setup-reconciliation-run).

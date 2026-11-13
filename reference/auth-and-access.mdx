@@ -1,31 +1,30 @@
 ---
 title: "Auth and access"
-description: "How sessions, active company and active tenant scope, and protected backend calls work."
+description: "Roles, sessions, password reset, CLI and AI access, and how the active tenant scopes backend calls."
 ---
 
-Darpan access is session-based; users sign in, receive a session, and operate within the active company or active tenant available to them.
+Darpan access is session-based: a user signs in, gets a session, and works inside one active tenant at a time, with the role they hold there.
 
-## User context
+## Tenant scope
 
-Some users may belong to more than one company or tenant. When that is enabled, the active company or active tenant controls which scoped records they read and write.
+A user can belong to more than one tenant. The active tenant decides which records they read and write, and permissions are checked for that tenant, so the same person can hold different roles in different tenants. Another tenant's record ID answers exactly like a missing one.
 
-## Permission context
+Confirm the active tenant before saving settings, connections, schemas, saved runs, or automations.
 
-Permissions are evaluated for the active company or active tenant. A user can have different capabilities in different companies or tenants.
+## Roles
 
-## Product roles
+Darpan seeds six permission groups. Two are Darpan-wide; the four tenant roles are assigned per tenant. Names are as the admin app shows them.
 
-| Role | Typical scope |
-| --- | --- |
-| Super Admin | Manages Darpan platform settings, users, tenants, permission assignments, and tenant data. |
-| Tenant Admin | Manages tenant-owned settings, connections, schemas, saved runs, automations, and results for the active tenant. |
-| Tenant User | Views tenant data, uploads files, runs reconciliation, and reviews output without changing tenant setup records. |
+| Role | Group ID | What it can do |
+| --- | --- | --- |
+| Super admin | `DARPAN_SUPER_ADMIN` | Sees and edits every tenant without a membership. Uses the admin app, where tenants, users, memberships, and CLI and AI access are managed. Has AI access in every tenant where the agent is on. |
+| Darpan admin | `DARPAN_ADMIN` | Edits settings shared by every tenant on the instance, such as AI configuration. |
+| Tenant admin | `DARPAN_TENANT_ADMIN` | Views, runs, creates, updates, and deletes the tenant's data. Only a tenant admin shares a configuration with another tenant, changes who gets an audit's run email, and creates GraphQL agent keys for the tenant. |
+| Company editor | `DARPAN_COMPANY_EDITOR` | Views, runs, creates, updates, and deletes the tenant's data, without the tenant-admin-only actions above. |
+| Tenant user | `DARPAN_TENANT_USER` | Views tenant pages, uploads files, and starts runs. Cannot change setup. |
+| Company view only | `DARPAN_COMPANY_VIEW_ONLY` | Views tenant data. Cannot run or change anything. |
 
-Tenant Admins should confirm the active tenant before saving settings, connection records, schemas, saved runs, or automations.
-
-## Sensitive auth values
-
-Examples use placeholders for usernames, passwords, session cookies, login keys, CSRF tokens, and sensitive auth artifacts.
+**Darpan admins** are users in either Darpan-wide group; the framework's built-in `ADMIN` group counts as both. The admin app and every `admin.*` method need Super admin.
 
 ## Session lifecycle
 
@@ -33,5 +32,47 @@ Examples use placeholders for usernames, passwords, session cookies, login keys,
 - Lifetime: the token lasts for the server's login-key expiry, 144 hours (6 days) by default; `authTokenExpiresInSeconds` reports it. The cookie expires at the same time. There is no refresh call: sign in again to get a new token.
 - CSRF bootstrap (browser): `GET /apps/darpan/csrfToken` restores the session from the cookie when present and returns `{"moquiSessionToken": "<token>", "authenticated": true|false}`. Send the token in the `X-CSRF-Token` header on later `POST /rpc/json` calls. Header-token callers skip this step.
 - Sign-out: `logout#Session` revokes the token on the current request (header or cookie) and ends only that session. `logout#AllSessions` revokes every login key for the user, which signs them out on every device.
-- Password: `verify#OwnPassword` checks the current password without changing anything. `change#OwnPassword` changes it for a signed-in user. When sign-in reports `passwordChangeRequired`, use `change#ExpiredPassword`, which needs no session; then sign in again.
+- Password: `verify#OwnPassword` checks the current password without changing anything. `change#OwnPassword` changes it for a signed-in user and revokes every other login key, CLI sign-ins included; the current session stays. When sign-in reports `passwordChangeRequired`, use `change#ExpiredPassword`, which needs no session; then sign in again.
 - Active tenant: the active tenant is stored as a preference on the user, not on the session. Switching tenant with `save#ActiveTenant` changes it for every session of that user, including other browser tabs. Give integrations their own user rather than sharing a login with a browser user.
+
+## Forgot password
+
+**Forgot password?** appears under **Sign In** only when the instance can send email; `get#PasswordResetStatus` reports whether it can.
+
+| Method | What it does |
+| --- | --- |
+| `request#PasswordReset` | Emails a 6-digit code to the account's recovery email. The code expires in 15 minutes; requesting again replaces it. |
+| `verify#PasswordResetCode` | Checks a code without using it up. Five wrong guesses end the code. |
+| `complete#PasswordReset` | Sets the new password, signs the account out on every device, and emails a notice. Issues no token: sign in afterwards. A disabled account is refused. |
+| `save#RecoveryEmail` | Saves the signed-in user's recovery email. Requires the current password; an address another account uses is refused. |
+
+## CLI access
+
+CLI access is set per user, per tenant, and is off by default. A user asks for it in **User settings** under **CLI sessions**; a super admin approves or declines in the admin app. A grant can carry an end date and can be paused, unpaused, or revoked. Darpan admins use the CLI in every tenant they reach without a grant. Setup steps: [Set up the Darpan CLI](/getting-started/set-up-darpan-cli).
+
+| Role in the tenant | CLI sign-in lasts |
+| --- | --- |
+| Darpan admin, Tenant admin | 30 days |
+| Company editor, Tenant user, Company view only | 7 days |
+
+- Sign-in: `darpan login` prints a code; the user approves it on **Approve CLI** (`/cli-login`) within 10 minutes. The password never goes through the terminal.
+- Lifetime: when a user holds several roles in a tenant, the longest lifetime wins.
+- Every call is checked against the tenant it reaches. It is refused when access there has ended, is paused, or is revoked, or when the sign-in is older than the user's role there allows; run `darpan login` again.
+- **Revoke** in **CLI sessions** ends one sign-in; a password change ends all of them.
+- Reach: a CLI sign-in can call only `/rpc/json` and `/rest/s1/graphql`, and on `/rpc/json` only the methods the CLI allows: reads that return no credentials, run starters, and tenant scripts.
+
+## AI access
+
+The audit agent answers only when it is on for the instance and the tenant, and the user has AI access there. A super admin grants AI access per user, per tenant, in the admin app, for a period and with a spend limit, and can pause, unpause, or revoke it. Access pauses on its own when spend reaches the limit. Super admins have AI access in every tenant where the agent is on, with no per-user limit. See [Audits](/guides/audits#the-audit-agent).
+
+## Request fence
+
+`/rpc/json` answers HTTP 403 for any method outside `facade.*`, `admin.*`, and `gql.*`, before dispatch. The framework's `/rest/login` is closed.
+
+## Sensitive auth values
+
+Examples use placeholders for usernames, passwords, session cookies, login keys, CSRF tokens, and other auth values.
+
+---
+
+To add users and assign roles, see [Manage users and access](/guides/manage-users-and-access).

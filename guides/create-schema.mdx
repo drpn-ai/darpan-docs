@@ -1,50 +1,76 @@
 ---
 title: "Create a schema"
-description: "Define a reusable source-data contract."
+description: "Turn a JSON Schema file, a JSON sample or a CSV header into a reusable source-data contract, then refine it in the Schema Editor."
 ---
 
-A schema is the contract between a source file and a run — it tells Darpan what fields to expect, what types they carry, and what to call them. Define it once and every future run that reads that source shape gets consistent parsing without guesswork.
+A schema tells Darpan which fields a source carries and what type each one is, so every run that reads that source parses it the same way. You never type the fields out to get one: upload a schema you already have, or a sample of the data, and Darpan reads the fields from it. Typing comes later, and only if you want to adjust what it found.
 
-## When to create a schema
+## Before you start
 
-Create a schema when a workflow needs to parse a new file shape, compare a new record shape, or preserve a reusable data contract for repeated runs.
+- You need edit access to the active tenant. Without it, the **Schema Library** has no **Create New Schema** action.
+- Have one of these files ready:
+  - a **JSON Schema** file (`.json`), or
+  - a **sample** of the data: a representative JSON record (`.json`) or a CSV file whose first row is the header (`.csv`).
+- Know which system the data comes from. Each schema is assigned to one system.
 
 ## Steps
 
-1. From **Ask Darpan**, open **Create Schema**.
-2. Provide the schema name or identifier.
-3. Select the source system when the workflow asks for it.
-4. Add or confirm the fields Darpan reads.
-5. Review field names, data types, and required markers.
-6. Save the schema.
+From **Ask Darpan**, open **Create Schema**, or open **Open Schema Library** and choose **Create New Schema**.
 
-## Start from a sample instead of typing fields
+1. **Are you uploading a schema file or a sample file?** Choose **Schema file** (`A`) or **Sample file** (`B`).
+2. **Upload the schema file** or **Upload the sample file**. A schema file must be `.json`; a sample can be `.json` or `.csv`. Choose **OK**.
+3. **Assign the system.** Pick the system the data comes from and choose **OK**. For a sample, this is when Darpan reads the file.
+4. **Review the interpreted schema** (samples only). Darpan lists every field it found with its **Field Path**, **Type** and a **Required** checkbox. Tick **Required** for the fields every record must carry, then choose **OK**.
+5. **Name the schema.** The name starts as the file name; change it to something you will recognise in saved runs. Choose **Save**.
 
-Typing thirty field names out of a CSV is the least interesting work in Darpan, and the easiest place to introduce a typo that only surfaces as a failed run. Two shortcuts skip it.
+Darpan saves the schema and opens the **Schema Library**. If the name is already taken, the schema is saved as `<name> (1)`.
 
-**From a CSV header row.** Give Darpan a CSV sample and it reads the header row into a flat schema, one field per column, and hands back the same editor rows you would have typed. Darpan parses the header with the same reader the reconciliation engine uses, so a header that quotes or escapes oddly is read the way a run will read it.
+## What Darpan reads from each file
 
-Darpan is told whether the sample is the whole file or only its opening slice. That distinction matters: a truncated sample and a complete header-only file look identical otherwise, and treating one as the other silently produces a schema with missing or invented columns.
+| You upload | What you get |
+| --- | --- |
+| A schema file | The schema as written. There is no review step. |
+| A JSON sample | Field paths and types inferred from the record, nested structures included. |
+| A CSV sample | One field per header column, in file order, every field typed `string`. Darpan reads only the first 64 KB of the file, so the header row must fit in that. |
 
-**From JSON text.** Paste a representative record and Darpan infers the field paths and types, including nested structures.
+An inferred schema reports the shape Darpan found, not the contract you intend. Check it before you rely on it in a run.
 
-Either way the result is a draft. Review names, types and required markers before saving — inference reports the shape it found, not the contract you intend.
+## Refine a schema
 
-## Flat and nested schemas
+Field types and paths are edited after saving, in the **Schema Editor**. Open **Open Schema Library** and choose the schema.
 
-A schema inferred from a CSV header is **flat**: every field is a top-level scalar with no nesting. A schema inferred from JSON may be nested.
+| Action | How |
+| --- | --- |
+| Change a field | Edit its **Field Path**, pick a **Type** (`string`, `integer`, `number`, `boolean`, `object`, `array`), or toggle **Required**. |
+| Add or remove a field | **Add field row** at the foot of the table; **Remove field row** on a row. |
+| Rename | Edit the title at the top of the page. |
+| Reassign the system | The **System** picker. |
+| Save your changes | **Save refined fields** saves field, name and system changes together. |
+| Download | **Download schema JSON** above the table. |
+| Delete | **Delete schema**, then confirm. |
 
-Darpan reports which one a schema is, because it decides where the schema can be used. Surfaces that need a plain column list — CSV sources especially — can only work with a flat schema, and knowing that up front is better than discovering it when a run rejects the pairing.
+## Where a schema shows up
 
-Existing schemas are available from **Open Schema Library**.
+When you set up a run, each side lists only the schemas assigned to that side's system.
 
-## Review checklist
+A CSV side lists only **flat** schemas: every field top-level, nothing nested. A schema inferred from a CSV header is always flat. A schema inferred from JSON with nested records is not, so it will not appear for a CSV side.
 
-- Field names match the source system or agreed normalized names.
-- Required fields are marked intentionally.
-- Numeric, date, and identifier fields use stable types.
-- The schema name is specific enough to understand in saved run history.
+## Troubleshooting
+
+| Message | What to do |
+| --- | --- |
+| Schema file must contain valid JSON. | The file is not valid JSON. Fix it, or upload it as a **Sample file** if it is a data record rather than a schema. |
+| This file looks like JSON, not CSV. Choose the JSON file type for this source instead. | The `.csv` file holds JSON. Upload a `.json` file instead. |
+| The header row is longer than the 65536-byte sample read from this file, so it cannot be read reliably. | Shorten the header row, or upload a JSON sample. |
+| Column N in the header row has no name. Give every column a name and upload the file again. | Name every header column. |
+| The header row repeats these column names: … | Make every header column name distinct. |
+| The header row has no commas but does contain semicolons. Reconciliation reads CSV files as comma-separated, so this file cannot be read as it stands. | Save the file as comma-separated. The same refusal names tabs or pipes. |
+| No systems are configured on this instance, so a schema cannot be assigned to one yet. | The instance is missing its system reference data. Ask your Darpan operator to load it. |
+| schemaText exceeds the maximum of 5 MB (received N MB). | The schema is larger than the 5 MB limit. Split it, or trim fields the runs do not need. |
+| No saved JSON schemas are available for *system*. | No schema is assigned to that side's system. Create one, or reassign an existing schema in the **Schema Editor**. |
 
 <Tip>
-Prefer one clear schema per source shape over reusing a vague schema that needs manual interpretation every time.
+Keep one clear schema per source shape. A vague schema reused across shapes needs interpreting every time it is picked.
 </Tip>
+
+Next: [Set up a reconciliation run](/guides/setup-reconciliation-run).

@@ -1,19 +1,35 @@
 ---
 title: "Connections"
-description: "Troubleshoot external connection records."
+description: "Diagnose and fix Shopify, HotWax, NetSuite, SFTP and database connections that fail to save, test or read."
 ---
 
-A connection that worked last week can break after a credential rotation, a host change, or a server that stopped accepting the authentication method it was set up with. The checks below are grouped by connection type. If you haven't set up the connection yet, start with the setup guide for that type instead.
+A connection that worked last week can break after a credential rotation, a host change, or a permission someone switched off on the other side. It feels like a dead end, but most failures name their own cause: run the diagnostics first, then find the message in the tables below. If you haven't set the connection up yet, start with its setup guide instead.
 
-## Rules every outbound address follows
+## Run the diagnostics first
 
-Shopify, HotWax OMS and NetSuite addresses are checked before Darpan connects to them, and Shopify and HotWax OMS addresses also when you save them:
+Shopify, HotWax and NetSuite connections have a **Run connection diagnostics** button (the pulse icon) at the foot of a saved connection's page. It tests the stored connection one stage at a time and opens a **Diagnostics** panel listing each check as **Passed**, **Failed** or **Skipped**. A check after a failure is skipped, so the first failed row is the one to fix.
+
+| Connection | Checks, in order |
+| --- | --- |
+| Shopify | **Credential readable**, **Shop reachable**, **API version supported**, **Orders readable**, **Bulk reads allowed** |
+| HotWax | **Credential readable**, **Base URL reachable**, **Credentials accepted**, **Orders readable** |
+| NetSuite | **Credential readable**, **Token issued**, **SuiteQL answers** |
+
+The button is shown only to users with edit access to the active tenant. On NetSuite it appears only for **OAuth2 M2M JWT** profiles.
+
+## Rules every connection follows
+
+**Outbound addresses.** Shopify, HotWax and NetSuite addresses are checked before Darpan connects to them, and Shopify and HotWax addresses also when you save them:
 
 - The address must use `https`.
 - The host must not resolve to a private, loopback, link-local or cloud-metadata address.
-- Some connections also restrict the host. A Shopify store address must end in `.myshopify.com`.
+- A Shopify store address must end in `.myshopify.com`.
 
-A save that breaks one of these rules is rejected with the reason. If an address worked before and is now refused, check whether its host now resolves somewhere internal.
+If an address worked before and is now refused, check whether its host now resolves somewhere internal.
+
+**Saved secrets stay with their host.** When you change where a HotWax, SFTP or database connection points, Darpan will not send the saved password, token or key to the new address. The save is refused until you enter the secret again, with a message like:
+
+> Enter the password or key again: the host changed, so the saved password or key is not sent to the new address.
 
 ## Shopify
 
@@ -21,54 +37,76 @@ Setup guide: [Set up Shopify](/guides/setup-shopify).
 
 | Symptom | What to check |
 | --- | --- |
-| Orders older than about 60 days are reported missing from Shopify | The app's access token lacks the `read_all_orders` scope. Without it, Shopify answers a lookup of an older order successfully but with no order, which Darpan can only read as "absent". Grant `read_all_orders` and run again. |
+| **Bulk reads allowed** fails: "Shopify refused bulk reads for this token, and runs need them." | Runs read Shopify through bulk queries, so this token cannot run them even if **Orders readable** passes. If a Partner made the app, its owner turns on **Allow bulk queries** in the Partner Dashboard (the app > **API access requests**). It lapses after 31 days without a bulk query. An app the store makes itself needs no switch. |
+| **Orders readable** fails: "The token is missing the read_orders scope." | Re-issue the token with `read_orders`, then save it on the connection. |
+| **Credential readable** fails: "The stored access token could not be decrypted." | Enter the access token again and save. |
+| **API version supported** fails | The shop did not serve the saved API version. Check the version and the store address. |
+| Orders older than about 60 days are reported missing from Shopify | The token lacks the `read_all_orders` scope. Without it, Shopify answers a lookup of an older order successfully but with no order, which Darpan can only read as "absent". Grant `read_all_orders` and run again. |
+| A run fails: "Shopify bulk operation could not start because another bulk operation was still running after N retry attempt(s)." | Another bulk read was still running on the store. Run again once it has finished. |
+| A run fails: "Shopify bulk operation … did not complete after N poll attempt(s)." | Shopify took too long to finish the export. Run a shorter window. |
 | The save is rejected | The store address is not `https`, or does not end in `.myshopify.com`. |
+| "Your active tenant only has view access for Shopify auth settings." | Your role in this tenant can view connections but not change them. Ask a Tenant Admin. |
 
-## HotWax OMS
+## HotWax
 
 Setup guide: [Set up HotWax](/guides/setup-hotwax).
 
-| Symptom | What to check |
-| --- | --- |
-| A returns extraction stops on gateway errors | Darpan retries a returns page that fails with HTTP 429, 502, 503 or 504 before giving up. If the gateway keeps failing at the default page size, lower `returnsPageSize` (1–1000) on the OMS configuration through the API (`save#HotWaxOmsRestSourceConfig`); the settings form does not show this field. |
-| The save is rejected | The OMS base URL is not `https`, or its host resolves to an internal address. |
-
-## Database sources
+HotWax is read over GraphQL. A page that times out, cannot connect, or answers HTTP 429, 502, 503 or 504 is asked again on its own, up to five attempts with a pause between them, so one slow answer does not fail a long read.
 
 | Symptom | What to check |
 | --- | --- |
-| The save or connection test says the host resolves to a non-routable or internal address | Database hosts on private, loopback or metadata addresses are refused by default. A self-hosted deployment that needs a private database host can allow it with the JVM system property `database_source_allow_private_hosts=true`. |
-| The extraction fails with a max-rows error | The query returned more rows than the connection's max-rows cap. The extraction fails rather than truncating. Narrow the query window or raise the cap. |
-| The query is rejected on save | Only a single read statement is accepted: it must start with `SELECT` or `WITH`, contain no semicolon, and use no placeholders other than `:windowStart` and `:windowEnd`, which carry the run window. The error names the rule that failed. |
-
-## SFTP
-
-Setup guide: [Connect SFTP](/guides/connect-sftp).
-
-Search **Ask Darpan** for **Open SFTP Servers**. For an existing record, search by SFTP description, host, or username. Check host, port, username, authentication method, directory path, and network access. Confirm whether the server expects a private key, password, or another authentication method.
+| A run fails: "OMS GraphQL … failed N attempts; last: …" | HotWax kept failing for every attempt. Check that HotWax is up, then run again or use a shorter window. |
+| **Base URL reachable** fails: "The base URL could not be reached." | The base URL, and whether HotWax is up. |
+| **Credentials accepted** fails: "The stored credentials were rejected (HTTP 401): invalid, expired, or issued by another OMS." | Enter current credentials for this OMS and save. |
+| **Orders readable** fails with HTTP 403 | The OMS user behind these credentials cannot read orders through GraphQL. Ask HotWax to grant that user API access. |
+| **Orders readable** fails with HTTP 404 | The GraphQL endpoint was not found. Check the base URL. |
+| The save is rejected: "OMS Base URL is not allowed: …" | The base URL is not `https`, or its host resolves to an internal address. |
 
 ## NetSuite
 
 Setup guide: [Connect NetSuite](/guides/connect-netsuite).
 
-NetSuite settings hold authentication profiles and RESTlet endpoint records. Runs read NetSuite over SuiteQL through an **OAuth2 M2M JWT** auth profile: lifecycles directly, Sync runs through a saved NetSuite check. The RESTlet endpoints serve inventory checks, which are not live.
+Runs read NetSuite over SuiteQL through an **OAuth2 M2M JWT** auth profile. Each page of a read waits up to 180 seconds and is tried up to three times; timeouts, dropped connections and HTTP 429, 502, 503 and 504 are retried. A month-long window can still fail where a shorter one works, so use a shorter window if reads keep timing out.
 
-A SuiteQL request times out at 120 seconds, so a month-long NetSuite window can fail where a shorter one works. Use a shorter window.
+Search **Ask Darpan** for **Open NetSuite Settings** and open the auth profile.
 
-Search **Ask Darpan** for **Open NetSuite Settings** and check the authentication profile:
-
-| Check | Detail |
+| Symptom | What to check |
 | --- | --- |
-| Authentication type | **OAuth2 M2M JWT** (OAuth 2.0 client credentials) needs the token URL, client ID, certificate ID, scope, and the private key whose certificate is uploaded to the NetSuite integration. **Basic** and **Bearer** are also offered. |
-| Integration record | Enabled for the client credentials grant, with the certificate mapped to an entity and role. |
-| Role permissions | The mapped role can read the records you need. |
-| Client ID and certificate ID | Not swapped. The client ID is 64 hexadecimal characters; the certificate ID is a 43-character string of letters, digits, `-` and `_`. Swapped values make the token endpoint answer an opaque HTTP 500 `server_error` rather than an authentication error. |
+| **Token issued** fails: "NetSuite refused the token request (HTTP N). The usual cause is a Client ID and Certificate ID pasted into each other's fields." | The client ID is 64 hexadecimal characters; the certificate ID is a 43-character string of letters, digits, `-` and `_`. NetSuite answers this mistake with an opaque HTTP 500 `server_error`, not an authentication error. |
+| **SuiteQL answers** fails: "NetSuite refused the SuiteQL query (HTTP N). The integration role may lack SuiteQL (REST Web Services) permission." | The role mapped to the certificate can use REST Web Services and read the records you need. |
+| **Credential readable** fails: "The private key could not be read. Paste the whole PEM, header and footer included." | Paste the full private key, including the `-----BEGIN` and `-----END` lines. |
+| **Credential readable** fails: "The token URL is not a NetSuite address." | The token URL must be on a NetSuite host. |
+| **Token issued** still fails with the IDs the right way round | Check the integration record: enabled for the client credentials grant, with the certificate mapped to an entity and role. |
+
+## SFTP
+
+Setup guide: [Connect SFTP](/guides/connect-sftp).
+
+Darpan saves an SFTP server's key the first time it connects and checks it on every connection after that, so a server that changes identity is not trusted silently.
+
+| Symptom | What to check |
+| --- | --- |
+| "The SFTP server host:port presented a different key (…) from the one saved (…), so nothing was sent to it. If the server was replaced on purpose, reset its saved key in SFTP settings." | If you know the server was replaced or rebuilt, search **Ask Darpan** for **Open SFTP Servers**, edit the server, tick **Forget saved key** under **Server key**, and save. The new key is saved on the next connection. If you don't know why the key changed, check with whoever runs the server before you reset it. |
+| The save asks you to enter the password or key again | You changed the host or port. See [Rules every connection follows](#rules-every-connection-follows). Changing the host or port also clears the saved server key. |
+| The connection fails | Check host, port, username, and whether the server expects a password or a private key. |
+
+## Database sources
+
+Setup guide: [Connect a database source](/guides/connect-database).
+
+| Symptom | What to check |
+| --- | --- |
+| A connection that worked before now fails on TLS | With `requireTls` on, Darpan verifies the server's certificate and hostname against the public certificate authorities (AWS RDS included). A server whose certificate is signed by a private authority needs that authority's certificate stored as `caCertPem`. |
+| "The CA certificate for this database could not be read; paste the PEM text (-----BEGIN CERTIFICATE----- ...) or clear it to use the public certificate authorities." | The stored CA is not a valid PEM certificate. Paste it again, or clear it. |
+| "Host '…' resolves to a non-routable or internal …" | Database hosts on private, loopback or metadata addresses are refused by default. A self-hosted deployment that needs a private database host can allow it with the JVM system property `database_source_allow_private_hosts=true`. |
+| "Extraction exceeded maxRows cap (N). Narrow the query window or raise maxRows on the connection config." | The query returned more rows than the cap. The extraction fails rather than truncating. |
+| The query is rejected on save | Only a single read statement is accepted. The error names the rule: "Only a single statement is allowed (no semicolons).", "Statement must start with SELECT or WITH (got '…').", or "Unknown placeholder :x (only :windowStart and :windowEnd are supported)." |
 
 ## AI providers
 
 Setup guide: [Configure AI](/guides/configure-ai).
 
-AI provider settings are stored in **Tenant Settings**, but no Darpan feature calls the provider in this release. A provider that is misconfigured or unreachable cannot affect a run, a schema, or a result.
+The AI provider stored in **Tenant Settings** is not read by any run, schema or result in this release. A provider that is misconfigured or unreachable cannot fail a run.
 
 ## Slack and Google Chat
 
@@ -76,4 +114,4 @@ Alert delivery problems are covered in [Automations and alerts](/troubleshooting
 
 ## Safe diagnostics
 
-Capture error codes and messages with secrets and organization-specific identifiers redacted before sharing externally.
+Before sharing an error outside your team, redact secrets and organization-specific identifiers.

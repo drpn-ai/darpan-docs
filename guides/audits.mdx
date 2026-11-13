@@ -1,17 +1,17 @@
 ---
 title: "Audits"
-description: "Write down what must be true about your orders, returns, and refunds, check it every morning, and keep every finding on a ledger until a check sees it fixed."
+description: "Write down what must be true about your orders, returns, and refunds, check it on a schedule, and keep every finding open until a check sees it fixed."
 ---
 
-Month close rarely breaks in one big place. It breaks in many small ones: an order shipped but never invoiced, a return refunded in one system and not the other. An audit lets you write those expectations down once, in plain English, and checks them every morning. Each problem it finds stays on a ledger until a later check sees it fixed, so nothing drops off the list because someone forgot about it.
+Month close rarely breaks in one big place. It breaks in many small ones: an order shipped but never invoiced, a return refunded in one system and not the other. An audit lets you write those expectations down once, in plain English, and checks them on a schedule. Each problem it finds stays open until a later check sees it fixed, so nothing drops off the list because someone forgot about it.
 
-An audit is a run type. It holds statements, such as "every fulfilled order is invoiced in NetSuite", grouped into categories. Each statement is tested by one or more checks, and each check reads an existing Sync or one-system run. A record that breaks a statement becomes a finding. A finding keeps when it was first found, whether it is still open, when it was fixed, and its history. When the run's conclusions explain it, the finding names its cause, and the check's fix text says what to do.
+An audit is a run type. It holds statements, such as "every fulfilled order is invoiced in NetSuite", grouped into categories. Each statement is tested by one or more checks, and each check reads an existing Sync or one-system run. A record that breaks a statement becomes a finding. A finding is **Open** or **Fixed**, and it keeps when it was first found, when it was fixed, and its history. When the run's conclusions explain it, the finding names its cause, and the check's fix text says what to do.
 
 ## Before you start
 
 Confirm:
 
-- You are a Tenant Admin for the active tenant to create an audit, change its settings, run it, or use **Resolve finding**. Anyone with access to the tenant can read it.
+- You can edit the active tenant, as a Tenant Admin can, to create an audit, run it, or change its settings. Anyone with access to the tenant can read it.
 - The runs your checks will read exist, or the connections they need do. See [Set up a reconciliation run](/guides/setup-reconciliation-run).
 
 ## Create an audit
@@ -53,54 +53,70 @@ Under a statement, choose **Add check**:
 | --- | --- |
 | **Run** | The run the check reads. **New run** and **New one-system run** open Create Run to build one. |
 | **Name**, **Check ID** | The check's name. The ID follows the name until you edit it. |
-| **Statements** | The statements this check tests and, for each, which of the run's rows break it: **Missing in** *system*, **Field mismatch**, **Finding**, or **Duplicate in** *system*. With **Field mismatch**, you can narrow to the run's rules; with **Finding** or **Missing in**, to the run's conclusions. **Add statement** links one more. |
+| **Statements** | The statements this check tests and, for each, which of the run's rows break it: **Missing in** *system*, **Field mismatch**, **Finding**, or **Duplicate in** *system* (a one-system run offers **Finding** and **Duplicate in** only). With **Field mismatch**, you can narrow to the run's rules. **Add statement** links one more. |
+| **Expected causes** | The run's causes that are expected. No statement counts a row with an expected cause. Shown when the run has conclusions. |
 | *System* **record** | The kind of record on each side, filled from the run. |
 | **Matched by** | How the run pairs records, filled from the run's keys. |
-| **Grace days** | How long a new finding stays **Pending** before it counts as **Open** (0 to 60). |
 | **Fix owner**, **Fix where** | Who fixes a finding, and in which system. |
-| **Money** | Optional. The currency, and where the expected and actual amounts come from, so a finding shows the gap. |
+| **Money** | Optional. The **Currency**, and where the expected and actual amounts come from (**Expected from**, **Actual from**), so a finding shows the gap. |
 | **Headline**, **Fix action**, **Passes when** | The words a finding reads with. `{name}` puts in the finding's field of that name. A blank headline reads as the record and the check's name. |
 
-Choose **Save check**. The check is saved on its own; the settings page's **Save** is not needed for it.
+Choose **Save check**. The check is saved on its own; the settings page's **Save** is not needed for it. A check moved to another statement takes its open findings with it, history kept.
 
 What a check can find is set by its run. A NetSuite side can read a SuiteQL query you write and **Preview** for one day before saving it; see [Write a SuiteQL query](/guides/connect-netsuite#write-a-suiteql-query). The causes a finding names come from the run's conclusions; see [Edit a run's conclusions](/guides/review-results#edit-a-runs-conclusions). On the settings page, select a check's name to open its run's rules.
 
-## Run it and schedule it
+## Run it
 
-Choose the play icon (**Run audit**) beside the audit's name, answer **Which days should this run look at?** with **Previous Day**, **Previous Week**, **Previous Month**, or **Custom Dates**, then choose **Run**. Days before the audit's open period, and days after today, are not offered. Every check runs in the background, and findings arrive as each one finishes.
+Choose the play icon (**Run audit**) beside the audit's name, answer **Which days should this run look at?** with **Previous Day**, **Previous Week**, **Month to Date**, or **Custom Dates**, then choose **Run**. **Month to Date** reads from the 1st of the month through yesterday; on the 1st, the whole previous month. Days before the earliest day the audit can record, and days after today, are not offered.
 
-<Warning>
-The first run creates the automations behind the audit's checks paused, at 06:00 in the tenant's time zone. The audit does not run every morning until you turn its schedule on.
-</Warning>
+Every check runs in the background. While they run, **Run health** shows **Running now**, each system's read with its record count, and **Findings arrive as each check finishes.**
 
-To schedule it, choose the gear (**Audit settings**). Under **Schedule**, turn **Daily** on, set **Time** and **Timezone** (the tenant's time zone by default), and choose **Save**. One schedule covers every check; when they differ, the page says **Checks run at different times; a change here sets them all.** Turning **Daily** off pauses every check; their findings stay.
+## Audit settings
 
-The same page renames the audit, edits a statement's wording, and turns a statement off. A statement turned off is left out from the next run, and its findings so far stay on record.
+Choose the gear (**Audit settings**) beside the audit's name. Change what you need, then choose **Save**.
+
+| Group | Sets |
+| --- | --- |
+| **Name** | The audit's name. |
+| **Schedule** | **Daily** on or off, **Time**, and **Timezone**. One schedule covers every check. |
+| **After each run** | The update sent when a run ends, on or off. The line under the switch says how many people with access to the tenant get it. **Also send to** adds email addresses; **Chat space** picks a space for a summary card. |
+| **Statements** | Each statement's wording, and a switch that turns it off. **Add check** and **New statement** are here too. |
+
+<Note>
+A new audit's schedule is off, set to 06:00 in the tenant's time zone. The audit does not run on its own until you turn **Daily** on.
+</Note>
+
+The audit owns its schedule. The automations behind its checks show **Set by audit** *name* under **Schedule**, linking back to these settings, and are not scheduled or paused on their own. When the checks' times differ, the page says **Checks run at different times; a change here sets them all.** Turning **Daily** off stops every check; their findings stay.
+
+A statement turned off is left out of the next run, and its findings so far stay on record.
+
+The update after each run is an email with a CSV per rule, plus a short message in the chosen chat space. Only a Tenant Admin can change the **After each run** group; others see **Only tenant admins can change this.** For chat spaces, see [Run completion alerts](/guides/run-completion-alerts).
 
 ## Read the audit page
 
-Home lists each audit under **Audit**. The page shows the audit's period and dates, then today's line: new, fixed today, and the oldest open finding. The board takes the full width of the screen.
+Home lists each audit under **Audit**, first. Under the audit's name, one line gives the run type, the dates the report covers and read, and today's movement: new, fixed today, and the oldest open finding. On a monthly audit, a period picker beside the name offers the report's month and the two before it.
 
 | Toolbar | Does |
 | --- | --- |
-| **open**, **pending**, **unchecked**, **all** | Counts that filter the board. A finding is pending inside its check's grace days and open after them. **unchecked** lists statements no check has run for. |
+| **open**, **all**, **not checked** | Counts that filter the board. **open** and **all** count findings; **not checked** counts statements no check has run for. |
 | **Order or record id** | Searches findings. |
 | **Any cause** | Keeps findings with one cause. |
 | **Any age** | Keeps findings at least **1 day+**, **7 days+**, or **30 days+** old. |
-| Period | On a monthly audit, the current month and the two before it. |
 
 Below the toolbar, the board drills down from left to right, with the path above it (audit › category › statement › finding). On a phone it shows one column at a time.
 
 | Column | Shows |
 | --- | --- |
-| Categories | **Run health** first, then each category with its open and pending counts. |
+| Categories | **Run health** first, then each category with its count. |
 | **Statements** | Each statement in the category, with its count. |
-| **Findings** | The statement's findings, each with its state and age. Findings on one order share a row; the rest are grouped under their cause. **N more** loads past the first 50. |
-| Detail | The open finding. With none open, the statement: each check's status (**Ran**, **Partial**, **Not run**), how many records each system read, **Matched by**, **Grace**, and **Read**. |
+| **Findings** | The statement's findings, each with its state and age, grouped under their cause. A cause's heading folds its group. An order sits under the cause holding it up, with its other causes named beneath it. |
+| Detail | The open finding. With none open, the statement: each check's status (**Ran**, **Partial**, **Not run**), how many records each system read, **Matched by**, and **Read**, then its counts. |
 
-**Run health** says whether the morning's checks are **Complete**, what each system read, and which statements are **Not covered** by any check.
+**Run health** says how many checks ran, which statements are **Not covered** by any check, and what each system read. On today's report, a check that did not run offers **Retry from last read**: it runs again from what that morning already read, and no system is read again. **Retry** *N* **not run** retries them all.
 
-A finding reads verdict first. Its state (**Open**, **Pending**, **Fixed**) and statement come first, then what is wrong, **Stuck on** (what holds it up), and **Do this** (the fix, with its owner). Under that, one card per system and order shows each record's id and status, with the system the fix is in outlined. An order lists its **Lines**, and the details a person searches by follow: customer, dates, channel, totals, deposits. **Evidence** shows only when no conclusion explains the finding. **History** lists when it was found, still open, fixed, or reopened.
+An order with findings under several statements counts once, under its earliest statement. Its later findings are listed with it under **Also on this order**, each named by its item, and the statement's counts say how many sit **under an earlier step**.
+
+A finding reads verdict first. Its state (**Open** or **Fixed**) and statement come first, then what is wrong, **Stuck on** (what holds it up), and **Do this** (the fix, with its owner). Under that, one card per system and order shows each record's id and status. An order lists its **Lines**, and the details a person searches by follow: customer, dates, channel, totals. **Evidence** shows only when no conclusion explains the finding. **History** lists when it was found, still open, fixed, or reopened.
 
 | Export | Where | Saves |
 | --- | --- | --- |
@@ -111,23 +127,31 @@ A finding reads verdict first. Its state (**Open**, **Pending**, **Fixed**) and 
 
 ## Resolve a finding
 
-You fixed the record and would rather not wait for tomorrow. **Resolve finding** re-checks one finding's record now; on an order, it re-checks the line holding the order up. Only that record is read, from each system by key. The finding then closes (**Resolved. The finding is closed.**) or stays open with today's cause (**Still open. The cause above is from this check.**). Resolve does not count as a check run, so **Run health** does not change.
+You fixed the record and would rather not wait for the next run. **Resolve finding** re-checks one open finding's record now, read from each system by key. The finding then closes (**Resolved. The finding is closed.**) or stays open with today's cause (**Still open. The cause above is from this check.**). Resolve does not count as a check run, so **Run health** does not change.
 
-Resolve needs the check's automation, so run the audit once first.
+If Darpan says the check has no automation yet, run the audit once first.
 
 ## How findings close
 
-A fix counts when a check sees it, not when someone says so. HotWax is read only from a check's last complete read, not across the whole period every morning, so a check that reads HotWax also reads its older open findings again by key, on both sides. A finding fixed in its own system closes on the next run without the whole period being read again. There is no control that marks a finding fixed by hand.
+A fix counts when a check sees it, not when someone says so. Each morning run re-checks open findings by key and reads the month so far, so a finding fixed in its own system closes on the next run. There is no control that marks a finding fixed by hand.
+
+## The audit agent
+
+When the agent is on for your tenant and a Darpan admin has given you AI access, the audit page's deepest column gets an **Agent** tab beside the detail. Type in **Ask the agent** to ask about the open finding, or to have it draft a change: a schedule, a statement, its wording, turning it on or off, or a new check.
+
+Each draft shows **Before the change** and **After the change**. If you can save the audit's checks, choose **Approve** or **Reject**, and **Revert** after a change is applied. Drafts waiting for approval are marked on the board. Without the agent on and AI access, the tab does not appear.
 
 ## Digests
 
-An audit can send a daily or weekly digest to a chat space, by email, or both, at a set time in the tenant's time zone. A daily digest gives open, pending, new today, and fixed today, with the open and pending count per category. A weekly digest compares open and pending with a week before. When a morning's checks are not complete, the digest says why.
+Separate from the update after each run, an audit can send a daily or weekly digest to a chat space, by email, or both, at a set time in the tenant's time zone. A daily digest gives what is open, new today, and fixed today; a weekly digest compares where things stand with a week before. When a morning's checks are not complete, the digest says why.
 
-Digests are set up by a Darpan administrator; there is no screen for them in the app. Ask your Darpan administrator to add one.
+Digests are set up by a Darpan admin; there is no screen for them in the app.
 
-## Read audits over the API
+## Read audits from code or the CLI
 
-The same report and findings the page shows are available read-only over GraphQL:
+The `darpan` CLI shows an audit as fully as the audit page: its report, findings, progress, and settings. See [Set up the Darpan CLI](/getting-started/set-up-darpan-cli).
+
+The same report and findings are also available read-only over GraphQL:
 
 - [GraphQL API overview](https://developers.drpn.ai/graphql/overview): endpoint, API keys, and what you can read.
 - [`auditReport`](https://developers.drpn.ai/graphql/queries/audit-report): an audit's report for one morning.

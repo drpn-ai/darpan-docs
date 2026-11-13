@@ -1,20 +1,19 @@
 ---
 title: "Reconciliation runs"
-description: "Reconciliation run data model, status values, stage order, counts, and preservation guidelines."
+description: "Run types, status values, stage order, date windows, the run queue, and how differences and repeated keys are counted."
 ---
 
-A reconciliation run is one execution of a reconciliation.
+A reconciliation run is one execution of a saved run over a date window or a set of uploaded files.
 
-## Run data to preserve
+## Run types
 
-- Who started the run
-- Active tenant
-- Selected schemas for source shape
-- RuleSet or rules used for comparison logic
-- Source inputs
-- Processing status
-- Generated output references
-- Error details when processing fails
+Every run has one of three types, chosen when you create it.
+
+| Type | Question it answers | What a healthy result looks like |
+| --- | --- | --- |
+| Sync | Do two systems hold the same records? | Zero differences. |
+| Lifecycle | Where do records stall on their way through? | Never zero: each stall is a named finding. See [Lifecycle runs](/guides/lifecycle-runs). |
+| Audit | Is what must be true still true? | Re-checked each period with sync and lifecycle checks; a finding stays open until a later run clears it. See [Audits](/guides/audits). |
 
 ## Status interpretation
 
@@ -25,63 +24,98 @@ A reconciliation run is one execution of a reconciliation.
 | Succeeded | `AUT_STAT_SUCCESS` | Processing finished and output is ready to review. |
 | No data | `AUT_STAT_NO_DATA` | Processing finished but no input data was available. |
 | Failed | `AUT_STAT_FAILED` | Processing stopped before producing expected output. |
-| Skipped duplicate | `AUT_STAT_SKIP_DUP` | The run matched an existing run and was skipped as a duplicate. |
-| Cancelled | `AUT_STAT_CANCELLED` | An operator stopped the run before it finished. Work completed before the stop is discarded. |
+| Skipped duplicate | `AUT_STAT_SKIP_DUP` | This window was already processed, so the run was skipped. |
+| Cancelled | `AUT_STAT_CANCELLED` | You stopped the run with **Cancel run** before it finished. Work completed before the stop is discarded. |
 | Dead-lettered | `AUT_STAT_DEAD_LETTER` | Automation executions only. A scheduled execution failed transiently, used up its retries, and was given up on. A failure alert is sent. |
-| Not run | `AUT_STAT_NOT_RUN` | Run flowcharts only. A question above this one failed or was switched off, so this one was not asked. |
+| Not run | `AUT_STAT_NOT_RUN` | Lifecycle runs only. A question above this one failed or was switched off, so this one was not asked. |
 
-Pending and Running are the active statuses. Succeeded, No data, Failed, Skipped duplicate and Cancelled are the terminal statuses for a run: a run in any of them is finished, will not change status again, and triggers run-completion alerts. Dead-lettered is also final, but it is recorded on the automation execution rather than on a run result. Not run is final for the flowchart question that carries it.
+Pending and Running are the active statuses. Succeeded, No data, Failed, Skipped duplicate and Cancelled are the terminal statuses for a run: a run in any of them is finished, will not change status again, and triggers run-completion alerts. Dead-lettered is also final, but it is recorded on the automation execution rather than on a run result. Not run is final for the lifecycle question that carries it.
+
+A failed run of a saved run offers **Retry from** *step*, named after the step that failed (**Retry** when no single step is marked failed). The retry is a new run over the same window that reuses what the failed run already read. It is refused when the saved run was edited after the failed run started, or when the failed run did not finish reading either side.
 
 ## Stage sequence
 
-A run advances through stages in a fixed order. The current stage is exposed on live run status and identifies where a run is spending time or where it stopped. The app shows each stage by its label.
+A run advances through stages in a fixed order. The current stage is shown on the live run and identifies where a run is spending time or where it stopped. The app shows each stage by its label.
 
 | Order | Stage | App label | Purpose |
 | --- | --- | --- | --- |
 | 1 | `RESOLVE` | Preparing run | Resolve the saved run, its sources, and the date window. |
 | 2 | `EXTRACT_FILE1` | Extracting *system* | Extract records from the first source. |
 | 3 | `EXTRACT_FILE2` | Extracting *system* | Extract records from the second source. |
-| 4 | `COMPARE` | Comparing records | Match records and apply rules. |
-| 5 | `VERIFY_MISSING` | Verifying differences | Point-lookup recheck of missing-record differences against lookup-capable sources. |
-| 6 | `VERIFY_EXCHANGE` | Verifying exchange pairs | Recheck of exchange pairs: one system's exchanges are looked up in the other. |
-| 7 | `VERIFY_RETURNS` | Verifying returns | Return-presence grading of both missing directions. |
-| 8 | `CONCLUDE` | Drawing conclusions | Name each verified finding with the run's conclusion rules. |
-| 9 | `WRITE_OUTPUT` | Writing results | Write the reviewable result, after verification has corrected it. |
-| 10 | `NOTIFY` | Sending notifications | Deliver run-completion alerts. |
+| 4 | `RECHECK` | Re-checking older findings | Read an audit's older open findings again by key on each side, before the compare judges them. |
+| 5 | `COMPARE` | Comparing records | Match records and apply rules. |
+| 6 | `VERIFY_MISSING` | Verifying differences | Point-lookup recheck of missing-record differences against lookup-capable sources. |
+| 7 | `VERIFY_EXCHANGE` | Verifying exchange pairs | Recheck of exchange pairs: one system's exchanges are looked up in the other. |
+| 8 | `VERIFY_RETURNS` | Verifying returns | Return-presence grading of both missing directions. |
+| 9 | `CONCLUDE` | Drawing conclusions | Name each verified finding with the run's conclusion rules. |
+| 10 | `WRITE_OUTPUT` | Writing results | Write the reviewable result, after verification has corrected it. |
+| 11 | `NOTIFY` | Sending notifications | Deliver run-completion alerts. |
 
-Each verification pass has its own stage code, and each names the systems it rechecked. Some stages are conditional. A file-upload side records no extract step, and a run that checks one system never opens `EXTRACT_FILE2`. A run with nothing to recheck, or no source that supports a point lookup, records no verification step. When verification is switched off or cannot run, the run records a `VERIFY_MISSING` step that states the reason. Only a run whose scope has conclusion rules records `CONCLUDE`.
+When a stage names the systems it worked on, the label carries them: **Re-checking older findings on** *systems*, **Verifying** *system*'s diffs, **Verifying** *system*'s exchange pairs, **Verifying** *system*'s returns.
 
-Runs recorded before 2.0.0 keep the single `VERIFY` stage code at order 5, with `WRITE_OUTPUT` at 6 and `NOTIFY` at 7. Anything that reads `stageCode` or `stageSequence` must expect both sets.
+Some stages are conditional:
+
+- A file-upload side records no extract step, and a run that checks one system never opens `EXTRACT_FILE2`.
+- `RECHECK` opens only on an audit window that has older open findings.
+- A run with nothing to recheck, or no source that supports a point lookup, records no verification step. When verification is switched off or cannot run, the run records a `VERIFY_MISSING` step that states the reason.
+- Only a run whose scope has conclusion rules records `CONCLUDE`.
+
+A step's `stageSequence` is stored when the step is written, so older runs keep the numbers they were recorded with. Runs recorded before 2.0.0 use a single `VERIFY` stage at 5, with `WRITE_OUTPUT` at 6 and `NOTIFY` at 7. Runs recorded before `RECHECK` existed number `COMPARE` through `NOTIFY` one lower than the table above (4 through 10). Anything that reads `stageCode` or `stageSequence` must expect all three sets.
 
 ## Run window
 
-A run's date window is recorded with the time zone it was anchored in. The app shows the window in that zone, and Tara gives the exact instants it covered. Over the API, `dateRange.start` and `dateRange.end` are ISO-8601 instants (for example `2026-09-01T11:30:00Z`) beside a nullable `timeZone`. A missing `timeZone` means none was recorded.
+When you start a run, you choose the days it reads.
+
+| Window | Days covered |
+| --- | --- |
+| Previous Day | Yesterday. |
+| Previous Week | Eight days ending yesterday. |
+| Month to Date | The 1st of yesterday's month through yesterday. On the 1st, that is the whole previous month. |
+| Custom Dates | The start and end dates you select. |
+
+Previous Day, Previous Week and Month to Date show their dates on the choice.
+
+A run's date window is recorded with the time zone it was anchored in, and the app shows the window in that zone. Over the API, `dateRange.start` and `dateRange.end` are ISO-8601 instants (for example `2026-09-01T11:30:00Z`), with a nullable `dateRange.timeZone`. A missing `timeZone` means none was recorded.
+
+## Run queue
+
+Scheduled runs and their automatic retries, an audit play, **Retry from last read**, and re-checking a finding all wait their turn in one queue before they start:
+
+| Limit | Value |
+| --- | --- |
+| Runs at once, across the instance | 8 |
+| Runs at once, per tenant | 5 |
+| Runs waiting, per tenant | 50 |
+
+Tenants with waiting runs take turns; within a tenant, runs start in the order they were asked for. While the instance is short of memory, no new run starts until memory frees up. A run waiting in the queue has no run record yet; on an audit page, **Run health** shows it as **Queued**.
+
+Past the waiting limit, a new run is refused with: "This tenant already has *N* runs waiting for a slot; try again once some have started."
 
 ## How differences are counted
 
-The difference count is the number of records missing from one side: records only in the first source plus records only in the second. Value mismatches found by rules are counted separately.
+The difference count on a run's result is:
 
-A run that finds value mismatches but no missing records therefore has a difference count of zero. Read the value-mismatch count as well before treating a run as clean.
+> records missing from one side + rule differences + duplicate records
 
-Duplicate-key findings on a side that opts in (below) are included in the difference count. A run that checks one system has no second side: every row it reports is a finding.
+Rule differences are value mismatches on matched records, found by the run's rules. A run with value mismatches and no missing records therefore has a non-zero difference count.
 
-## Duplicate compare IDs
+A run that checks one system has no second side: every row it reports is a finding.
 
-A compare ID should identify exactly one record on each side. When a side produces the same compare ID more than once after normalization:
+## Repeated keys
 
-| Run type | Behavior |
-| --- | --- |
-| No active rules (presence check only) | The duplicates collapse to one row per compare ID, and the run records a processing warning naming examples. A duplicated key can therefore read as a single clean match. |
-| Active rules | The run fails with an error naming the duplicated values and their row counts. |
-| Side opted in to duplicate-key findings | Every record under a repeated key becomes a finding (`DUPLICATE_IN_FILE_1` or `DUPLICATE_IN_FILE_2`), and the key is left out of the compare on both sides, so the other side's record is not reported missing. |
+A compare ID should identify exactly one record on each side. When a side of a two-system run produces the same compare ID more than once after normalization:
 
-Duplicate-key findings are opt-in per side (`duplicateKeyHandling = FINDING` on the run's compare source). The app has no control for it; it is set in run configuration data. A side without it keeps the behaviour in the first two rows.
+- Every record under the repeated key becomes a finding (`DUPLICATE_IN_FILE_1` or `DUPLICATE_IN_FILE_2`), listed under **Duplicates** on the run page.
+- The key is left out of the compare on both sides, so the other side's record is not reported missing.
+- The run finishes with the rest of its results and records a processing warning naming how many keys repeated.
+
+This applies to every two-system run. The answer to **What happens when a key repeats** in run setup no longer changes it: a repeated key never fails the run or collapses into a match.
 
 If a source legitimately carries several rows per key, use a [composite matching key](/reference/composite-matching-keys) that makes each row unique.
 
 ## Failure visibility
 
-A failed run stays visible rather than disappearing. Runs that failed after the most recent completed run are grouped under **Needs Attention** in run history, and a run that failed before producing any output file is still listed — a failure with no artifact is a result worth seeing, not an absence.
+A failed run stays visible rather than disappearing. Runs that failed after the most recent completed run are grouped under **Needs Attention** in run history, and a run that failed before producing any output file is still listed.
 
 ## Review principle
 
@@ -89,4 +123,4 @@ Treat the run as evidence. If you change schema, mapping, source files, or rules
 
 ---
 
-To start a run, see [Run a reconciliation](/guides/run-reconciliation).
+To start a run, see [Run a reconciliation](/guides/run-reconciliation). For runs that fail or surprise you, see [Troubleshoot reconciliation runs](/troubleshooting/reconciliation-runs).

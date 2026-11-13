@@ -1,38 +1,68 @@
 ---
 title: "Reconciliation runs"
-description: "Troubleshoot failed or surprising reconciliation output."
+description: "Troubleshoot runs that wait, refuse to start, fail, or return surprising counts."
 ---
 
-A run that fails or returns empty usually leaves evidence — the result status, the support logs, or the source data itself. The failure is fixable. Start with the result row, then work down through these checks.
+A run that waits, fails, or comes back with odd numbers looks worse than it is. Darpan keeps the evidence on the run page: the step it stopped at, the full error, and a way to try again without re-reading everything. Find your symptom below and work through the checks.
 
-## Failed run
+## A run has not started
+
+Scheduled runs and their retries, audit plays, **Retry from last read**, and finding re-checks wait in one queue: up to 8 run at once, 5 per tenant, with tenants taking turns. While the instance is short of memory, no new run starts until memory frees up. A waiting run starts on its own.
 
 Check:
 
-- Open **Ask Darpan**, search by the run name or output file name, and select **Open Result: ...**.
-- Source inputs were present.
-- Schema or RuleSet selection was valid.
-- Connection records were reachable.
-- The run or support logs show the first processing error, not only the final failure.
-
-A scheduled run whose source read fails ends failed and is retried. It does not report the window as having no data, so an empty result means the source had nothing to read.
+- On an audit page, **Run health** shows a waiting run as **Queued**, and **Running now** counts how many are running and queued.
+- Your tenant has no more than 50 runs waiting. Past that, a new run is refused with: "This tenant already has *N* runs waiting for a slot; try again once some have started." Wait for some to start, then ask again.
 
 ## A run refuses to start
 
-A run that was archived, or switched off with `facade.ReconciliationFacadeServices.disable#SavedRun`, refuses to start, from the app and from a schedule alike. `enable#SavedRun` and `restore#SavedRun` bring it back; the app has no control for either.
+An archived or switched-off run refuses to start, from the app and from a schedule alike. The error says which:
 
-In a run flowchart, a question shows **Not run** when a question above it failed or was switched off. Fix the question above, then run again. See [Lifecycle runs](/guides/lifecycle-runs#questions-and-flowcharts).
+- "Run '*name*' is archived. Restore it from Show archived before running it."
+- "Run '*name*' is disabled. Enable it before running it."
+- For a lifecycle run: "Run '*id*' is archived." or "Run '*id*' is switched off."
 
-## Zero matches
+The app has no control to restore or re-enable a saved run. Over the API, `facade.ReconciliationFacadeServices.restore#SavedRun` brings back an archived run and `enable#SavedRun` a disabled one.
 
-If zero matches followed a file upload issue — encoding, leading zeros, or delimiter — check [File upload](/troubleshooting/file-upload) first.
+In a lifecycle run, a question shows **Not run** when a question above it failed or was switched off. Fix the question above, then run again. See [Lifecycle runs](/guides/lifecycle-runs#questions-and-flowcharts).
+
+## Failed run
+
+Open the run. To find it, open **Ask Darpan**, search by the run name or output file name, and select **Open Result: ...**. Runs that failed since the last completed run are also grouped under **Needs Attention** in run history.
+
+Check:
+
+- The error on the run page. It shows the full error text, and **Run steps** marks the step that failed.
+- Source inputs were present.
+- Schema or rule set selection was valid.
+- Connection records were reachable. See [Connections](/troubleshooting/connections).
+
+When the cause is fixed, or was transient, choose **Retry from** *step*. The retry is a new run over the same window that reuses what the failed run already read, so a long extract is not repeated. Darpan refuses the retry, and you run it again instead, when:
+
+- "*Saved run* was edited after run *id* started, so its extracts no longer answer the same question; run it again instead."
+- "Run *id* did not finish reading either side, so there is nothing to retry from; run it again instead."
+
+A scheduled run whose source read fails ends failed and is retried. It does not report the window as having no data, so an empty result means the source had nothing to read.
+
+## Wrong window or setup, mid-run
+
+A run started against the wrong window or setup does not have to finish. Choose **Cancel run** and confirm. The run ends at its next step boundary and finishes as cancelled; work completed so far is discarded. See [Stopping a run](/guides/run-reconciliation#stopping-a-run).
+
+## Zero or too few matches
+
+If zero matches followed a file upload issue (encoding, leading zeros, or delimiter), check [File upload](/troubleshooting/file-upload) first.
 
 Check:
 
 - Join keys are populated in both sources.
 - Identifiers use the same formatting.
 - The selected schema reads the intended columns.
-- The files are from the same business period.
+- Both sides cover the same business period. **Month to Date** reads the 1st of yesterday's month through yesterday, so a run started on the 1st reads the whole previous month.
+- The run page's **Duplicates**. A key that repeats on either side is left out of the compare on both sides, so its records count as duplicates rather than matches. If a source legitimately has several rows per key, use a [composite matching key](/reference/composite-matching-keys).
+
+## Difference count is higher than expected
+
+The difference count adds three things: records missing from one side, rule differences (value mismatches on matched records), and duplicate records. A run with no missing records can still have a non-zero count. See [How differences are counted](/reference/reconciliation-runs#how-differences-are-counted).
 
 ## Unexpected differences
 
@@ -42,4 +72,5 @@ Classify each difference before changing configuration:
 - Schema parsing issue
 - Mapping or normalization issue
 - Rule classification issue
+- Repeated key (listed under **Duplicates**)
 - Expected business variance

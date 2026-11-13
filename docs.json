@@ -26,7 +26,8 @@
               "getting-started/overview",
               "getting-started/core-concepts",
               "getting-started/ask-darpan-navigation",
-              "getting-started/tenant-admin-quickstart"
+              "getting-started/tenant-admin-quickstart",
+              "getting-started/set-up-darpan-cli"
             ]
           },
           {
