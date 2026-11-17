@@ -7,6 +7,75 @@ Darpan releases from newest to oldest, with product and operator changes that af
 
 Version key: headings carry the backend version (`drpn-ai/darpan`); the app (`darpan-ui`) has its own tags, named in each entry: `v2.x` alongside backend `v1.x`, `v3.x` from backend `v2.0.0`, and `v4.x` from backend `v3.0.0`. Backend and app tags are cut together for major and minor releases. A patch can be backend-only or carry an app tag too, as `v1.5.1` did with app `v2.6.1`.
 
+## v3.1.0 — November 2026
+
+Cut together with app `v4.1.0`, `darpan-hotwax v1.1.0`, `shopify-darpan v0.10.0`, `netsuite-darpan v0.6.0`, `database-darpan v0.4.0`, `moqui-gql v1.1.0` and `darpan-agent v0.2.0`. A minor release: the API contract stays at version `4` and only gains methods, and every component deploys together.
+
+**Sign-in**
+
+- **Two-factor sign-in.** Turn on an authenticator app in **User Settings** under **Two-factor**, and keep ten one-time recovery codes as the fallback. Once it is on, sign-in asks for a code after the password, and approving a CLI sign-in asks for one too. Darpan emails you when an app is set up. See [Two-factor sign-in](/guides/two-factor).
+- **Passkeys and security keys.** Touch ID, Windows Hello, a phone passkey or a security key such as a YubiKey can be the second factor, beside the app or on its own. Add, rename and remove them in **User Settings**; a recovery code still signs you in when the device is not at hand.
+- **Two-factor by role.** A Darpan admin can require two-factor for Super admins, Darpan admins and Tenant admins from a date. Until then, sign-in reminds them to set it up; from then, sign-in walks them through it.
+- **Shorter sessions.** A web sign-in ends after 60 minutes without activity, and 24 hours after sign-in at the latest. Every CLI sign-in lasts 7 days, whatever the role.
+- **Passwords need 12 characters,** with a number and a symbol, when they are set or changed.
+
+**Tenants and roles**
+
+- **Tenant users run and connect.** A Tenant user can play an audit, retry a check, resolve a finding, run a saved run or a one-off comparison, and add, edit and delete NetSuite, Shopify, HotWax, SFTP and database connections. Talking to the audit agent is for Company editors and Tenant admins. See [Manage users and access](/guides/manage-users-and-access#roles).
+- **A welcome email.** When someone is added to a tenant, Darpan emails them from `support@drpn.ai` with the tenant, their role, their username and where to sign in. A Darpan admin can send it again, to one member or to all.
+- **Darpan admins in the admin app.** A user's page shows and changes the Darpan admin and Super admin roles, and the users list filters to Darpan admins.
+
+**Audits**
+
+- **Previous Week is seven days,** ending yesterday.
+- **Run setup no longer asks what happens when a key repeats.** Every record under a repeated key is a finding.
+- **Audit settings warns** when the chosen chat space no longer exists, is turned off, or has nowhere to post.
+- **Report links name their tenant.** A link in the update after a run opens the report in the tenant it belongs to.
+- **An order opens on its open line,** so an order listed as Open opens as Open.
+- **Fix text names the record.** A finding's fix and passes-when text fill names such as the order name from the finding's own records.
+- **NetSuite open order lines carry their own HotWax ship group,** facility and ship method, so a check can judge each line by its own ship group.
+- **Agent drafts read cleanly.** The agent drafts new statements, which take their codes in the order they are approved; a check it adds gets an ID no other audit uses, and its findings name each system's value and the record's key.
+- **Each run applies its own rules,** also when several runs start at once.
+- **Fixed findings close on audits that read very large record counts.**
+
+**Connections and data**
+
+- **Shopify customer data at Level 1.** Darpan never reads a Shopify customer's email, phone, name or address: order email and shipping address fields are gone from the orders extract and the field catalog, and any query asking for them is refused before it is sent. See [Customer data](/guides/setup-shopify#customer-data).
+- **Extracts are kept 7 days.** The raw files a run reads from its sources are deleted 7 days after the run. Result files and findings stay.
+- **Secrets stay with their address.** A Shopify connection asks for its access token again when its shop URL changes, and a NetSuite auth profile asks for its secret again when its token URL changes, as HotWax, SFTP and database connections already do.
+- **A NetSuite endpoint stays on its auth profile's NetSuite account.** See [Connections](/troubleshooting/connections#netsuite).
+- **Clearer errors.** An archived or disabled saved run says to ask a Darpan admin.
+
+**Operators**
+
+- All components deploy together. Deploy with `darpan-docker-config` at `v3.1.0`: its health check reads `/`, because the framework's `/Login` page now answers 404.
+- Tell people before deploying: web sign-ins older than 24 hours and CLI sign-ins older than 7 days end at the deploy, and they sign in again (`darpan login` for the CLI).
+- Two-factor is optional for every role at deploy. Have at least two super admins set it up, then require it by role in the admin app under **Open Security**. Requiring it for super admins is refused until two have it on.
+- Passkeys use the host of `DARPAN_APP_BASE_URL` as their relying party. An instance served elsewhere sets `DARPAN_WEBAUTHN_RP_ID` and `DARPAN_WEBAUTHN_ORIGINS`. `DARPAN_TOTP_ISSUER` names the entry in authenticator apps (default `Darpan`).
+- Darpan signs people in only through its own sign-in. HTTP Basic and username/password request parameters are refused with 401; integrations use a session or an API key.
+- Passwords are stored with PBKDF2 and rehashed at sign-in.
+- Tighter tenant isolation and outbound connection checks across every connector.
+- The admin audit trail covers every admin change and every download.
+- Per-table retention for findings, run results, agent transcripts and agent query logs, off until a period is set. A nightly job deletes extracts older than 7 days.
+- A super admin command rotates the field-encryption key.
+- Backend groundwork for a Darpan Shopify app (install and privacy webhooks). Nothing changes until an app is registered.
+- The prod image runs as a non-root user, from pinned base images.
+
+**API**
+
+- Contract version stays `4`: 23 methods are added (12 for two-factor and passkeys, and admin methods for two-factor policy and reset, Darpan admins, the tenant welcome, a retention dry run, key rotation and Shopify apps, plus `begin#ShopifyInstall`) and none is removed. `login#Session` can answer with a two-factor challenge instead of a token.
+- GraphQL agent keys last at most 90 days by default (`gql.apiKey.maxDays`); a key minted with no expiry gets the maximum. Each key records who minted it.
+
+**Upgrade**
+
+- Start the new image first: it creates the new tables for two-factor, passkeys, retention and Shopify apps.
+- From `v3.0.3`: load the seed records with `./gradlew loadDarpanUpgradeData` (90 records: two-factor policies and email templates, the tenant welcome template, the extract and retention jobs, and the tenant filters), then `run#PendingMigrations`, dry run first. One migration, `NS_AUTH_ACCOUNTS`, records each NetSuite auth profile's account.
+- From an earlier `v3.0` patch, load the `v3.0.3` records first; see that section.
+
+**Rollback**
+
+- Roll back as a set, to `v3.0.3` with app `v4.0.3`. Passwords rehashed after the upgrade cannot be checked by the older image, so those people reset their password. Reload `v3.0.3`'s `SecuritySeedData.xml` so the tenant filters match its code. The new tables and two-factor enrolments stay and are not read.
+
 ## v3.0.3 — November 2026
 
 Cut together with app `v4.0.3`, `darpan-hotwax v1.0.1`, `shopify-darpan v0.9.1`, `netsuite-darpan v0.5.1`, `database-darpan v0.3.0`, `moqui-gql v1.0.0` and `darpan-agent v0.1.2`. One section covers the 3.0 line: `v3.0.0` (November 12, with app `v4.0.0` and the first `darpan-agent` tag, `v0.1.0`) and the November 12 patches: app `v4.0.1`, `v4.0.2` and `v4.0.3`, `darpan-agent v0.1.1` and `v0.1.2`, `v3.0.2` with `darpan-hotwax v1.0.1`, `shopify-darpan v0.9.1` and `netsuite-darpan v0.5.1`, and `v3.0.3` with app `v4.0.3`. There is no backend `v3.0.1`. A major release: the API contract moves to version `4`, and every component deploys together.

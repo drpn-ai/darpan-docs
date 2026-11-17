@@ -13,7 +13,7 @@ Runs read NetSuite over SuiteQL with an **OAuth2 M2M JWT** auth profile. A [life
 
 Confirm:
 
-- You are a Tenant Admin, or have edit access, for the active tenant.
+- You are a Tenant user, Company editor or Tenant admin in the active tenant. A Company view only member can read connections but not change them.
 - The NetSuite owner has given you the authentication method and its values: a username and password, a token, or an OAuth 2.0 client-credentials setup (client ID, certificate ID, and private key).
 - For OAuth 2.0, the integration record and role in NetSuite grant the permissions the account needs.
 
@@ -38,7 +38,7 @@ Every profile also asks **Should this auth profile be active?** and, last, the l
 For OAuth 2.0, the **Client ID** comes from the NetSuite integration record and is 64 hexadecimal characters. The **Cert ID** comes from the certificate mapping and is a 43-character value. They are often pasted into each other's fields; check them before saving.
 </Note>
 
-Secrets are write-only on edit: leave the password, token, or private key blank to keep the stored value.
+Secrets are write-only on edit: leave the password, token, or private key blank to keep the stored value, as long as the token URL stays the same. If you change the token URL, enter the secret again: Darpan does not send the stored one to a new address.
 
 ## Open an auth profile
 
@@ -50,6 +50,8 @@ Choose a profile under **Auth** to open its details page: its settings, the **En
 ## Create an endpoint
 
 Open the auth profile the endpoint will use, choose **Create Endpoint** under **Endpoints**, and answer the setup questions: the endpoint URL, the HTTP method (**POST**, **PUT**, or **GET**), the auth profile it uses (the one you came from is already selected), optional headers as JSON, connect and read timeouts in seconds, whether it is active, and a label. Darpan gives the endpoint its ID.
+
+An endpoint stays on its auth profile's NetSuite account: the first part of the endpoint URL's host, such as `1234567` in `1234567.restlets.api.netsuite.com`, must name the account the profile signs in to. To call another account, create an auth profile for that account and its endpoints under it.
 
 ## Write a SuiteQL query
 

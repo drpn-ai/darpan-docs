@@ -14,7 +14,7 @@ Keep access tokens, customer hostnames, and account-specific values in secure co
 Confirm:
 
 - You are signed in to the correct active company or active tenant.
-- Your user can edit connection settings.
+- You are a Tenant user, Company editor or Tenant admin in the active tenant. A Company view only member can read connections but not change them.
 - The Shopify shop or Admin API URL is known.
 - The Shopify API version is known.
 - The timezone for Shopify date windows is known.
@@ -42,6 +42,8 @@ Save the connection. Darpan creates it as active and gives it a **Config ID**. T
 
 To change the connection later, open it from **Open Shopify Settings** and choose **Edit Shopify Config**. The edit form holds **Description**, **Shop/API URL**, **API Version**, **Timezone**, **Active**, **Access Token (leave blank to keep existing)**, **Available Endpoints**, where you choose which endpoints this connection may be read through, and the **Shared with** panel.
 
+Leaving **Access Token** blank keeps the stored token only while **Shop/API URL** stays the same. If you change the shop URL, enter the token again: Darpan does not send the stored token to a new address.
+
 </Step>
 <Step title="Confirm the connection is reusable">
 
@@ -63,6 +65,12 @@ The connection is ready when a reconciliation run or automation can select Shopi
 Run pickers and results name these by source, for example **Shopify returns** and **Shopify order lines**.
 
 Each connection enables endpoints separately under **Available Endpoints**. An endpoint that is not enabled is not offered when you build a run. The saved connection's page lists the enabled endpoints under **Endpoints**.
+
+## Customer data
+
+Darpan reads Shopify's protected customer data at Level 1: it never reads a customer's email, phone, name or address. Orders carry their customer's ID only, and the field catalog offers no email or shipping address fields. Every Shopify read goes through this check, including runs, lookups, free-form GraphQL and the audit agent's queries, so a query that asks for those fields is refused before anything is sent to Shopify.
+
+Match Shopify orders to other systems by order name, order ID or transaction IDs, not by email.
 
 ## Validation
 

@@ -14,7 +14,7 @@ Keep passwords, API tokens, and API keys in secure configuration. These docs des
 Confirm:
 
 - You are signed in to the correct active tenant.
-- Your user can edit connection settings.
+- You are a Tenant user, Company editor or Tenant admin in the active tenant. A Company view only member can read connections but not change them.
 - You know the base URL of your HotWax instance, for example `https://your-instance.hotwax.io`. Darpan sends every read to `<base URL>/rest/s1/graphql`, so the instance must serve GraphQL there.
 - You know the auth type: **None**, **Basic**, **Bearer**, or **API Key**.
 - The username and password, API token, or API key for that auth type is available.

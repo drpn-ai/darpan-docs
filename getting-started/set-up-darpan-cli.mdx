@@ -70,6 +70,8 @@ Type the code into **Code from your terminal** and choose **Continue**. The code
 
 The **Sign-in request** shows the computer name the CLI sent, when the code was started, and when it expires. Approve only a code you just started in your own terminal, then choose **Approve**.
 
+With [two-factor](/guides/two-factor) on, type a fresh code into **Current code from your app** first, or choose **Use a passkey** and confirm in the passkey prompt that **Approve** opens.
+
 The page shows **CLI approved. Return to your terminal.** The terminal prints your username and when the sign-in ends.
 
 </Step>
@@ -114,12 +116,7 @@ Claude Code then works with the same access you have: your tenants, your role, a
 
 ## How long a sign-in lasts
 
-| You are | A sign-in lasts |
-| --- | --- |
-| Tenant Admin in that tenant | 30 days |
-| Any other role in that tenant | 7 days |
-
-A sign-in also stops working when your CLI access for the tenant ends, is paused, or is revoked. When it does, commands say **Your CLI session has expired.** Run `darpan login` again.
+A sign-in lasts 7 days, whatever your role, Darpan admins included. It also stops working when your CLI access for the tenant ends, is paused, or is revoked. When it does, commands say **Your CLI session has expired.** Run `darpan login` again.
 
 ## See and end your sign-ins
 
@@ -140,7 +137,8 @@ The CLI keeps its key in `~/.config/darpan`. Signing out removes it.
 | **The sign-in was denied in the browser.** | Someone chose **Deny** on the **Approve CLI** page. Run `darpan login` again and approve. |
 | **The sign-in code expired before it was approved.** | The 10 minutes ran out, or the CLI is not on for you in that tenant. Check **User settings** → **CLI sessions**, then run `darpan login` again. |
 | **You are not signed in.** | Run `darpan login`. |
-| **Your CLI session has expired.** | The sign-in reached its end, or your access ended. Run `darpan login`; if it fails, ask for access again. |
+| **Your CLI session has expired.** | The sign-in reached its 7 days, or your access ended. Run `darpan login`; if it fails, ask for access again. |
+| "Two-factor is required for this account. Set it up in the Darpan app, then run darpan login again." | Your role requires two-factor. Set it up in the app (see [Two-factor sign-in](/guides/two-factor)), then run `darpan login`. |
 
 ## Next step
 

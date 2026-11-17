@@ -15,7 +15,7 @@ Shopify, HotWax and NetSuite connections have a **Run connection diagnostics** b
 | HotWax | **Credential readable**, **Base URL reachable**, **Credentials accepted**, **Orders readable** |
 | NetSuite | **Credential readable**, **Token issued**, **SuiteQL answers** |
 
-The button is shown only to users with edit access to the active tenant. On NetSuite it appears only for **OAuth2 M2M JWT** profiles.
+The button is shown to anyone who can run in the active tenant: a Tenant user, Company editor or Tenant admin. On NetSuite it appears only for **OAuth2 M2M JWT** profiles.
 
 ## Rules every connection follows
 
@@ -27,9 +27,19 @@ The button is shown only to users with edit access to the active tenant. On NetS
 
 If an address worked before and is now refused, check whether its host now resolves somewhere internal.
 
-**Saved secrets stay with their host.** When you change where a HotWax, SFTP or database connection points, Darpan will not send the saved password, token or key to the new address. The save is refused until you enter the secret again, with a message like:
+**Saved secrets stay with their host.** When you change where a connection points, Darpan will not send the saved password, token or key to the new address. The save is refused until you enter the secret again, with a message like:
 
 > Enter the password or key again: the host changed, so the saved password or key is not sent to the new address.
+
+| Connection | The change that asks for the secret again |
+| --- | --- |
+| Shopify | **Shop/API URL** (the access token) |
+| NetSuite auth profile | The token URL (the password, API token or private key, by auth type) |
+| HotWax | Base URL, auth type or headers (the password or token) |
+| SFTP | Host or port (the password or key) |
+| Database | Host, port or dialect (the password) |
+
+**Who can change connections.** A Tenant user, Company editor or Tenant admin can add, edit and delete connections. A Company view only member can read them; a save is refused with a message that the tenant has only view access.
 
 ## Shopify
 
@@ -45,7 +55,10 @@ Setup guide: [Set up Shopify](/guides/setup-shopify).
 | A run fails: "Shopify bulk operation could not start because another bulk operation was still running after N retry attempt(s)." | Another bulk read was still running on the store. Run again once it has finished. |
 | A run fails: "Shopify bulk operation … did not complete after N poll attempt(s)." | Shopify took too long to finish the export. Run a shorter window. |
 | The save is rejected | The store address is not `https`, or does not end in `.myshopify.com`. |
-| "Your active tenant only has view access for Shopify auth settings." | Your role in this tenant can view connections but not change them. Ask a Tenant Admin. |
+| "Your active tenant only has view access for Shopify auth settings." | You are a Company view only member in this tenant, which can view connections but not change them. Ask a Tenant Admin. |
+| "Enter the access token again: the shop URL changed, so the saved access token is not sent to the new address." | You changed **Shop/API URL**. Paste the access token for that store and save. |
+| "Darpan reads Shopify customer data at Level 1 only (no customer email, phone, name or address), so this query was not sent. It asks for: …" | A query asked for customer contact or address fields. Darpan never reads them; remove the named fields. See [Customer data](/guides/setup-shopify#customer-data). |
+| A run fails: "Unsupported Shopify field path(s) for SHOPIFY_ORDERS: …" naming `email`, `customer.email` or a `shippingAddress` field | The run was set up with a customer email or shipping address field, which Darpan no longer reads. Edit the run, remove the field from its rules and filters, and run again. |
 
 ## HotWax
 
@@ -77,6 +90,9 @@ Search **Ask Darpan** for **Open NetSuite Settings** and open the auth profile.
 | **Credential readable** fails: "The private key could not be read. Paste the whole PEM, header and footer included." | Paste the full private key, including the `-----BEGIN` and `-----END` lines. |
 | **Credential readable** fails: "The token URL is not a NetSuite address." | The token URL must be on a NetSuite host. |
 | **Token issued** still fails with the IDs the right way round | Check the integration record: enabled for the client credentials grant, with the certificate mapped to an entity and role. |
+| Saving an endpoint is refused: "This endpoint must stay on NetSuite account *account*, the account its auth config uses. Use an auth config for account *other* instead." | The endpoint URL names a different NetSuite account from its auth profile. Fix the account in the URL, or create an auth profile for the other account and add the endpoint there. |
+| Saving an endpoint is refused: "The auth config's token URL names no NetSuite account. Fix its token URL first." | Edit the auth profile and correct its token URL, then save the endpoint again. |
+| Saving an auth profile asks for the private key, password or API token again | You changed the token URL. See [Rules every connection follows](#rules-every-connection-follows). |
 
 ## SFTP
 

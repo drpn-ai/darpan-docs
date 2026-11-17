@@ -54,7 +54,7 @@ For **File upload**, choose which data the file holds when the system offers mor
 
 Then choose the primary ID. The picker accepts more than one field: pick several to match on a composite key, such as order ID plus line number. See [Composite matching keys](/reference/composite-matching-keys).
 
-The next card asks **What happens when a key repeats in …?** and offers **Fail the run** or **Report each as a finding**. The answer no longer changes anything: a two-system run reports every record under a repeated key as a finding and finishes with the rest of its results. See [Repeated keys](/reference/reconciliation-runs#repeated-keys).
+A two-system run reports every record under a repeated key as a finding and finishes with the rest of its results, so setup does not ask about repeated keys. See [Repeated keys](/reference/reconciliation-runs#repeated-keys).
 
 When the API config declares extract options, a last card, **Which options should … use?**, offers them as checkboxes or text fields.
 

@@ -11,7 +11,7 @@ An audit is a run type. It holds statements, such as "every fulfilled order is i
 
 Confirm:
 
-- You can edit the active tenant, as a Tenant Admin can, to create an audit, run it, or change its settings. Anyone with access to the tenant can read it.
+- To create an audit or change its settings, you are a Tenant admin or Company editor in the active tenant. To run it, retry a check, or resolve a finding, a Tenant user can too. Anyone with access to the tenant can read it.
 - The runs your checks will read exist, or the connections they need do. See [Set up a reconciliation run](/guides/setup-reconciliation-run).
 
 ## Create an audit
@@ -59,7 +59,7 @@ Under a statement, choose **Add check**:
 | **Matched by** | How the run pairs records, filled from the run's keys. |
 | **Fix owner**, **Fix where** | Who fixes a finding, and in which system. |
 | **Money** | Optional. The **Currency**, and where the expected and actual amounts come from (**Expected from**, **Actual from**), so a finding shows the gap. |
-| **Headline**, **Fix action**, **Passes when** | The words a finding reads with. `{name}` puts in the finding's field of that name. A blank headline reads as the record and the check's name. |
+| **Headline**, **Fix action**, **Passes when** | The words a finding reads with. `{name}` puts in the finding's field of that name; in **Fix action** and **Passes when**, a name the check does not supply is filled from the finding's own records, so `Re-route order {orderName}` names the order. A blank headline reads as the record and what is wrong; for a field mismatch, it names each system's value, such as `ACME-1120: Shipped in HotWax, Pending Billing in NetSuite`. |
 
 Choose **Save check**. The check is saved on its own; the settings page's **Save** is not needed for it. A check moved to another statement takes its open findings with it, history kept.
 
@@ -67,7 +67,7 @@ What a check can find is set by its run. A NetSuite side can read a SuiteQL quer
 
 ## Run it
 
-Choose the play icon (**Run audit**) beside the audit's name, answer **Which days should this run look at?** with **Previous Day**, **Previous Week**, **Month to Date**, or **Custom Dates**, then choose **Run**. **Month to Date** reads from the 1st of the month through yesterday; on the 1st, the whole previous month. Days before the earliest day the audit can record, and days after today, are not offered.
+Choose the play icon (**Run audit**) beside the audit's name, answer **Which days should this run look at?** with **Previous Day**, **Previous Week**, **Month to Date**, or **Custom Dates**, then choose **Run**. **Previous Week** reads the seven days ending yesterday. **Month to Date** reads from the 1st of the month through yesterday; on the 1st, the whole previous month. Days before the earliest day the audit can record, and days after today, are not offered.
 
 Every check runs in the background. While they run, **Run health** shows **Running now**, each system's read with its record count, and **Findings arrive as each check finishes.**
 
@@ -90,7 +90,15 @@ The audit owns its schedule. The automations behind its checks show **Set by aud
 
 A statement turned off is left out of the next run, and its findings so far stay on record.
 
-The update after each run is an email with a CSV per rule, plus a short message in the chosen chat space. Only a Tenant Admin can change the **After each run** group; others see **Only tenant admins can change this.** For chat spaces, see [Run completion alerts](/guides/run-completion-alerts).
+The update after each run is an email with a CSV per rule, plus a short message in the chosen chat space. Its links to the report name the tenant, so opening one switches the app into that tenant first. Only a Tenant Admin can change the **After each run** group; others see **Only tenant admins can change this.** For chat spaces, see [Run completion alerts](/guides/run-completion-alerts).
+
+When the chosen chat space can no longer take the message, the group says so under **Chat space**:
+
+- **This chat space no longer exists, so no card is sent.**
+- **This chat space is turned off, so no card is sent.**
+- **This chat space has no webhook or Slack channel, so no card is sent.**
+
+Pick another space, or fix the space in **Tenant Settings** under **Notifications**. The email still goes out.
 
 ## Read the audit page
 
@@ -116,14 +124,14 @@ Below the toolbar, the board drills down from left to right, with the path above
 
 An order with findings under several statements counts once, under its earliest statement. Its later findings are listed with it under **Also on this order**, each named by its item, and the statement's counts say how many sit **under an earlier step**.
 
-A finding reads verdict first. Its state (**Open** or **Fixed**) and statement come first, then what is wrong, **Stuck on** (what holds it up), and **Do this** (the fix, with its owner). Under that, one card per system and order shows each record's id and status. An order lists its **Lines**, and the details a person searches by follow: customer, dates, channel, totals. **Evidence** shows only when no conclusion explains the finding. **History** lists when it was found, still open, fixed, or reopened.
+A finding reads verdict first. Its state (**Open** or **Fixed**) and statement come first, then what is wrong, **Stuck on** (what holds it up), and **Do this** (the fix, with its owner). Under that, one card per system and order shows each record's id and status. An order lists its **Lines**, and the details a person searches by follow: customer, dates, channel, totals. An order opens on the line that holds it up, or else on its first open line, so an order listed as **Open** opens as **Open** even when another of its lines was fixed that day. **Evidence** shows only when no conclusion explains the finding. **History** lists when it was found, still open, fixed, or reopened.
 
 | Export | Where | Saves |
 | --- | --- | --- |
 | **Export report** | Beside the audit's name | The morning's report, as JSON. |
 | **Export findings** | Findings column | Every finding of the statement under the picked filter, each with its order. |
 | **Export finding** | Open finding | The finding, as JSON. |
-| **Export** *system* **extract** | A check, in the statement detail | What that system's read wrote that morning. |
+| **Export** *system* **extract** | A check, in the statement detail | What that system's read wrote that morning. Extracts are kept 7 days after the run. |
 
 ## Resolve a finding
 
@@ -137,9 +145,9 @@ A fix counts when a check sees it, not when someone says so. Each morning run re
 
 ## The audit agent
 
-When the agent is on for your tenant and a Darpan admin has given you AI access, the audit page's deepest column gets an **Agent** tab beside the detail. Type in **Ask the agent** to ask about the open finding, or to have it draft a change: a schedule, a statement, its wording, turning it on or off, or a new check.
+When the agent is on for your tenant, you are a Tenant admin or Company editor there, and a Darpan admin has given you AI access, the audit page's deepest column gets an **Agent** tab beside the detail. Type in **Ask the agent** to ask about the open finding, or to have it draft a change: a schedule, a new statement, a statement's wording, turning one on or off, or a new check. Describe several statements or checks in one message and it drafts each of them.
 
-Each draft shows **Before the change** and **After the change**. If you can save the audit's checks, choose **Approve** or **Reject**, and **Revert** after a change is applied. Drafts waiting for approval are marked on the board. Without the agent on and AI access, the tab does not appear.
+Each draft shows **Before the change** and **After the change**. Choose **Approve** or **Reject**, and **Revert** after a change is applied. Drafts waiting for approval are marked on the board, and the board reloads when a change is applied. New statements take their codes in the order you approve them. A check the agent adds gets a check ID no other audit uses, and its findings read like a configured check's: a field mismatch names each system's value, and its record cards are named by the side's key field, such as **Order name**. Without the agent on, the role, and AI access, the tab does not appear.
 
 ## Digests
 

@@ -1,6 +1,6 @@
 ---
 title: "Reconciliation runs"
-description: "Run types, status values, stage order, date windows, the run queue, and how differences and repeated keys are counted."
+description: "Run types, status values, stage order, date windows, the run queue, how differences and repeated keys are counted, and how long extract files are kept."
 ---
 
 A reconciliation run is one execution of a saved run over a date window or a set of uploaded files.
@@ -69,7 +69,7 @@ When you start a run, you choose the days it reads.
 | Window | Days covered |
 | --- | --- |
 | Previous Day | Yesterday. |
-| Previous Week | Eight days ending yesterday. |
+| Previous Week | The seven days ending yesterday. |
 | Month to Date | The 1st of yesterday's month through yesterday. On the 1st, that is the whole previous month. |
 | Custom Dates | The start and end dates you select. |
 
@@ -109,9 +109,13 @@ A compare ID should identify exactly one record on each side. When a side of a t
 - The key is left out of the compare on both sides, so the other side's record is not reported missing.
 - The run finishes with the rest of its results and records a processing warning naming how many keys repeated.
 
-This applies to every two-system run. The answer to **What happens when a key repeats** in run setup no longer changes it: a repeated key never fails the run or collapses into a match.
+This applies to every two-system run: a repeated key never fails the run or collapses into a match, and run setup has no question about it.
 
 If a source legitimately carries several rows per key, use a [composite matching key](/reference/composite-matching-keys) that makes each row unique.
+
+## Extract files
+
+The raw files a run reads from its sources (its extracts) are deleted 7 days after the run, by a nightly clean-up. Result files and audit findings are not affected. Once an extract is gone it cannot be downloaded, from the run's result page or with an audit check's **Export** *system* **extract**.
 
 ## Failure visibility
 

@@ -18,11 +18,11 @@ Check:
 
 An archived or switched-off run refuses to start, from the app and from a schedule alike. The error says which:
 
-- "Run '*name*' is archived. Restore it from Show archived before running it."
-- "Run '*name*' is disabled. Enable it before running it."
+- "Run '*name*' is archived. Ask a Darpan admin to restore it."
+- "Run '*name*' is disabled. Ask a Darpan admin to enable it."
 - For a lifecycle run: "Run '*id*' is archived." or "Run '*id*' is switched off."
 
-The app has no control to restore or re-enable a saved run. Over the API, `facade.ReconciliationFacadeServices.restore#SavedRun` brings back an archived run and `enable#SavedRun` a disabled one.
+The app has no control to restore or re-enable a saved run, so ask a Darpan admin. Over the API, `facade.ReconciliationFacadeServices.restore#SavedRun` brings back an archived run and `enable#SavedRun` a disabled one.
 
 In a lifecycle run, a question shows **Not run** when a question above it failed or was switched off. Fix the question above, then run again. See [Lifecycle runs](/guides/lifecycle-runs#questions-and-flowcharts).
 

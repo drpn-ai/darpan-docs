@@ -1,0 +1,95 @@
+---
+title: "Two-factor sign-in"
+description: "Add an authenticator app or a passkey to your Darpan account, keep recovery codes, and sign in with a second factor."
+---
+
+A password alone is one leaked spreadsheet away from someone else reading your tenant's orders. Two-factor closes that gap: after your password, Darpan asks for a code from an app on your phone or a passkey on your device. Setting it up takes about two minutes, and the recovery codes you save at the end mean a lost phone is an inconvenience, not a lockout.
+
+## Before you start
+
+- You can sign in to Darpan with your password.
+- One of these:
+  - An authenticator app on your phone or computer, such as Google Authenticator, Microsoft Authenticator or 1Password.
+  - A passkey or security key: Touch ID or Face ID, Windows Hello, a passkey on your phone, or a key such as a YubiKey. Passkeys appear only when your Darpan instance offers them and your browser can use them.
+- Somewhere safe to keep ten recovery codes, such as a password manager.
+
+## Who has to use it
+
+Two-factor is optional for every role until a Darpan admin requires it for a role from a date. The roles it can be required for are Super admin, Darpan admin, and Tenant admin in any tenant.
+
+- **Before the date:** each sign-in asks **Set up two-factor by** *date*. Choose **Set up**, or **Not now** to carry on; Darpan asks again at the next sign-in.
+- **From the date:** a right password shows **Your role needs two-factor. Set it up to sign in.** You set it up there and then, and the sign-in finishes once you have.
+
+## Set it up
+
+<Steps>
+<Step title="Open User Settings">
+
+Open **Ask Darpan** with `Cmd/Ctrl+K` or by clicking Tara, the red panda in the corner, and search for **Open User Settings**. The **Two-factor** section has an **Authenticator app** card and, when passkeys are offered, a **Passkeys** card.
+
+At a required setup or after **Set up** at sign-in, the same steps open on the sign-in page instead, starting with **Authenticator app or passkey?**.
+
+</Step>
+<Step title="Prove it is you">
+
+Choose **Set up** on **Authenticator app**, or **Add** on **Passkeys**. While nothing is on yet, Darpan asks **Enter your current password.** Once a factor is on, every change asks for a code from your app or your passkey instead.
+
+</Step>
+<Step title="Add the app or the passkey">
+
+For an authenticator app:
+
+1. **Scan this with your authenticator app.** Scan the QR code. If you cannot, **Can't scan? Key:** shows the key to type in, with **Copy** and **Open in app**.
+2. **Enter the code it shows.** Type the 6-digit code; the sixth digit submits it.
+
+For a passkey: **Add a passkey.** Choose **Continue** and follow your browser's prompt.
+
+</Step>
+<Step title="Save your recovery codes">
+
+**Save your recovery codes.** shows ten codes. Each works once, in place of a code or passkey. Use **Copy** or **Download**, store them somewhere other than this device, then choose **I saved them**. The codes are shown only this once.
+
+</Step>
+</Steps>
+
+## Expected result
+
+The **Authenticator app** card reads **On since** *date* (or **On** when you also have passkeys), each passkey has its own card, and **Recovery codes** shows how many are left. Darpan emails you that an authenticator app was set up or a passkey was added.
+
+Turning two-factor on signs you out everywhere else, CLI sign-ins included. The tab you used stays signed in. Adding a second app or passkey later ends nothing.
+
+## Sign in
+
+After your password, Darpan asks **Enter the code from your app.** Type the current code. To use something else:
+
+- **Use a passkey** asks **Confirm with your passkey.** Choose **Continue** to open your browser's prompt.
+- **Use a recovery code** asks **Enter a recovery code.** Each code works once, and Darpan emails you when one is used. When three or fewer remain, the sign-in tells you how many are left.
+
+If you have only passkeys, the passkey step comes first.
+
+## Manage your factors
+
+All of these are in **User Settings** under **Two-factor**, and each asks for a current code or your passkey first.
+
+| Card | Action | What it does |
+| --- | --- | --- |
+| **Authenticator app** | **New app** | Moves two-factor to a new app. Asks for a code from the current one. |
+| **Authenticator app** | **Turn off** | Removes the app. With passkeys left, they stay on; without, two-factor turns off. Not shown when your role requires two-factor and the app is your only factor. |
+| **Passkeys** | **Add** | Adds a passkey, up to ten. |
+| A passkey | Its name | Select the name to rename it, for example `MacBook Touch ID`. **Added** and **Last used** show its dates. |
+| A passkey | **Remove** | Removes that passkey. Your last factor cannot be removed while your role requires two-factor. |
+| **Recovery codes** | **New codes** | Replaces every unused code with ten new ones. |
+
+Turning two-factor off signs you out everywhere else, as turning it on does.
+
+## Approve a CLI sign-in
+
+With two-factor on, the **Approve CLI** page asks for **Current code from your app** before **Approve**, or **Use a passkey** (**Approve opens your passkey prompt.**). A code you have just used to sign in is refused for a few seconds; wait for the next one. See [Set up the Darpan CLI](/getting-started/set-up-darpan-cli#sign-in).
+
+## Lost your phone or passkey
+
+Sign in with a recovery code, then use **New app** or **Add** to put a new factor on, and **New codes** to replace the codes you have used. With no recovery code left, ask a Darpan admin to reset your two-factor. A reset removes your app, passkeys and recovery codes and ends your sessions and CLI sign-ins; you set two-factor up again at your next sign-in if your role requires it.
+
+## Next step
+
+If a code or passkey is refused, see [Login and session](/troubleshooting/login-and-session#two-factor). For session lengths and the full list of actions that ask for a fresh code, see [Auth and access](/reference/auth-and-access#two-factor).

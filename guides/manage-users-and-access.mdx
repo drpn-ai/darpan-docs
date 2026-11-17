@@ -1,6 +1,6 @@
 ---
 title: "Manage users and access"
-description: "Create users, grant tenant access, assign roles, and turn on CLI and AI access."
+description: "Create users, grant tenant access, assign roles, require two-factor, and turn on CLI and AI access."
 ---
 
 User management is a Darpan admin task — it sits outside the Tenant Admin scope entirely. Knowing where that line is saves time when a Tenant Admin asks why they cannot add someone to their tenant, or when a new team member cannot see the right data after signing in.
@@ -21,12 +21,14 @@ The active tenant is a server-side preference on the account, not a per-tab sett
 
 Each tenant membership carries one of four roles:
 
-| Role | View tenant data | Run reconciliation | Edit setup (connections, schemas, runs, rules, automations, tenant settings) | Share connections with other tenants |
-| --- | --- | --- | --- | --- |
-| Tenant admin | Yes | Yes | Yes | Yes |
-| Company editor | Yes | Yes | Yes | No |
-| Tenant user | Yes | Yes | No | No |
-| Company view only | Yes | No | No | No |
+| Role | View tenant data | Run (audits, saved runs, comparisons) and resolve findings | Add, edit and delete connections | Edit other setup (schemas, runs, rules, audits, automations, tenant settings) | Talk to the audit agent | Share connections with other tenants |
+| --- | --- | --- | --- | --- | --- | --- |
+| Tenant admin | Yes | Yes | Yes | Yes | Yes | Yes |
+| Company editor | Yes | Yes | Yes | Yes | Yes | No |
+| Tenant user | Yes | Yes | Yes | No | No | No |
+| Company view only | Yes | No | No | No | No | No |
+
+Connections are NetSuite, Shopify, HotWax, SFTP and database connections. Talking to the agent also needs AI access; see [AI access](#ai-access).
 
 **Darpan admin** is a platform role, not a tenant role. It manages users, tenants, membership, and CLI and AI access across every tenant from the admin app. The exact groups behind it are in [Auth and access](/reference/auth-and-access#roles).
 
@@ -48,6 +50,8 @@ Always give an email. Password resets depend on it.
 
 Start the add-member flow. It asks **Which user should join?**, **Which tenant should they join?**, and **Which role should they have?** Pick one of the four roles above.
 
+Darpan emails the user a welcome from `support@drpn.ai`: the tenant, their role, their username and where to sign in. It never contains a password. An account that is disabled or has no email gets no welcome, and the grant still goes through.
+
 Repeat for each tenant the user needs.
 
 </Step>
@@ -60,7 +64,7 @@ Share the username and temporary password with the user through a channel you tr
 
 ## Expected result
 
-The user signs in, sets a new password, and lands in a tenant they belong to. What they can do there follows the role table above.
+The user has a welcome email for each tenant, signs in, sets a new password of at least 12 characters, and lands in a tenant they belong to. What they can do there follows the role table above.
 
 ## Changing access
 
@@ -69,6 +73,19 @@ In the admin app, a Darpan admin can:
 - On the tenant's page, change a member's role or **Remove** them from the tenant. Removing access from one tenant does not affect their other tenants.
 - On the user's page, **Reset Password**: sets a new temporary password, signs the user out everywhere, and forces a password change at their next sign-in.
 - **Disable** the account: the user can no longer sign in and is signed out everywhere. **Enable** reverses it. A Darpan admin cannot disable their own account.
+- On the tenant's page, **Send welcome** sends one member the welcome email again, and **Welcome all** sends it to every member, for example after a new tenant's members were added. A member with no email or a disabled account is named beside the refusal.
+- On the user's page, under **Darpan admin**, **Add** or **Remove** the **Darpan admin** and **Super admin** roles. The users list has a **Darpan admins only** filter. You cannot remove your own Super admin role.
+- On the user's page, under **Two-factor**, **Reset two-factor** removes the person's authenticator app, passkeys and recovery codes and ends their sessions and CLI keys, for someone who lost their phone and has no recovery code. It needs a reason and a code from your own app, and you cannot reset your own.
+
+## Require two-factor
+
+Two-factor is optional for every role until you require it. In the admin app, **Open Security** lists, under **Required by role**, each role two-factor can be required for (Super admin, Darpan admin, Tenant admin) with how many of its people have it on, and who has not.
+
+- **Require** sets the date it is required from. Before that date, each sign-in asks the person to set it up and lets them skip; from that date, sign-in waits until they have. **Change date** moves it, and **Make optional** ends the requirement.
+- Each change needs a code from your own authenticator app, so set up your own two-factor first, under **Your two-factor**.
+- Requiring it for Super admins is refused until at least two super admins have it on, so one lost phone cannot lock everyone out.
+
+What each person sees: [Two-factor sign-in](/guides/two-factor).
 
 ## CLI access
 
@@ -78,7 +95,7 @@ Setup steps for the user: [Set up the Darpan CLI](/getting-started/set-up-darpan
 
 ## AI access
 
-The audit agent answers a user only when it is on for the tenant and that user has AI access there. A Darpan admin grants AI access per user, per tenant, for a period and with a spend limit; access pauses on its own when spend reaches the limit. Darpan admins have AI access in every tenant where the agent is on. See [The audit agent](/guides/audits#the-audit-agent) and [Auth and access](/reference/auth-and-access#ai-access).
+The audit agent answers a user only when it is on for the tenant, the user is a Tenant admin or Company editor there, and that user has AI access there. A Darpan admin grants AI access per user, per tenant, for a period and with a spend limit; access pauses on its own when spend reaches the limit. Darpan admins have AI access in every tenant where the agent is on. See [The audit agent](/guides/audits#the-audit-agent) and [Auth and access](/reference/auth-and-access#ai-access).
 
 ## Endpoint access per source configuration
 
