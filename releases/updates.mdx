@@ -7,6 +7,32 @@ Darpan releases from newest to oldest, with product and operator changes that af
 
 Version key: headings carry the backend version (`drpn-ai/darpan`); the app (`darpan-ui`) has its own tags, named in each entry: `v2.x` alongside backend `v1.x`, `v3.x` from backend `v2.0.0`, and `v4.x` from backend `v3.0.0`. Backend and app tags are cut together for major and minor releases. A patch can be backend-only or carry an app tag too, as `v1.5.1` did with app `v2.6.1`.
 
+## v3.3.0 — November 2026
+
+Cut together with app `v4.3.0` and `darpan-agent v0.4.0`; backend `v3.3.0` is the build to deploy. A minor release: the API contract stays at version `4` and only gains methods. The theme: what used to wait for a release is now edited while Darpan runs, by a super admin, with a preview where it matters and a record of every change.
+
+### Sign-in and settings
+
+- Sign-in asks for your username first. The username field's autofill offers your saved passkeys, and a browser you have signed in with a passkey asks for it again after Next; otherwise you type your password. See [Two-factor sign-in](/guides/two-factor#sign-in-with-a-passkey-alone).
+- User Settings starts with your profile. Tenant Settings is a short list of rows: Chat, Time, Audit and AI.
+- Notifications shows, in one grid, which chat space each audit update, automation, script and streak message posts to. Move one with a click, add a space in one flow, and send a space a test message.
+- Scripts is a list, and each script has a page of its own. Config history shows the current version, then earlier versions by day.
+- Audit settings and the Ruleset manager read as rows, with each change in a popup. Edit buttons are icons everywhere.
+- Tara can be dragged anywhere for the tab; a reload sends her home.
+
+### Emails
+
+- The text version of every Darpan email carries every sentence and link.
+- The words of every Darpan email can be corrected without a release. Until someone edits them, every email reads as it did.
+
+### Operators
+
+- Editable in the admin app and with `darpan-admin`, without a deploy: every email's words and subject, with a live preview; tunables such as run admission caps, retries, run-health thresholds and the two-factor reminder cadence; scheduled jobs' crons, pause states and parameters; retention periods, per tenant too, and the purge days for result and extract files; the mascot's hints and glossary; and the agent's prompts, models, prices, replies and per-tenant daily cap.
+- A deploy keeps every edit: job seeds carry defaults only, applied to jobs nobody edited. Resuming a job that deletes data, or shortening a retention period while it runs, needs a fresh preview.
+- An agent model without a price refuses the turn instead of spending untracked; enter the price first when moving to a new model.
+- Deploy the backend first, then the app, then the admin app. After deploy, run the `RETIRED_JOB_PARAMETERS` migration (dry run, then real): it moves the purge jobs' old `retentionDays` parameters into their settings.
+- The agent's author model is no longer a JVM property; set every role's model in the admin app.
+
 ## v3.2.1 — November 2026
 
 Cut together with app `v4.2.0`, `darpan-hotwax v1.2.0` and `darpan-agent v0.3.0`; backend `v3.2.1` is the build to deploy. A minor line: the API contract stays at version `4` and only gains methods.
