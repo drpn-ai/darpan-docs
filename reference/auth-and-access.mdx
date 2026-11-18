@@ -31,6 +31,7 @@ Darpan seeds six permission groups. Two are Darpan-wide; the four tenant roles a
 - Sign-in: `login#Session` returns a login-key token and also sets the HttpOnly `darpan_login_key` cookie. Read `authenticated` in the result to know whether a session exists.
 - Lifetime: a web sign-in ends after 60 minutes with no request, and 24 hours after sign-in at the latest. Each request moves the idle end on. `authTokenExpiresInSeconds` reports the 24-hour end, and the cookie expires then too. There is no refresh call: sign in again to get a new token.
 - Two-factor: when two-factor is on or required, a right password does not sign in on its own. `login#Session` answers with a challenge (`twoFactorRequired` or `twoFactorSetupRequired`) instead of a token, and `verify#SignInCode` finishes the sign-in with a code, a recovery code or a passkey assertion. See [Two-factor](#two-factor).
+- Passkey alone: where passkeys are offered, the sign-in page has **Sign in with a passkey**, which needs no password. `begin#PasskeyFirstSignIn` returns the options and a one-use token, and `finish#PasskeyFirstSignIn` answers as a completed `verify#SignInCode` does. Type the username first to use a security key; a passkey kept on the device needs no username. Password plus code stays as the fallback, and an account that must change its password is asked to sign in with the password once.
 - CSRF bootstrap (browser): `GET /apps/darpan/csrfToken` restores the session from the cookie when present and returns `{"moquiSessionToken": "<token>", "authenticated": true|false}`. Send the token in the `X-CSRF-Token` header on later `POST /rpc/json` calls. Header-token callers skip this step.
 - Sign-out: `logout#Session` revokes the token on the current request (header or cookie) and ends only that session. `logout#AllSessions` revokes every login key for the user, which signs them out on every device.
 - Password: a new password needs at least 12 characters, one number and one symbol, and cannot repeat one of the last five. `verify#OwnPassword` checks the current password without changing anything. `change#OwnPassword` changes it for a signed-in user and revokes every other login key, CLI sign-ins included; the current session stays. When sign-in reports `passwordChangeRequired`, use `change#ExpiredPassword`, which needs no session; then sign in again.
@@ -51,9 +52,9 @@ Darpan seeds six permission groups. Two are Darpan-wide; the four tenant roles a
 
 CLI access is set per user, per tenant, and is off by default. A user asks for it in **User settings** under **CLI sessions**; a super admin approves or declines in the admin app. A grant can carry an end date and can be paused, unpaused, or revoked. Darpan admins, super admins included, use the CLI in every tenant without a grant. Setup steps: [Set up the Darpan CLI](/getting-started/set-up-darpan-cli).
 
-- Lifetime: every CLI sign-in lasts 7 days, whatever the role, Darpan admins included.
+- Lifetime: every tenant CLI sign-in lasts 7 days, whatever the role, Darpan admins included. The admin CLI sign-in lasts 12 hours (see below).
 - Sign-in: `darpan login` prints a code; the user approves it on **Approve CLI** (`/cli-login`) within 10 minutes. The password never goes through the terminal. With two-factor on, approving also takes a current code from the authenticator app or a passkey.
-- Every call is checked against the tenant it reaches. It is refused when access there has ended, is paused, or is revoked, or when the sign-in is older than 7 days; run `darpan login` again.
+- Every call is checked against the tenant it reaches. It is refused when access there has ended, is paused, or is revoked, or when the tenant sign-in is older than 7 days; run `darpan login` again.
 - When a role requires two-factor and the user has not set it up, CLI calls are refused with "Two-factor is required for this account. Set it up in the Darpan app, then run darpan login again."
 - **Revoke** in **CLI sessions** ends one sign-in; a password change ends all of them.
 - Admin CLI: `darpan-admin` signs in by browser approval. It prints a link and an 8-character code; the person opens the link in the Darpan app, types the code from the terminal, and approves with a fresh passkey or authenticator code. Only a super admin can approve an admin sign-in. It lasts 12 hours, is kept between commands until it ends or `darpan-admin logout` is run, and is the only CLI sign-in that can call `admin.*`. A tenant CLI sign-in is refused there with "... is not available to the Darpan CLI; use the app."
@@ -67,13 +68,13 @@ Two-factor adds an authenticator-app code (6 digits, a new one every 30 seconds)
 | --- | --- |
 | Roles it can be required for | Super admin, Darpan admin (and the framework's `ADMIN`), Tenant admin in any tenant, or everyone: every person with a tenant membership or a Darpan role. Optional for every role until a super admin sets a date. |
 | Before the required date | Each sign-in asks the person to set it up, and they can skip. When two-factor will be required for everyone, people without it get reminder emails. |
-| From the required date | A right password leads to setup; the sign-in finishes once a factor is on. |
+| From the required date | A person who has not set it up is taken into setup at sign-in, not locked out; the sign-in finishes once a factor is on. |
 | Wrong codes in one sign-in | 5 end the sign-in. Each wrong code also counts as a failed sign-in toward the 3-failure, 5-minute lockout. |
 | Wrong codes in 24 hours | 20 lock codes until a password reset or an admin reset, and the person is emailed. |
 | A code | Accepted once. |
 | Emails | Setting up the app, adding a passkey, using a recovery code, a code lock, and an admin reset each email the person. |
 
-- Dates are on the UTC calendar: a requirement dated for a day starts at 00:00 UTC. Your Darpan admin sets the date.
+- Dates are on the UTC calendar: a requirement dated for a day starts at 00:00 UTC. A super admin sets the date.
 - Reminders: when two-factor is required for everyone, each covered person who has no factor set up and has an email address gets a reminder when the date is set, again as the date nears, then weekly, at most one a day. They stop once a factor is on.
 - A fresh code or passkey is asked for when approving a CLI sign-in, making new recovery codes, changing or turning off a factor, and on admin actions such as a config transfer export or a two-factor reset.
 - Turning two-factor on or off, and an admin reset, end every other sign-in of the person, web and CLI. The tab that made the change stays signed in. Adding or removing a factor that is not the last ends nothing.
