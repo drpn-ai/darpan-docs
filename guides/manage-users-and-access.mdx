@@ -83,7 +83,7 @@ Two-factor is optional for every role until you require it. In the admin app, **
 
 - **Require** sets the date it is required from. Before that date, each sign-in asks the person to set it up and lets them skip; from that date, sign-in waits until they have. **Change date** moves it, and **Make optional** ends the requirement.
 - Each change needs a code from your own authenticator app, so set up your own two-factor first, under **Your two-factor**.
-- Requiring it for Super admins is refused until at least two super admins have it on, so one lost phone cannot lock everyone out.
+- Requiring it for Super admins or for everyone needs you to keep a second way back in: a passkey and an authenticator app, or unused recovery codes. Without one, the change is refused, so one lost phone cannot lock you out. Clearing a date is never blocked.
 
 What each person sees: [Two-factor sign-in](/guides/two-factor).
 
