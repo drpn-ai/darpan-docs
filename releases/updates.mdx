@@ -7,6 +7,41 @@ Darpan releases from newest to oldest, with product and operator changes that af
 
 Version key: headings carry the backend version (`drpn-ai/darpan`); the app (`darpan-ui`) has its own tags, named in each entry: `v2.x` alongside backend `v1.x`, `v3.x` from backend `v2.0.0`, and `v4.x` from backend `v3.0.0`. Backend and app tags are cut together for major and minor releases. A patch can be backend-only or carry an app tag too, as `v1.5.1` did with app `v2.6.1`.
 
+## v3.2.0 — November 2026
+
+Cut together with app `v4.2.0`, `darpan-hotwax v1.2.0` and `darpan-agent v0.3.0`. A minor release: the API contract stays at version `4` and only gains methods.
+
+**Sign-in**
+
+- **Sign in with a passkey alone.** The sign-in page has **Sign in with a passkey**: your browser offers the passkey you saved, Touch ID or Face ID confirms it, and you are in, with no password and no code. A security key works after you type your username. The password and a code stay as the fallback. See [Two-factor sign-in](/guides/two-factor#sign-in-with-a-passkey-alone).
+- **Two-factor for everyone.** A super admin can require two-factor from one date for every person with a tenant membership or a Darpan role. Until then, sign-in asks; from then, anyone without an app or a passkey is walked through setup at sign-in, not locked out.
+- **Reminder emails** go to anyone a dated requirement covers who has not set up two-factor: when the date is set, again as it nears, and weekly after, at most one a day.
+- **Approving a CLI sign-in** names an admin request, warns that it carries admin powers for 12 hours, and offers **Approve** only to a super admin.
+
+**Roles**
+
+- **A Darpan admin works in every tenant** as a tenant admin, with the CLI and AI, without being added to each tenant. See [Auth and access](/reference/auth-and-access#roles).
+
+**Screens and email**
+
+- **Every Darpan email wears the app's look,** ends with one or two user guide links for its subject, and carries one short light line.
+- **A run result's rule picker shows the rule's name,** not its formula.
+- **Tara wears the active tenant** as a bowtie.
+
+**Audits**
+
+- **HotWax item quantity counts exchange orders** with their original order, as Shopify does.
+
+**Operators**
+
+- Deploy the backend before app `v4.2.0`: the passkey button calls two new methods.
+- `darpan-admin` signs in on UAT and prod by browser approval: the operator types the terminal's code in the Darpan app, and a super admin with two-factor on approves with a fresh passkey or app code. The session lasts 12 hours and is kept until it ends or `darpan-admin logout`. Only that admin session can call `admin.*` from a CLI.
+- Two-factor policy gains the role `everyone`; dating it needs two super admins with two-factor on. Policy dates are on the UTC calendar: `2026-12-02` starts at 00:00 UTC.
+- A daily job at 15:00 UTC sends the reminder emails and does nothing while no policy has a date.
+- Passkey-only sign-in is rate-limited per address and answers an unknown username the same as a known one.
+- The email line is written at send time when an AI key is configured; otherwise the template's own line is used.
+- Before dating the everyone requirement, enrol a second super admin, move password-only service accounts to GraphQL API keys or enrol them, and tell tenant users.
+
 ## v3.1.0 — November 2026
 
 Cut together with app `v4.1.0`, `darpan-hotwax v1.1.0`, `shopify-darpan v0.10.0`, `netsuite-darpan v0.6.0`, `database-darpan v0.4.0`, `moqui-gql v1.1.0` and `darpan-agent v0.2.0`. A minor release: the API contract stays at version `4` and only gains methods, and every component deploys together.

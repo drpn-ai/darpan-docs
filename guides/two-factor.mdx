@@ -1,6 +1,6 @@
 ---
 title: "Two-factor sign-in"
-description: "Add an authenticator app or a passkey to your Darpan account, keep recovery codes, and sign in with a second factor."
+description: "Add an authenticator app or a passkey to your Darpan account, keep recovery codes, and sign in with a second factor or with a passkey alone."
 ---
 
 A password alone is one leaked spreadsheet away from someone else reading your tenant's orders. Two-factor closes that gap: after your password, Darpan asks for a code from an app on your phone or a passkey on your device. Setting it up takes about two minutes, and the recovery codes you save at the end mean a lost phone is an inconvenience, not a lockout.
@@ -15,10 +15,11 @@ A password alone is one leaked spreadsheet away from someone else reading your t
 
 ## Who has to use it
 
-Two-factor is optional for every role until a Darpan admin requires it for a role from a date. The roles it can be required for are Super admin, Darpan admin, and Tenant admin in any tenant.
+Two-factor is optional until a super admin requires it from a date, for a role or for everyone. The roles are Super admin, Darpan admin, and Tenant admin in any tenant; everyone means every person with a tenant membership or a Darpan role.
 
 - **Before the date:** each sign-in asks **Set up two-factor by** *date*. Choose **Set up**, or **Not now** to carry on; Darpan asks again at the next sign-in.
-- **From the date:** a right password shows **Your role needs two-factor. Set it up to sign in.** You set it up there and then, and the sign-in finishes once you have.
+- **From the date:** a right password shows **Your role needs two-factor. Set it up to sign in.** You set it up there and then, and the sign-in finishes once you have. Nobody is locked out.
+- **Reminders:** if you have no app or passkey yet, Darpan emails you when a date is set, again as it nears, and weekly after, never more than one a day. They stop once you set one up.
 
 ## Set it up
 
@@ -66,6 +67,10 @@ After your password, Darpan asks **Enter the code from your app.** Type the curr
 - **Use a recovery code** asks **Enter a recovery code.** Each code works once, and Darpan emails you when one is used. When three or fewer remain, the sign-in tells you how many are left.
 
 If you have only passkeys, the passkey step comes first.
+
+### Sign in with a passkey alone
+
+Where passkeys are offered, the sign-in page has **Sign in with a passkey**. Your browser offers the passkey you saved, Touch ID or Face ID confirms it, and you are in, with no password and no code. For a security key, type your username first. The password and a code stay as the fallback.
 
 ## Manage your factors
 
