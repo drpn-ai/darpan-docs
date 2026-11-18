@@ -17,14 +17,14 @@ Darpan seeds six permission groups. Two are Darpan-wide; the four tenant roles a
 
 | Role | Group ID | What it can do |
 | --- | --- | --- |
-| Super admin | `DARPAN_SUPER_ADMIN` | Sees and edits every tenant without a membership. Uses the admin app, where tenants, users, memberships, and CLI and AI access are managed. Has AI access in every tenant where the agent is on. |
-| Darpan admin | `DARPAN_ADMIN` | Edits settings shared by every tenant on the instance, such as AI configuration. |
+| Super admin | `DARPAN_SUPER_ADMIN` | Everything a Darpan admin has, and the admin app and every `admin.*` method, where tenants, users, memberships, and CLI and AI access are managed. Receives the audit run emails. |
+| Darpan admin | `DARPAN_ADMIN` | Works in every tenant as a tenant admin without a membership: sees and edits each tenant's data, uses the CLI without a grant, and has AI access where the agent is on. Edits settings shared by every tenant on the instance, such as AI configuration. Does not use the admin app. |
 | Tenant admin | `DARPAN_TENANT_ADMIN` | Views, runs, creates, updates, and deletes the tenant's data, and talks to the audit agent. Only a tenant admin shares a configuration with another tenant, changes who gets an audit's run email, and creates GraphQL agent keys for the tenant. |
 | Company editor | `DARPAN_COMPANY_EDITOR` | Views, runs, creates, updates, and deletes the tenant's data, and talks to the audit agent, without the tenant-admin-only actions above. |
 | Tenant user | `DARPAN_TENANT_USER` | Views tenant pages, uploads files, and runs: plays an audit, resolves a finding, starts a saved run, a one-off comparison or a reconciliation. Saves and deletes connections (NetSuite, Shopify, HotWax, SFTP and database). Cannot change other setup or talk to the audit agent. |
 | Company view only | `DARPAN_COMPANY_VIEW_ONLY` | Views tenant data. Cannot run or change anything. |
 
-**Darpan admins** are users in either Darpan-wide group; the framework's built-in `ADMIN` group counts as both. The admin app and every `admin.*` method need Super admin. A super admin adds or removes the Darpan admin and Super admin roles on a user's page in the admin app; their own Super admin role cannot be removed there.
+**Darpan admins** are users in either Darpan-wide group; the framework's built-in `ADMIN` group counts as a Super admin. A Darpan admin reaches every tenant as a tenant admin, with no membership to add. The admin app and every `admin.*` method need Super admin. A super admin adds or removes the Darpan admin and Super admin roles on a user's page in the admin app; their own Super admin role cannot be removed there.
 
 ## Session lifecycle
 
@@ -49,13 +49,14 @@ Darpan seeds six permission groups. Two are Darpan-wide; the four tenant roles a
 
 ## CLI access
 
-CLI access is set per user, per tenant, and is off by default. A user asks for it in **User settings** under **CLI sessions**; a super admin approves or declines in the admin app. A grant can carry an end date and can be paused, unpaused, or revoked. Darpan admins use the CLI in every tenant they reach without a grant. Setup steps: [Set up the Darpan CLI](/getting-started/set-up-darpan-cli).
+CLI access is set per user, per tenant, and is off by default. A user asks for it in **User settings** under **CLI sessions**; a super admin approves or declines in the admin app. A grant can carry an end date and can be paused, unpaused, or revoked. Darpan admins, super admins included, use the CLI in every tenant without a grant. Setup steps: [Set up the Darpan CLI](/getting-started/set-up-darpan-cli).
 
 - Lifetime: every CLI sign-in lasts 7 days, whatever the role, Darpan admins included.
 - Sign-in: `darpan login` prints a code; the user approves it on **Approve CLI** (`/cli-login`) within 10 minutes. The password never goes through the terminal. With two-factor on, approving also takes a current code from the authenticator app or a passkey.
 - Every call is checked against the tenant it reaches. It is refused when access there has ended, is paused, or is revoked, or when the sign-in is older than 7 days; run `darpan login` again.
 - When a role requires two-factor and the user has not set it up, CLI calls are refused with "Two-factor is required for this account. Set it up in the Darpan app, then run darpan login again."
 - **Revoke** in **CLI sessions** ends one sign-in; a password change ends all of them.
+- Admin CLI: `darpan-admin` signs in by browser approval. It prints a link and an 8-character code; the person opens the link in the Darpan app, types the code from the terminal, and approves with a fresh passkey or authenticator code. Only a super admin can approve an admin sign-in. It lasts 12 hours, is kept between commands until it ends or `darpan-admin logout` is run, and is the only CLI sign-in that can call `admin.*`. A tenant CLI sign-in is refused there with "... is not available to the Darpan CLI; use the app."
 - Reach: a CLI sign-in can call only `/rpc/json` and `/rest/s1/graphql`, and on `/rpc/json` only the methods the CLI allows: reads that return no credentials, run starters, and tenant scripts.
 
 ## Two-factor
@@ -64,14 +65,16 @@ Two-factor adds an authenticator-app code (6 digits, a new one every 30 seconds)
 
 | Item | Value |
 | --- | --- |
-| Roles it can be required for | Super admin, Darpan admin (and the framework's `ADMIN`), Tenant admin in any tenant. Optional for every role until a super admin sets a date. |
-| Before the required date | Each sign-in asks the person to set it up, and they can skip. |
+| Roles it can be required for | Super admin, Darpan admin (and the framework's `ADMIN`), Tenant admin in any tenant, or everyone: every person with a tenant membership or a Darpan role. Optional for every role until a super admin sets a date. |
+| Before the required date | Each sign-in asks the person to set it up, and they can skip. When two-factor will be required for everyone, people without it get reminder emails. |
 | From the required date | A right password leads to setup; the sign-in finishes once a factor is on. |
 | Wrong codes in one sign-in | 5 end the sign-in. Each wrong code also counts as a failed sign-in toward the 3-failure, 5-minute lockout. |
 | Wrong codes in 24 hours | 20 lock codes until a password reset or an admin reset, and the person is emailed. |
 | A code | Accepted once. |
 | Emails | Setting up the app, adding a passkey, using a recovery code, a code lock, and an admin reset each email the person. |
 
+- Dates are on the UTC calendar: a requirement dated for a day starts at 00:00 UTC. Your Darpan admin sets the date.
+- Reminders: when two-factor is required for everyone, each covered person who has no factor set up and has an email address gets a reminder when the date is set, again as the date nears, then weekly, at most one a day. They stop once a factor is on.
 - A fresh code or passkey is asked for when approving a CLI sign-in, making new recovery codes, changing or turning off a factor, and on admin actions such as a config transfer export or a two-factor reset.
 - Turning two-factor on or off, and an admin reset, end every other sign-in of the person, web and CLI. The tab that made the change stays signed in. Adding or removing a factor that is not the last ends nothing.
 - The last factor of a person whose role requires two-factor cannot be removed.
