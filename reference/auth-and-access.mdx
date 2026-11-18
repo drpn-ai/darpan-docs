@@ -67,7 +67,7 @@ Two-factor adds an authenticator-app code (6 digits, a new one every 30 seconds)
 | Item | Value |
 | --- | --- |
 | Roles it can be required for | Super admin, Darpan admin (and the framework's `ADMIN`), Tenant admin in any tenant, or everyone: every person with a tenant membership or a Darpan role. Optional for every role until a super admin sets a date. |
-| Before the required date | Each sign-in asks the person to set it up, and they can skip. When two-factor will be required for everyone, people without it get reminder emails. |
+| Before the required date | Each sign-in asks the person to set it up, and they can skip. Anyone a dated requirement covers (a role, or everyone) and who has no factor gets reminder emails. |
 | From the required date | A person who has not set it up is taken into setup at sign-in, not locked out; the sign-in finishes once a factor is on. |
 | Wrong codes in one sign-in | 5 end the sign-in. Each wrong code also counts as a failed sign-in toward the 3-failure, 5-minute lockout. |
 | Wrong codes in 24 hours | 20 lock codes until a password reset or an admin reset, and the person is emailed. |
@@ -75,7 +75,7 @@ Two-factor adds an authenticator-app code (6 digits, a new one every 30 seconds)
 | Emails | Setting up the app, adding a passkey, using a recovery code, a code lock, and an admin reset each email the person. |
 
 - Dates are on the UTC calendar: a requirement dated for a day starts at 00:00 UTC. A super admin sets the date.
-- Reminders: when two-factor is required for everyone, each covered person who has no factor set up and has an email address gets a reminder when the date is set, again as the date nears, then weekly, at most one a day. They stop once a factor is on.
+- Reminders: each person a dated requirement covers (a role, or everyone) who has no factor set up and has an email address gets a reminder when the date is set, again as the date nears, then weekly, at most one a day. They stop once a factor is on.
 - A fresh code or passkey is asked for when approving a CLI sign-in, making new recovery codes, changing or turning off a factor, and on admin actions such as a config transfer export or a two-factor reset.
 - Turning two-factor on or off, and an admin reset, end every other sign-in of the person, web and CLI. The tab that made the change stays signed in. Adding or removing a factor that is not the last ends nothing.
 - The last factor of a person whose role requires two-factor cannot be removed.
