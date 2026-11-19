@@ -79,21 +79,21 @@ That URL goes straight into the chat space you create below. There is nothing el
 Slack offers two routes. Darpan shows whichever the deployment supports, and the bot-token route is always available.
 
 <Steps>
-<Step title="Open the Slack menu">
+<Step title="Start from Add space">
 
-Open **Tenant Settings**, choose **Notifications**, and open the Slack entry. It reads **Connect a Slack workspace** until one is connected.
+Open **Tenant Settings**, choose **Open** on **Notifications**, then choose **Add space** and pick **A Slack channel**. It reads **Connect a Slack workspace first** until one is connected.
 
 </Step>
 <Step title="Choose a route">
 
 **Connect Slack** opens Slack to authorise Darpan and returns you here. This one-click install appears only when the deployment has Slack app credentials configured; if it is missing, the deployment has no `darpan.slack.clientId` and the token route below is the way in.
 
-**Connect with a bot token** takes a pasted token instead. Use it when your Slack administrators do not permit installing apps.
+**Paste a bot token** takes a pasted token instead. Use it when your Slack administrators do not permit installing apps.
 
 </Step>
 <Step title="Paste the bot token, if you chose that route">
 
-In your Slack app, go to **OAuth & Permissions** and copy the **Bot User OAuth Token**. It starts with `xoxb-`.
+In your Slack app, go to **OAuth & Permissions** and copy the **Bot User OAuth Token**. It starts with `xoxb-`. Paste it and choose **Connect**.
 
 Darpan rejects a token that does not start with `xoxb-`. A user token (`xoxp-`) authenticates fine but posts as the human who created it, so it is refused by shape before it can be mistaken for a bot token.
 
@@ -107,26 +107,21 @@ If the token is missing scopes, Darpan connects anyway and names what will not w
 </Step>
 </Steps>
 
-Once a workspace is connected, the Slack menu offers **Add a chat space** first, because a channel that receives notifications is the reason to connect at all. It also offers **Replace bot token** — the way to rotate a token — **Reconnect workspace**, and **Disconnect workspace**.
+Once a workspace is connected, a **Slack** line on the Notifications page shows its name. Beside it are **Replace token** — the way to rotate a token — **Reconnect** (when the deployment offers the one-click install), and **Disconnect**. **Add space** then goes straight to the channel list.
 
 ## Register a chat space
 
-A chat space is a named destination. Creating one asks for its name, then which chat product it posts to, then where.
+A chat space is a named destination: a column on the Notifications page.
 
 <Steps>
-<Step title="Open Tenant Settings">
+<Step title="Open Notifications">
 
-Open **Ask Darpan**, search for **Open Tenant Settings**, and open the result. Confirm the active tenant is the one you want alerts on. In **Operations**, choose **Notifications**.
-
-</Step>
-<Step title="Name the space">
-
-The name must be unique within the tenant and is what everyone else picks from later, so name it after the destination rather than the run — `Ops alerts` rather than `Nightly Shopify`.
+Open **Ask Darpan**, search for **Open Tenant Settings**, and open the result. Confirm the active tenant is the one you want alerts on. In **Chat**, choose **Open** on **Notifications**, then choose **Add space**.
 
 </Step>
-<Step title="Choose the chat product">
+<Step title="Choose where it posts">
 
-Pick **Google Chat** or **Slack**. Arriving from the Slack menu answers this already, and the question is skipped. A space's product is fixed once it is created; to move a destination to the other product, register a new space.
+Pick **A Slack channel** or **A Google Chat space**. A space's product is fixed once it is created; to move a destination to the other product, register a new space.
 
 </Step>
 <Step title="Point it at a destination">
@@ -135,7 +130,15 @@ For Google Chat, paste the webhook URL. Darpan validates it on save. The URL is 
 
 For Slack with a connected workspace, pick the channel from the searchable list. Darpan reads every page of channels rather than the first one, and says so when a workspace has more channels than it lists at once — you are never shown a partial list that looks complete.
 
-If a workspace is not connected, a Slack space falls back to a Slack incoming webhook URL.
+</Step>
+<Step title="Name the space">
+
+For Google Chat, the name must be unique within the tenant and is what everyone else picks from later, so name it after the destination rather than the run — `Ops alerts` rather than `Nightly Shopify`. A Slack space is named for its channel, such as `#ops`; rename either from its column heading.
+
+</Step>
+<Step title="Choose what posts there">
+
+Switch on what should post to the new space, or choose **Skip**. Choose **Send test** to confirm it delivers.
 
 </Step>
 </Steps>
@@ -144,7 +147,7 @@ If a workspace is not connected, a Slack space falls back to a Slack incoming we
 If the channel you pick is private, invite the Darpan app to it. Slack will not let the app post to a private channel it has not joined, and the first run is where you would find out.
 </Warning>
 
-Repeat for each destination. The list shows each space's chat product and whether it delivers by **bot** or **webhook**. A tenant can hold as many spaces as it needs — one for operations, one for a client-facing channel, one for a single team — and they can mix chat products freely.
+Repeat for each destination. Each column heading shows the space's chat product and whether it delivers by **bot** or **webhook**. A tenant can hold as many spaces as it needs — one for operations, one for a client-facing channel, one for a single team — and they can mix chat products freely.
 
 ## Route alerts to a space
 
@@ -166,7 +169,7 @@ Run alerts are not the only thing that posts to a chat space. A space can also r
 
 - An audit's update after each run, when the audit's settings pick it under **Chat space**. See [Audits](/guides/audits#audit-settings).
 - A tenant script's scheduled message, when a script deployment posts to it. See [Tenant scripts](/guides/manage-tenant-settings#tenant-scripts).
-- Tenant-wide streak messages, when it is the **Streaks space** in **Tenant Settings**. A streak one automation earns posts to that automation's own space.
+- Tenant-wide streak messages, when the **Streaks** row on the Notifications page points to it. A streak one automation earns posts to that automation's own space.
 
 ## Expected result
 
@@ -174,11 +177,11 @@ Every finished run reports to its automation's space, and to the space of anyone
 
 ## Turning alerts off
 
-Deactivate the space in **Tenant Settings** to stop messages while keeping the configuration. Alternatively, unlink the automation from its space, or clear your personal default.
+Deactivate the space from its edit button on the Notifications page (**Deactivate space**) to stop messages while keeping the configuration. Alternatively, unlink the automation from its space, or clear your personal default.
 
 A space that nothing references can be deleted outright. A space still referenced by an automation or a subscription must be deactivated instead — Darpan refuses the delete rather than silently breaking the automation pointing at it.
 
-Disconnecting a Slack workspace follows the same rule. Darpan refuses while chat spaces still post through it and names them, because a silent disconnect would leave those destinations resolving to nothing and the tenant would learn about it from missing notifications. Repoint or delete those spaces first.
+Choosing **Disconnect** on a Slack workspace follows the same rule. Darpan refuses while chat spaces still post through it and names them, because a silent disconnect would leave those destinations resolving to nothing and the tenant would learn about it from missing notifications. Repoint or delete those spaces first.
 
 ## Upgrading from the single tenant webhook
 
@@ -195,7 +198,7 @@ The one change worth making afterwards is renaming **Default space** to somethin
 | **Notify me** does not subscribe | You have no default chat space set. Set one in **User Settings**. |
 | A Google Chat save is rejected | The webhook URL must be `https` on `chat.googleapis.com`, target a space messages endpoint, and include `key` and `token` query parameters. |
 | Slack rejects the bot token | The token must start with `xoxb-`. A `xoxp-` user token is refused by shape. Darpan also reports Slack's own reason when Slack rejects a well-shaped token. |
-| **Connect Slack** is not offered | The deployment has no Slack app credentials. Use **Connect with a bot token**. |
+| **Connect Slack** is not offered | The deployment has no Slack app credentials. Use **Paste a bot token**. |
 | Slack messages fail for one channel only | The app is not in that channel. Invite it, and check the scope warning shown when the token was saved. |
 | The Slack channel list looks short | Darpan reports when a workspace has more channels than it lists at once. Search by name in the picker rather than scrolling. |
 | A Slack workspace cannot be disconnected | Chat spaces still post through it. Darpan names them; repoint or delete them first. |

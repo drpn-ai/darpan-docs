@@ -36,18 +36,18 @@ Answer **What does one report cover?** with **A day**, **A month**, or **A quart
 
 ## Add statements
 
-Under **Statements**, choose **New statement**, type what must be true, and pick:
+Under **Statements**, choose **New statement**. Under **What must be true?**, type the statement and pick:
 
 | Field | Options |
 | --- | --- |
 | Category | **Orders**, **Refunds and credits**, **Returns**, or **Exchanges and warranty**. |
 | Weight | **Firm** (the business stated it) or **Derived** (awaiting the business's confirmation). |
 
-Choose **Save statement**, or press Enter. The statement is saved at once and gets the next code. It raises nothing until a check is added to it.
+Choose **Save**, or press Enter. The statement is saved at once and gets the next code. It raises nothing until a check is added to it.
 
 ## Add a check
 
-Under a statement, choose **Add check**:
+Open a statement and choose **Add check**:
 
 | Field | Sets |
 | --- | --- |
@@ -63,7 +63,7 @@ Under a statement, choose **Add check**:
 
 Choose **Save check**. The check is saved on its own; the settings page's **Save** is not needed for it. A check moved to another statement takes its open findings with it, history kept.
 
-What a check can find is set by its run. A NetSuite side can read a SuiteQL query you write and **Preview** for one day before saving it; see [Write a SuiteQL query](/guides/connect-netsuite#write-a-suiteql-query). The causes a finding names come from the run's conclusions; see [Edit a run's conclusions](/guides/review-results#edit-a-runs-conclusions). On the settings page, select a check's name to open its run's rules.
+What a check can find is set by its run. A NetSuite side can read a SuiteQL query you write and **Preview** for one day before saving it; see [Write a SuiteQL query](/guides/connect-netsuite#write-a-suiteql-query). The causes a finding names come from the run's conclusions; see [Edit a run's conclusions](/guides/review-results#edit-a-runs-conclusions). Open a statement and choose **Rules** beside a check to open its run's rules.
 
 ## Run it
 
@@ -73,26 +73,27 @@ Every check runs in the background. While they run, **Run health** shows **Runni
 
 ## Audit settings
 
-Choose the gear (**Audit settings**) beside the audit's name. Change what you need, then choose **Save**.
+Choose the gear (**Audit settings**) beside the audit's name. The page shows the audit's name with a **Daily schedule** switch, and a strip of **Schedule**, **After each run**, **Posts to**, and **Statements**. Choose one to change it, then choose **Save** in its popup; each change is saved on its own.
 
 | Group | Sets |
 | --- | --- |
-| **Name** | The audit's name. |
-| **Schedule** | **Daily** on or off, **Time**, and **Timezone**. One schedule covers every check. |
-| **After each run** | The update sent when a run ends, on or off. The line under the switch says how many people with access to the tenant get it. **Also send to** adds email addresses; **Chat space** picks a space for a summary card. |
-| **Statements** | Each statement's wording, and a switch that turns it off. **Add check** and **New statement** are here too. |
+| **Name** | The audit's name, at the top of the page. |
+| **Schedule** | **Daily schedule** on or off beside the name, and **Daily at** a time and **Timezone** in the **Schedule** popup. One schedule covers every check. |
+| **After each run** | The update sent when a run ends, on or off. The line under the switch says how many people with access to the tenant get it. **Also send to** adds email addresses. |
+| **Posts to** | The **Chat space** that gets a summary card, or **None**. |
+| **Statements** | Each statement's wording and a switch that turns it off. Open a statement to change it or choose **Add check**; **New statement** is here too. |
 
 <Note>
-A new audit's schedule is off, set to 06:00 in the tenant's time zone. The audit does not run on its own until you turn **Daily** on.
+A new audit's schedule is off, set to 06:00 in the tenant's time zone. The audit does not run on its own until you turn **Daily schedule** on.
 </Note>
 
-The audit owns its schedule. The automations behind its checks show **Set by audit** *name* under **Schedule**, linking back to these settings, and are not scheduled or paused on their own. When the checks' times differ, the page says **Checks run at different times; a change here sets them all.** Turning **Daily** off stops every check; their findings stay.
+The audit owns its schedule. The automations behind its checks show **Set by audit** *name* under **Schedule**, linking back to these settings, and are not scheduled or paused on their own. When the checks' times differ, the page says **Checks run at different times; a change here sets them all.** Turning the **Daily schedule** off stops every check; their findings stay.
 
 A statement turned off is left out of the next run, and its findings so far stay on record.
 
-The update after each run is an email with a CSV per rule, plus a short message in the chosen chat space. Its links to the report name the tenant, so opening one switches the app into that tenant first. Only a Tenant Admin can change the **After each run** group; others see **Only tenant admins can change this.** For chat spaces, see [Run completion alerts](/guides/run-completion-alerts).
+The update after each run is an email with a CSV per rule, plus a short message in the chosen chat space. Its links to the report name the tenant, so opening one switches the app into that tenant first. Only a Tenant Admin can change **After each run** and **Posts to**; for everyone else they read as plain text and do not open. For chat spaces, see [Run completion alerts](/guides/run-completion-alerts).
 
-When the chosen chat space can no longer take the message, the group says so under **Chat space**:
+When the chosen chat space can no longer take the message, the page says so under the audit's name:
 
 - **This chat space no longer exists, so no card is sent.**
 - **This chat space is turned off, so no card is sent.**

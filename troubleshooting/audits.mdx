@@ -9,8 +9,8 @@ For how audits work, see [Audits](/guides/audits).
 
 ## The audit did not run this morning
 
-- **Daily is off.** A new audit's schedule starts off, set to 06:00 in the tenant's time zone. Open the gear (**Audit settings**) and turn **Daily** on.
-- **Its automations were changed one by one.** The audit owns its schedule. The automations behind its checks show **Set by audit** *name* under **Schedule** and follow the audit's **Daily**, **Time**, and **Timezone**. Change the schedule in **Audit settings**, not on an automation.
+- **Daily is off.** A new audit's schedule starts off, set to 06:00 in the tenant's time zone. Open the gear (**Audit settings**) and turn **Daily schedule** on.
+- **Its automations were changed one by one.** The audit owns its schedule. The automations behind its checks show **Set by audit** *name* under **Schedule** and follow the audit's **Daily schedule**, time, and timezone. Change the schedule in **Audit settings**, not on an automation.
 - **The run is waiting.** Audit runs wait in a queue when the instance is busy. **Run health** shows **Queued**, or **Queued · retry, attempt** *N* when a failed run is trying again. A queued run starts on its own. See [the run queue](/reference/reconciliation-runs#run-queue).
 
 To run it now, choose the play icon (**Run audit**) beside the audit's name.
@@ -31,7 +31,7 @@ A check marked **Partial** ran over a read that was not complete, so it may have
 
 ## A statement says Not covered
 
-No check tests the statement yet, so it cannot have findings. **Run health** lists these statements. In **Audit settings**, choose **Add check** under the statement.
+No check tests the statement yet, so it cannot have findings. **Run health** lists these statements. In **Audit settings**, open the statement and choose **Add check**.
 
 ## A finding stays open after you fixed it
 
@@ -58,8 +58,8 @@ A new finding is **Open** from the run that finds it. Findings are either **Open
 
 ## The update after a run did not arrive
 
-- **After each run is off.** Turn it on in **Audit settings**. Only a Tenant Admin can change this group; others see **Only tenant admins can change this.**
-- **No chat message.** The chat space must still exist, belong to this tenant, be active, and have a webhook or Slack channel. Otherwise the run sends no chat message, and **Audit settings** says why under **Chat space**: **This chat space no longer exists, so no card is sent.**, **This chat space is turned off, so no card is sent.**, or **This chat space has no webhook or Slack channel, so no card is sent.** Pick a space again under **Chat space**, or fix the space in **Tenant Settings** under **Notifications**.
+- **After each run is off.** Open **Audit settings**, choose **After each run**, and turn it on. Only a Tenant Admin can change it; for everyone else it does not open.
+- **No chat message.** The chat space must still exist, belong to this tenant, be active, and have a webhook or Slack channel. Otherwise the run sends no chat message, and **Audit settings** says why under the audit's name: **This chat space no longer exists, so no card is sent.**, **This chat space is turned off, so no card is sent.**, or **This chat space has no webhook or Slack channel, so no card is sent.** Choose **Posts to** and pick a space again, or fix the space in **Tenant Settings** under **Notifications**.
 - **No email.** The update goes to the people with access to the tenant, plus any address under **Also send to**. Email needs the Darpan instance to be able to send mail. If **Forgot password?** does not appear on the sign-in page, the instance cannot send email; ask a Darpan admin.
 
 ## A report link opens a different tenant

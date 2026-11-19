@@ -41,7 +41,7 @@ A run whose scope has no conclusion rules shows the difference buckets as before
 
 ### Edit a run's conclusions
 
-Tenant Admins edit a run's conclusions in its **Ruleset Manager**, in the **Conclusions** section. Each conclusion is a node in a tree: it applies to one kind of difference (missing from one side, a rule difference, a finding, or any row), carries a question, and holds conditions that must all hold for it to name a finding. **Add child conclusion** nests one under another; **Move up** and **Move down** set the order they are tried in.
+Tenant Admins edit a run's conclusions in its **Ruleset Manager**, in the **Conclusions** section. The section lists the conclusions as rows; the first match wins. Choose a row to change it, or **New conclusion** to add one. Each conclusion is a node in a tree: it applies to one kind of difference (missing from one side, a rule difference, a finding, or any row), carries a question, and holds conditions that must all hold for it to name a finding. **Add child conclusion** in a conclusion's popup nests one under it; its **Order** list sets the order the conclusions are tried in.
 
 A condition reads a field on one side and tests it:
 
@@ -53,7 +53,7 @@ A condition reads a field on one side and tests it:
 | **is within the last hours** | Holds a time within the given number of hours before the run. |
 | **is blank** / **has a value** | Is empty, or has a value. |
 
-A condition can also set the record's presence on that side (**any**, **kept**, **excluded** or **absent**), with **full key** or **first key field** as its key scope, and, once it names a field, whether **all values** or **any value** must pass. Leave the test as **presence only** to check only whether the record is there. **New** beside a conclusion names a conclusion that is not in the list yet. **Save conclusions** stores the tree; **Revert** drops unsaved edits. A conclusion's fix text, where the run's configuration gives one, is kept as it is.
+A condition can also set the record's presence on that side (**any**, **kept**, **excluded** or **absent**), with **full key** or **first key field** as its key scope, and, once it names a field, whether **all values** or **any value** must pass. Leave the test as **presence only** to check only whether the record is there. The plus beside **Conclusion** (**New conclusion code**) names a conclusion that is not in the list yet. Choose **Save** in the popup to store the change; closing the popup without saving drops it. A conclusion's fix text, where the run's configuration gives one, is kept as it is.
 
 ## Run history
 
