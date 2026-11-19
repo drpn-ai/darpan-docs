@@ -7,9 +7,9 @@ Darpan releases from newest to oldest, with product and operator changes that af
 
 Version key: headings carry the backend version (`drpn-ai/darpan`); the app (`darpan-ui`) has its own tags, named in each entry: `v2.x` alongside backend `v1.x`, `v3.x` from backend `v2.0.0`, and `v4.x` from backend `v3.0.0`. Backend and app tags are cut together for major and minor releases. A patch can be backend-only or carry an app tag too, as `v1.5.1` did with app `v2.6.1`.
 
-## v3.3.0 — November 2026
+## v3.3.1 — November 2026
 
-Cut together with app `v4.3.0` and `darpan-agent v0.4.0`; backend `v3.3.0` is the build to deploy. A minor release: the API contract stays at version `4` and only gains methods. The theme: what used to wait for a release is now edited while Darpan runs, by a super admin, with a preview where it matters and a record of every change.
+Cut together with app `v4.3.0` and `darpan-agent v0.4.0`; backend `v3.3.1` is the build to deploy. A minor release: the API contract stays at version `4` and only gains methods. The theme: what used to wait for a release is now edited while Darpan runs, by a super admin, with a preview where it matters and a record of every change.
 
 ### Sign-in and settings
 
@@ -32,6 +32,7 @@ Cut together with app `v4.3.0` and `darpan-agent v0.4.0`; backend `v3.3.0` is th
 - An agent model without a price refuses the turn instead of spending untracked; enter the price first when moving to a new model.
 - Deploy the backend first, then the app, then the admin app. After deploy, run the `RETIRED_JOB_PARAMETERS` migration (dry run, then real): it moves the purge jobs' old `retentionDays` parameters into their settings.
 - The agent's author model is no longer a JVM property; set every role's model in the admin app.
+- A conclusion rule can read any field of the HotWax order, also on a run that filters stores or channels: the read asks for every field the run's rules and conclusion rules use. Before, such a condition saw a blank and never matched (3.3.1).
 
 ## v3.2.1 — November 2026
 

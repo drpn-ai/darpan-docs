@@ -60,6 +60,8 @@ Some stages are conditional:
 - A run with nothing to recheck, or no source that supports a point lookup, records no verification step. When verification is switched off or cannot run, the run records a `VERIFY_MISSING` step that states the reason.
 - Only a run whose scope has conclusion rules records `CONCLUDE`.
 
+A HotWax order read asks for every field the run's rules and conclusion rules read, on a manual run and a scheduled one, whatever the run's filters.
+
 A step's `stageSequence` is stored when the step is written, so older runs keep the numbers they were recorded with. Runs recorded before 2.0.0 use a single `VERIFY` stage at 5, with `WRITE_OUTPUT` at 6 and `NOTIFY` at 7. Runs recorded before `RECHECK` existed number `COMPARE` through `NOTIFY` one lower than the table above (4 through 10). Anything that reads `stageCode` or `stageSequence` must expect all three sets.
 
 ## Run window
