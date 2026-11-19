@@ -66,11 +66,15 @@ After your password, Darpan asks **Enter the code from your app.** Type the curr
 - **Use a passkey** asks **Confirm with your passkey.** Choose **Continue** to open your browser's prompt.
 - **Use a recovery code** asks **Enter a recovery code.** Each code works once, and Darpan emails you when one is used. When three or fewer remain, the sign-in tells you how many are left.
 
-If you have only passkeys, the passkey step comes first.
+If you have only passkeys, or a passkey last confirmed you in this browser, the passkey step comes first, with **Use the app code** beside it.
 
 ### Sign in with a passkey alone
 
-The sign-in page asks **Username?** first. Where passkeys are offered, the username field's autofill lists the passkeys you saved for Darpan: pick one, Touch ID or Face ID confirms it, and you are in, with no password and no code. Once you have signed in with a passkey in this browser, **Next** after your username asks **Use your passkey.** and opens the prompt; **Use password instead** goes to the password. For a security key, or a passkey on another device, choose **Use a passkey or security key** on the password step. The password and a code stay as the fallback.
+The sign-in page asks **Username?** first. Where passkeys are offered, the username field's autofill lists the passkeys you saved for Darpan: pick one, Touch ID or Face ID confirms it, and you are in, with no password and no code.
+
+A browser where a passkey last confirmed you remembers your account and opens on **Welcome back.** with one row: your username and **Passkey**. Choose the row and the passkey prompt opens; that one prompt signs you in. **Another account** asks **Username?** instead. A new browser asks **Username?** and then your password. After a password sign-in, or a cancelled or refused passkey, the row reads **Password** and goes to the password step.
+
+For a security key, or a passkey on another device, choose **Use a passkey or security key** on the password step. The password and a code stay as the fallback.
 
 ## Manage your factors
 
@@ -89,7 +93,7 @@ Turning two-factor off signs you out everywhere else, as turning it on does.
 
 ## Approve a CLI sign-in
 
-With two-factor on, the **Approve CLI** page asks for **Current code from your app** before **Approve**, or **Use a passkey** (**Approve opens your passkey prompt.**). A code you have just used to sign in is refused for a few seconds; wait for the next one. See [Set up the Darpan CLI](/getting-started/set-up-darpan-cli#sign-in).
+With two-factor on, **Approve** on the CLI approval page opens your passkey prompt when you have a passkey; **Use the app code** asks for **Current code from your app** instead. A code you have just used to sign in is refused for a few seconds; wait for the next one. See [Set up the Darpan CLI](/getting-started/set-up-darpan-cli#sign-in).
 
 ## Lost your phone or passkey
 

@@ -9,11 +9,11 @@ Version key: headings carry the backend version (`drpn-ai/darpan`); the app (`da
 
 ## v3.3.2 — November 2026
 
-Cut together with app `v4.3.0` and `darpan-agent v0.4.0`; backend `v3.3.2` is the build to deploy. A minor release: the API contract stays at version `4` and only gains methods. The theme: what used to wait for a release is now edited while Darpan runs, by a super admin, with a preview where it matters and a record of every change.
+Cut together with app `v4.3.0` and `darpan-agent v0.4.0`; backend `v3.3.2` and app `v4.3.1` are the builds to deploy. A minor release: the API contract stays at version `4` and only gains methods. The theme: what used to wait for a release is now edited while Darpan runs, by a super admin, with a preview where it matters and a record of every change.
 
 ### Sign-in and settings
 
-- Sign-in asks for your username first. The username field's autofill offers your saved passkeys, and a browser you have signed in with a passkey asks for it again after Next; otherwise you type your password. See [Two-factor sign-in](/guides/two-factor#sign-in-with-a-passkey-alone).
+- Sign-in asks for your username first, and the username field's autofill offers your saved passkeys. A browser where a passkey last confirmed you opens on **Welcome back.**: one click and one passkey prompt sign you in. A new browser asks for your password. Approving a CLI sign-in opens your passkey prompt by default. See [Two-factor sign-in](/guides/two-factor#sign-in-with-a-passkey-alone).
 - User Settings starts with your profile. Tenant Settings is a short list of rows: Chat, Time, Audit and AI.
 - Notifications shows, in one grid, which chat space each audit update, automation, script and streak message posts to. Move one with a click, add a space in one flow, and send a space a test message.
 - Scripts is a list, and each script has a page of its own. Config history shows the current version, then earlier versions by day.
