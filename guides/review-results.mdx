@@ -49,6 +49,7 @@ A condition reads a field on one side and tests it:
 | --- | --- |
 | **is one of** / **is not one of** | Is, or is not, one of the comma-separated values. |
 | **is more than** | Is more than the number given. |
+| **is less than** | Is less than the number given. A date read as a number (epoch milliseconds) is less when it is earlier, so a return dated before go-live matches. |
 | **is above zero** | Is above zero. |
 | **is within the last hours** | Holds a time within the given number of hours before the run. |
 | **is blank** / **has a value** | Is empty, or has a value. |
