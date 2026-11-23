@@ -91,7 +91,7 @@ The audit owns its schedule. The automations behind its checks show **Set by aud
 
 A statement turned off is left out of the next run, and its findings so far stay on record.
 
-The update after each run is an email with a CSV per rule, plus a short message in the chosen chat space. Its links to the report name the tenant, so opening one switches the app into that tenant first. Only a Tenant Admin can change **After each run** and **Posts to**; for everyone else they read as plain text and do not open. For chat spaces, see [Run completion alerts](/guides/run-completion-alerts).
+The update after each run is an email with a CSV per rule, plus a short message in the chosen chat space. Both say how many times the run read your systems and over how many connections, and how many of those reads could cost less. The Darpan team reviews those. Its links to the report name the tenant, so opening one switches the app into that tenant first. Only a Tenant Admin can change **After each run** and **Posts to**; for everyone else they read as plain text and do not open. For chat spaces, see [Run completion alerts](/guides/run-completion-alerts).
 
 When the chosen chat space can no longer take the message, the page says so under the audit's name:
 
@@ -143,6 +143,18 @@ If Darpan says the check has no automation yet, run the audit once first.
 ## How findings close
 
 A fix counts when a check sees it, not when someone says so. Each morning run re-checks open findings by key and reads the month so far, so a finding fixed in its own system closes on the next run. There is no control that marks a finding fixed by hand.
+
+## Orders on their way to NetSuite
+
+On a check that looks for HotWax orders missing from NetSuite, an order that was less than 24 hours old when read is named **On its way to NetSuite**. It is expected, so no statement counts it, and the next run looks at it again. HotWax sends most orders within hours and the rest in a daily catch-up.
+
+Past that day, an exchange whose return already has its RMA and credit memo in NetSuite is named **Exchange not sent, return credited**. Nothing on the return holds the exchange back; it was never sent.
+
+## A check on no statement
+
+A check that tests no statement does not run. It reports nowhere, so running it would only read your systems for nothing. A check ends up like this when an import or a restored config version takes it off its last statement and leaves it on its automation. Its automation still runs any other check it carries. One with no check left runs as a plain run that reports to no audit.
+
+The audit page lists checks under their statements, so a check on none is not shown there. To run it again, link it to a statement in a config import, or restore a config version from before it was taken off. See [Config history](/guides/manage-tenant-settings#config-history).
 
 ## The audit agent
 

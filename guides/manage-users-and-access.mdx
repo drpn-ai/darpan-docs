@@ -50,14 +50,16 @@ Always give an email. Password resets depend on it.
 
 Start the add-member flow. It asks **Which user should join?**, **Which tenant should they join?**, and **Which role should they have?** Pick one of the four roles above.
 
-Darpan emails the user a welcome from `support@drpn.ai`: the tenant, their role, their username and where to sign in. It never contains a password. An account that is disabled or has no email gets no welcome, and the grant still goes through.
+Darpan emails the user a welcome from `support@drpn.ai`: the tenant, their role, their username, where to sign in, and their temporary password. The password is in the welcome only while the user has not set their own, and for 7 days (by default) after you set it. Darpan keeps it encrypted until then and keeps no copy of a welcome that carries it. An account that is disabled or has no email gets no welcome, and the grant still goes through.
 
 Repeat for each tenant the user needs.
 
 </Step>
-<Step title="Hand over the temporary password">
+<Step title="Check the user has the password">
 
-Share the username and temporary password with the user through a channel you trust. At first sign-in, Darpan asks them to choose a new password before it signs them in.
+The welcome carries the temporary password. At first sign-in, Darpan asks the user to choose a new password before it signs them in.
+
+A welcome sent more than 7 days after the password was set, or after the user set their own, has no password in it. To send one, choose **Reset Password** on the user's page, then **Send welcome** on the tenant's page. Users created before Darpan 3.4.0 have no kept password, so they need the same two steps.
 
 </Step>
 </Steps>
@@ -71,7 +73,7 @@ The user has a welcome email for each tenant, signs in, sets a new password of a
 In the admin app, a Darpan admin can:
 
 - On the tenant's page, change a member's role or **Remove** them from the tenant. Removing access from one tenant does not affect their other tenants.
-- On the user's page, **Reset Password**: sets a new temporary password, signs the user out everywhere, and forces a password change at their next sign-in.
+- On the user's page, **Reset Password**: sets a new temporary password, signs the user out everywhere, and forces a password change at their next sign-in. The next welcome sent to them carries it.
 - **Disable** the account: the user can no longer sign in and is signed out everywhere. **Enable** reverses it. A Darpan admin cannot disable their own account.
 - On the tenant's page, **Send welcome** sends one member the welcome email again, and **Welcome all** sends it to every member, for example after a new tenant's members were added. A member with no email or a disabled account is named beside the refusal.
 - On the user's page, under **Darpan admin**, **Add** or **Remove** the **Darpan admin** and **Super admin** roles. The users list has a **Darpan admins only** filter. You cannot remove your own Super admin role.

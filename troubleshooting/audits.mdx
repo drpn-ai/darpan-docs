@@ -29,6 +29,12 @@ On today's report, choose **Retry from last read** on the check. It runs again f
 
 A check marked **Partial** ran over a read that was not complete, so it may have missed records. Play the audit again once the system is reachable.
 
+## A check stopped running after an import
+
+A check that an import or a restored config version took off its last statement no longer runs. Before this release it kept running every morning, recorded nothing, and logged "Audit check *id* tests no statement". Now it is skipped, its automation runs any other checks it carries, and nothing is lost: it had no statement to report a finding to.
+
+If the unlink was on purpose, nothing needs doing. If it was not, link the check to a statement again with a config import, or restore the config version from before it. See [A check on no statement](/guides/audits#a-check-on-no-statement).
+
 ## A statement says Not covered
 
 No check tests the statement yet, so it cannot have findings. **Run health** lists these statements. In **Audit settings**, open the statement and choose **Add check**.
