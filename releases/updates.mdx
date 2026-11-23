@@ -57,7 +57,7 @@ Cut together with app `v4.4.0` and `darpan` CLI `0.2.4`. A minor release that mo
 - Users created before this release have no kept password. For anyone who still needs one, reset the password and send the welcome again.
 - `add#TenantMember` answers `welcomeSent` and `welcomeWithPassword` instead of `welcomeQueued`, and waits for the mail server.
 - Darpan emails carry a Message-ID on the sending domain (`support@drpn.ai`, or `DARPAN_MAIL_FROM`) instead of the server's host name.
-- A scheduled query's email comes from `jexl_email_from`, which defaults to `DARPAN_MAIL_FROM` or `support@drpn.ai`. Set it to an address your mail server may send from. An instance with `scheduled_job_check_time` `0` holds query schedules too.
+- A scheduled query's email comes from the same address as Darpan's other mail (`DARPAN_MAIL_FROM`, else `support@drpn.ai`); there is nothing new to set. An instance with `scheduled_job_check_time` `0` holds query schedules too.
 
 ## v3.3.2 — November 2026
 
