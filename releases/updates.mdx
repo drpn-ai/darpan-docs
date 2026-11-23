@@ -7,6 +7,49 @@ Darpan releases from newest to oldest, with product and operator changes that af
 
 Version key: headings carry the backend version (`drpn-ai/darpan`); the app (`darpan-ui`) has its own tags, named in each entry: `v2.x` alongside backend `v1.x`, `v3.x` from backend `v2.0.0`, and `v4.x` from backend `v3.0.0`. Backend and app tags are cut together for major and minor releases. A patch can be backend-only or carry an app tag too, as `v1.5.1` did with app `v2.6.1`.
 
+## v3.4.0 — November 2026
+
+Cut together with app `v4.4.0` and `darpan` CLI `0.2.4`. A minor release: the API contract stays at version `4` and gains 14 methods, for peak periods, the sync pulse and the audit read report. None is removed. The theme: Darpan stays light on your busy days, and every run filters its records the same way.
+
+### Busy days
+
+- Peak periods: name a sale week in **Tenant Settings**. Darpan moves the runs you choose, holds scheduled runs out of the peak hours, keeps its HotWax reads inside a share you pick, and can send NetSuite one request at a time. See [Peak periods and sync pulse](/guides/peak-periods-and-sync-pulse).
+- Sync pulse: attach a pulse to a daily HotWax check and it counts the orders still waiting in the other system every 1 to 6 hours. It posts to a chat space when orders pass the allowance you set, and again when none are left. The daily check then starts after the allowance, and its rows say which orders the pulse flagged first.
+
+### Runs and results
+
+- Every run applies a side's filters after the read and before the compare, manual and scheduled alike. Records a filter leaves out are set aside and counted, and a conclusion can test for them. HotWax exchange orders, cancelled HotWax returns and NetSuite payment lines are set aside the same way. See [Filters and set-aside records](/reference/reconciliation-runs#filters-and-set-aside-records).
+- A side with filters but no key, or whose records are not the extract's top-level records, fails before it reads instead of comparing records you meant to leave out. See [A side cannot be filtered](/troubleshooting/reconciliation-runs#a-side-cannot-be-filtered).
+- Lookups are a last resort. A side is looked up only when its missing records are at most 5% of the records checked against it, and never by an ID of another kind.
+- A found HotWax order or return, or a Shopify return, shows its status and ids in a run's expanded row.
+- Conclusions have their own page. The pencil beside **Conclusions** in the **Ruleset Manager** opens it: each conclusion reads as plain lines and edits one line at a time, and **Save conclusions** saves the list once. A condition can test **is less than**. See [Edit a run's conclusions](/guides/review-results#edit-a-runs-conclusions).
+
+### Audits
+
+- A HotWax order NetSuite lacks that was less than a day old when read is named **On its way to NetSuite**: expected, not a finding. Past that, an exchange whose return already has its RMA and credit memo is named **Exchange not sent, return credited**.
+- A check on no statement does not run. An import or restore that takes a check off its last statement retires it, so it no longer reads your systems every morning for nothing.
+- The update after each run says how often the run read your systems, and how many reads could cost less.
+
+### Users and sign-in
+
+- The welcome email carries the temporary password while the user has not set their own and for 7 days by default. See [Manage users and access](/guides/manage-users-and-access#create-a-user-and-grant-access).
+- After signing in with a code, Darpan offers **Add a passkey on this device?** and asks for no second code.
+
+### CLI
+
+- `darpan` 0.2.4 shows and saves a run's conclusions, makes a conclusion name, and syncs an automation with its run, for a Tenant admin or Company editor. Each write previews first and saves only with `--yes`. See [Set up the Darpan CLI](/getting-started/set-up-darpan-cli#change-a-runs-conclusions-and-sync-an-automation).
+
+### Operators
+
+- Deploy the backend first, then the app, then release `darpan` CLI `0.2.4`. The CLI's new writes are refused until the backend is deployed. The image must carry `moqui-rules`.
+- Load this release's upgrade data with the deploy, not after. It carries each connector's built-in filters: without them, a run on that source fails with "Load the upgrade data, then run again." It also carries the peak period and sync pulse access rows (without them, saves say not authorized), the sync pulse job and statuses, the welcome email's password line, two conclusion names and three connectors' status fields.
+- The first extract clean-up after the deploy deletes every manual run's extracts and lookup answers older than 7 days, for every tenant. Download any you still need before deploying.
+- Stored automation filters are no longer sent to the source's read. They run after it, with the run's other filters.
+- Sync pulse samples are kept 30 days by the daily retention job. Make sure that job is running.
+- Users created before this release have no kept password. For anyone who still needs one, reset the password and send the welcome again.
+- `add#TenantMember` answers `welcomeSent` and `welcomeWithPassword` instead of `welcomeQueued`, and waits for the mail server.
+- Darpan emails carry a Message-ID on the sending domain (`support@drpn.ai`, or `DARPAN_MAIL_FROM`) instead of the server's host name.
+
 ## v3.3.2 — November 2026
 
 Cut together with app `v4.3.0` and `darpan-agent v0.4.0`; backend `v3.3.2` and app `v4.3.2` are the builds to deploy. A minor release: the API contract stays at version `4` and only gains methods. The theme: what used to wait for a release is now edited while Darpan runs, by a super admin, with a preview where it matters and a record of every change.
