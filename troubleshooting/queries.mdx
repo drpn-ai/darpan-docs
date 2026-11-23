@@ -21,7 +21,7 @@ Most query failures say exactly what went wrong: the run's cell names the field,
 | **Read not allowed**: `Dataset` (or `Audit`) *id* `is not one of this tenant's.` | The id belongs to another tenant, or was copied from another instance. | Use an id from this tenant. |
 | **Read too large**: `Input '`*name*`' has more than 20000 rows` | The input passed the row limit. Darpan never cuts a read silently. | Narrow it with `where` or `window`, or group it with `groupBy` and `measures`. |
 | **Script error** with a line number | The script failed on that line. | Fix that line. Map keys need quotes (`{'summary': ...}`), a list you add to starts as `[...]` and grows with `fn:push`, and methods on values (`x.size()`) are refused: use `size(x)` and the `fn:` functions. |
-| **Script error**: `The result is more than 65536 characters of JSON.` or `The result holds more than 20000 values.` | The whole result, files included, passed its size limit. | Return fewer rows or columns, group the read, or split it into a smaller question. |
+| **Script error**: `The result is more than 8000000 characters of JSON.` or `The result holds more than 400000 values.` | The whole result, files included, passed its size limit. | Return fewer rows or columns, group the read, or split it into a smaller question. |
 | **Script error** naming units or time | The script did too much work or ran past 10 seconds. | Read fewer rows, or let the read group them instead of the script. |
 | **Result not usable** | The script returned something other than a summary, files and data. | Return `{'summary': ..., 'files': [...]}`, a text, or nothing. |
 | `Scripts are busy right now; try again in a moment.` | Every query slot on the server is taken. | Run it again in a moment. |
