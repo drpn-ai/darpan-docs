@@ -63,9 +63,9 @@ One HotWax connection serves every endpoint, because they share the same base UR
 
 | Endpoint | Source name in runs | Reads |
 | --- | --- | --- |
-| **Orders** | **HotWax orders** | One record per sales order. Exchange orders are left out. Carries **Sales channel**, so a run can leave out orders from a channel such as POS, and **Item quantity**, which counts an exchange HotWax keeps on a separate order with its original order, as Shopify does. |
+| **Orders** | **HotWax orders** | One record per sales order. Exchange orders are set aside before the compare, by the **Exchange order** field. Carries **Sales channel**, so a run can leave out orders from a channel such as POS, and **Item quantity**, which counts an exchange HotWax keeps on a separate order with its original order, as Shopify does. |
 | **Order lines** | **HotWax order lines** | One record per order-line unit, so a quantity shortfall on a line is visible. Items without a Shopify line ID are kept. |
-| **Returns** | **HotWax returns** | One record per return, refunded and pending alike. For [returns reconciliation](/guides/returns-and-exchanges). |
+| **Returns** | **HotWax returns** | One record per return, refunded and pending alike. Cancelled returns, and returns with no Shopify refund or return ID, are set aside before the compare, by the **Return class** field. For [returns reconciliation](/guides/returns-and-exchanges). |
 | **Products** | **HotWax products** | One record per sellable product, keyed by its NetSuite item ID, for NetSuite and HotWax product checks. Reads the whole catalogue and ignores the run's date window. |
 
 An endpoint that is not enabled under **Available Endpoints** is not offered when you build a run.

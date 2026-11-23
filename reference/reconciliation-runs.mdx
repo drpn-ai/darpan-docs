@@ -58,11 +58,28 @@ Some stages are conditional:
 - A file-upload side records no extract step, and a run that checks one system never opens `EXTRACT_FILE2`.
 - `RECHECK` opens only on an audit window that has older open findings.
 - A run with nothing to recheck, or no source that supports a point lookup, records no verification step. When verification is switched off or cannot run, the run records a `VERIFY_MISSING` step that states the reason.
+- `VERIFY_MISSING` looks a side up only when its missing records are at most 5% of the records checked against it (a connector can set its own share), and only by the ID kind its lookup answers. Above that share, the step says so and looks nothing up.
 - Only a run whose scope has conclusion rules records `CONCLUDE`.
 
 A HotWax order read asks for every field the run's rules and conclusion rules read, on a manual run and a scheduled one, whatever the run's filters.
 
 A step's `stageSequence` is stored when the step is written, so older runs keep the numbers they were recorded with. Runs recorded before 2.0.0 use a single `VERIFY` stage at 5, with `WRITE_OUTPUT` at 6 and `NOTIFY` at 7. Runs recorded before `RECHECK` existed number `COMPARE` through `NOTIFY` one lower than the table above (4 through 10). Anything that reads `stageCode` or `stageSequence` must expect all three sets.
+
+## Filters and set-aside records
+
+Every run applies each side's filters after the read and before `COMPARE`, on manual, scheduled, retried and audit runs alike. A record a filter leaves out is set aside: it is not compared, it is counted, and a conclusion condition can test that it **was set aside**.
+
+A side's filters are its own exclusions plus the ones its source applies by itself:
+
+| Source | Set aside by itself | Field |
+| --- | --- | --- |
+| HotWax orders | Exchange orders. | **Exchange order** (`isExchangeOrder`) |
+| HotWax returns | Cancelled returns, and returns with neither a Shopify refund ID nor a Shopify return ID, unless the side's read options keep them. | **Return class** (`omsReturnClass`) |
+| NetSuite sales lines | A line with no HotWax line ID, such as a store-credit payment line. | `nsUnkeyedLine` |
+
+These fields are offered on the rules board like any other.
+
+A side with filters needs a key, and its records must be the extract's top-level `records` with no key field running through a nested list. A side that fails this fails the run before it reads; a scheduled run is not retried. See [A side cannot be filtered](/troubleshooting/reconciliation-runs#a-side-cannot-be-filtered).
 
 ## Run window
 
@@ -117,7 +134,7 @@ If a source legitimately carries several rows per key, use a [composite matching
 
 ## Extract files
 
-The raw files a run reads from its sources (its extracts) are deleted 7 days after the run, by a nightly clean-up. Result files and audit findings are not affected. Once an extract is gone it cannot be downloaded, from the run's result page or with an audit check's **Export** *system* **extract**.
+The raw files a run reads from its sources (its extracts) are deleted 7 days after the run, by a nightly clean-up. This covers manual runs and scheduled runs alike, and the answers the run's lookups got, which are kept with the run. Result files and audit findings are not affected. Once an extract is gone it cannot be downloaded, from the run's result page or with an audit check's **Export** *system* **extract**.
 
 ## Failure visibility
 

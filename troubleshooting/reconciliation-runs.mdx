@@ -44,6 +44,29 @@ When the cause is fixed, or was transient, choose **Retry from** *step*. The ret
 
 A scheduled run whose source read fails ends failed and is retried. It does not report the window as having no data, so an empty result means the source had nothing to read.
 
+## A side cannot be filtered
+
+A run fails before it reads anything, and the error starts with the side and its system, for example "File 2 (OMS_GQL) cannot be filtered: ...". Darpan stops here on purpose. Comparing the side without its filters would report records you chose to leave out.
+
+Every run applies a side's filters, yours and the ones its source sets aside by itself, after the read and before the compare. That works only when the side has a key and its records are the extract's top-level records.
+
+| The error ends with | Cause | Fix |
+| --- | --- | --- |
+| "... and it has no key, so Keep cannot run in Spark. Give the side a key field in its compare scope." | The side has filters but no primary ID. | Give the side a primary ID in the run's setup, then run again. |
+| "... and its records are not top-level, so Keep cannot run in Spark." | The side's record root is not the top-level `records`, or a key field runs through a nested list. | Point the side at top-level records and key it on fields of the record itself. Or remove the side's filters. |
+| "the *system* connector's Keep lines (keepLinesJson) are not loaded. Load the upgrade data, then run again." | The instance was upgraded without loading the release's upgrade data. | Ask a Darpan admin to load the upgrade data, then run again. |
+
+A scheduled run that fails this way is not retried, because a retry would fail the same way. Fix the setup, then let the next scheduled run go or start it from the automation.
+
+## Verification pass skipped
+
+The **Verifying differences** step can say a side was not looked up:
+
+- "Verification pass skipped for *side*: *N* of *M* records are reported missing there, above the *P*% a lookup is for. The read or the pairing needs fixing; nothing was looked up." *P* is 5 unless the source's connector sets its own.
+- "Verification pass skipped for *side*: the run did not say how many records were checked against it, so *N* missing difference(s) were not looked up."
+
+A lookup is for the few records an export missed. When many are reported missing, the read or the key is wrong, and a record-by-record lookup would hide that. Check that both sides read the same days and that the primary IDs hold the same values, then run again. The reported differences stay as found.
+
 ## Wrong window or setup, mid-run
 
 A run started against the wrong window or setup does not have to finish. Choose **Cancel run** and confirm. The run ends at its next checkpoint (a stage boundary, or a progress tick during a long paged read) and finishes as cancelled; work completed so far is discarded. See [Stopping a run](/guides/run-reconciliation#stopping-a-run).

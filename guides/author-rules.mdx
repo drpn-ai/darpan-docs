@@ -124,7 +124,11 @@ Some records should never be compared, for example a channel or status that one 
 | **Only these values** | Only records whose value is listed. | Left out. |
 | **Only values starting with** | Only records whose value starts with one of the listed values. | Left out. |
 
-Filters apply when the records are extracted, before matching and before any rule runs. A filter removes records from its own side only: if the same records exist in the other system, filter them there too, or they report as missing from this side. Filters work only on API sources whose connector supports filtering. On a file upload, or a source that cannot filter, the board says so instead of opening the editor.
+Every run applies a side's filters after the source is read, before matching and before any rule runs, on a manual run and a scheduled one alike. The records a filter leaves out are set aside, not deleted: they are counted, and a conclusion can test whether a side's record **was set aside**. A filter removes records from its own side only: if the same records exist in the other system, filter them there too, or they report as missing from this side. Filters work only on API sources whose connector supports filtering. On a file upload, or a source that cannot filter, the board says so instead of opening the editor.
+
+Some sources set records aside on their own before your filters, such as HotWax exchange orders and cancelled HotWax returns. See [Filters and set-aside records](/reference/reconciliation-runs#filters-and-set-aside-records).
+
+A side with filters needs a primary ID, and its records must be the extract's top-level records. Otherwise the run fails before it reads, rather than compare records you meant to leave out. See [A side cannot be filtered](/troubleshooting/reconciliation-runs#a-side-cannot-be-filtered).
 
 The **Ruleset Manager** lists the run's exclusions in their own panel next to the rules.
 

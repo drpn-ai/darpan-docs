@@ -71,7 +71,7 @@ A paired Shopify return is dropped, and the HotWax return is dropped once every 
 
 ## Exchanges
 
-An exchange in Shopify becomes a separate exchange order in HotWax, carrying the same Shopify order ID as the original. HotWax **Orders** reads leave exchange orders out, so they do not show up as extra orders in an orders run.
+An exchange in Shopify becomes a separate exchange order in HotWax, carrying the same Shopify order ID as the original. A run on HotWax **Orders** sets exchange orders aside before the compare, so they do not show up as extra orders in an orders run.
 
 When an orders run compares **Shopify orders** with **HotWax orders**, Darpan also runs an exchange presence check:
 
