@@ -88,11 +88,11 @@ When an orders run compares **Shopify orders** with **HotWax orders**, Darpan al
 | Return cancelled | Ignored. |
 | Closed, older than 3 hours, absent from HotWax | Reported as missing from HotWax. |
 
-Each run looks up at most 200 exchanges in HotWax. Any beyond that are deferred to a later run rather than reported.
+Each run looks up every exchange left over, 100 order IDs per HotWax request.
 
 ## Reading the result
 
-Each check records its counts on the run, in a note that starts **Return presence check:**, **Rebuilt return pairing:**, or **Exchange presence check:**. The notes say what each rule removed and how many exchanges were matched, pending, in transit, or deferred, so a count that moved between runs can be traced rather than guessed at.
+Each check records its counts on the run, in a note that starts **Return presence check:**, **Rebuilt return pairing:**, or **Exchange presence check:**. The notes say what each rule removed and how many exchanges were matched, pending, or in transit, so a count that moved between runs can be traced rather than guessed at.
 
 When a record is reported:
 
