@@ -50,7 +50,7 @@ A moved run reads the same window it always does. Only its start changes.
 </Step>
 </Steps>
 
-{/* TODO-328: the period end date follow-up is still landing; describe it here once it is on darpan-ui main. */}
+While a period changes a pair, the pair's allowance and pulse popups say so, for example "Normal days. Black Friday pulses every hour through 1 Dec." A period runs through its last day, and that day reads the same in every time zone.
 
 **Peak period on** beside the name switches a period off without deleting it. The trash icon deletes it, and its runs go back to their normal times.
 
@@ -99,7 +99,7 @@ The allowance also moves the daily check. A check with a sync pair never starts 
 | **Today** | Two charts by hour on the tenant's clock: **Oldest waiting, hours** and **Waiting, orders**. A gap means no pulse ran then. |
 | **Past allowance** | Each order past the allowance: **Order**, **Created**, **Waiting**, and its id in the other system. **in run** *id* opens the daily check run that reported it. |
 
-{/* TODO-328: two follow-ups are still landing. The "in run" link will follow the window that read the order, and the pair will show a caught-up count. Describe both here once they are on darpan-ui main. */}
+**in run** opens the daily check whose window read the order, not simply the latest run. When the last open order closes, the caught-up post counts every order the episode flagged, not only the last pulse's.
 
 The pulse posts to the chat space when orders first go past the allowance, and again when none are left. An order closes when it reaches the other system. It also closes, without counting as synced, when it is cancelled or grows older than the allowance plus a day. When the last pulse failed, the facts say **last pulse failed** *time*.
 
