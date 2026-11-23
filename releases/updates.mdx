@@ -9,7 +9,7 @@ Version key: headings carry the backend version (`drpn-ai/darpan`); the app (`da
 
 ## v3.4.0 — November 2026
 
-Cut together with app `v4.4.0` and `darpan` CLI `0.2.4`. A minor release that moves the API contract to version `5`, because methods are removed. It adds 25 methods, for peak periods, the sync pulse, the audit read report and queries, and removes the 8 tenant script methods that queries replace. The theme: Darpan stays light on your busy days, every run filters its records the same way, and you can ask your own questions of what your audits keep.
+Cut together with app `v4.4.0` and `darpan` CLI `0.2.4`; app `v4.4.1` is the build to deploy. A minor release that moves the API contract to version `5`, because methods are removed. It adds 25 methods, for peak periods, the sync pulse, the audit read report and queries, and removes the 8 tenant script methods that queries replace. The theme: Darpan stays light on your busy days, every run filters its records the same way, and you can ask your own questions of what your audits keep.
 
 ### Busy days
 
@@ -41,7 +41,7 @@ Cut together with app `v4.4.0` and `darpan` CLI `0.2.4`. A minor release that mo
 ### Users and sign-in
 
 - The welcome email carries the temporary password while the user has not set their own and for 7 days by default. See [Manage users and access](/guides/manage-users-and-access#create-a-user-and-grant-access).
-- After signing in with a code, Darpan offers **Add a passkey on this device?** and asks for no second code.
+- After signing in with a recovery code, an account without an authenticator app is offered **Add a passkey on this device?** and asked for no second code. An account with the app is not asked.
 
 ### CLI
 
