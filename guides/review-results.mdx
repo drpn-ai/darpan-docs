@@ -34,27 +34,42 @@ The footer links to **Open run**, **View previous runs**, and **Run settings**.
 When a run's scope has conclusion rules, the result names what each finding most likely means instead of leaving the raw difference to be worked out.
 
 - The page summarises by conclusion: one tile per conclusion with its count. **Unexplained** is always shown, always last, and lists the findings no rule could name.
-- The **Conclusion** column names each finding. Expand a row to see each system's state, **How Darpan concluded** (the fields the deciding rule tested), and the **Raw record**.
+- The **Conclusion** column names each finding. Expand a row to see each system's state, **How Darpan concluded** (the fields the deciding rule tested), and the **Raw record**. A HotWax order or return, or a Shopify return, that was found shows its status and its ids, such as the order name or the return's order.
 - Where a conclusion needs a decision, **Stop flagging in rules board ›** opens the rules board with a filter pre-filled. **Keep flagging** leaves the rules as they are.
 
 A run whose scope has no conclusion rules shows the difference buckets as before.
 
 ### Edit a run's conclusions
 
-Tenant Admins edit a run's conclusions in its **Ruleset Manager**, in the **Conclusions** section. The section lists the conclusions as rows; the first match wins. Choose a row to change it, or **New conclusion** to add one. Each conclusion is a node in a tree: it applies to one kind of difference (missing from one side, a rule difference, a finding, or any row), carries a question, and holds conditions that must all hold for it to name a finding. **Add child conclusion** in a conclusion's popup nests one under it; its **Order** list sets the order the conclusions are tried in.
+Tenant Admins edit a run's conclusions on their own page. In the run's **Ruleset Manager**, choose the pencil beside **Conclusions** (**Edit conclusions**, or **Set up conclusions** when there are none). The **Conclusions** section on the **Ruleset Manager** is read-only.
 
-A condition reads a field on one side and tests it:
+The page lists the conclusions in the order they are tried; the first match wins. **Unexplained** is always last. Choose a conclusion to open it. It reads as plain lines, and choosing a line turns only that line into its control. Choose the check mark (**Done with this line**) when it is right.
+
+| Line | Sets |
+| --- | --- |
+| **Name** | The conclusion, picked from the tenant's names. The plus (**New conclusion code**) adds a name that is not in the list yet. |
+| **Explains** | Which rows it is tried on: **any check**, a side's missing rows, the rules, or every finding. |
+| **When** | The conditions, one per line, joined by "and". All must hold. The plus (**Add a line**) adds one; the trash icon on a line removes it. |
+| **Asks** | The question it answers. |
+| **Shows as** | **Shown** (a finding you see), **Expected** (not a finding; counted as expected), or **Hidden** (not a finding; left out of counts). |
+| **Fix** | How you fix it, in your own words. Darpan never writes it. |
+
+The arrows move the open conclusion up or down, and the trash icon deletes it. The plus at the end of the list (**Add conclusion**) adds one. **Unexplained** can show as **Shown** or **Expected**, never **Hidden**.
+
+A **When** line picks a side and a field (**Pick what to check**, or **Type a path…** for a field the list does not offer), then a test:
 
 | Test | Holds when the field |
 | --- | --- |
-| **is one of** / **is not one of** | Is, or is not, one of the comma-separated values. |
+| **is one of** / **is not one of** | Is, or is not, one of the values. Type a value and press Enter for each. |
 | **is more than** | Is more than the number given. |
 | **is less than** | Is less than the number given. A date read as a number (epoch milliseconds) is less when it is earlier, so a return dated before go-live matches. |
-| **is above zero** | Is above zero. |
-| **is within the last hours** | Holds a time within the given number of hours before the run. |
-| **is blank** / **has a value** | Is empty, or has a value. |
+| **is more than 0** | Is above zero. |
+| **is within … hours** | Holds a time within the given number of hours before the run. |
+| **is empty** / **is not empty** | Is empty, or has a value. |
 
-A condition can also set the record's presence on that side (**any**, **kept**, **excluded** or **absent**), with **full key** or **first key field** as its key scope, and, once it names a field, whether **all values** or **any value** must pass. Leave the test as **presence only** to check only whether the record is there. The plus beside **Conclusion** (**New conclusion code**) names a conclusion that is not in the list yet. Choose **Save** in the popup to store the change; closing the popup without saving drops it. A conclusion's fix text, where the run's configuration gives one, is kept as it is.
+A line can also test whether the side's record **is there**, **is missing**, or **was set aside** by the side's filters, alone or before a field test. On a field inside a list, such as an order's lines, the line says whether **any**, **every**, or **no** item must pass.
+
+Nothing is stored until you choose **Save conclusions**, which saves the whole list at once and returns to the run. **Cancel changes** drops every change. Leaving the page with unsaved changes asks **Discard unsaved conclusion changes?**
 
 ## Run history
 
@@ -83,7 +98,7 @@ Two things shape a difference count before you see it, and both exist to stop yo
 
 Some differences are an artefact of how a source was read rather than a real gap. A bulk export can be indexed slightly behind the live system, so a record that exists is reported missing.
 
-For sources that support it, Darpan re-checks reported-missing records with a direct point lookup and drops the ones that turn out to be present. The result names **which systems each pass rechecked**, so a count that moved is traceable rather than mysterious. Verification is capped per connector, so a pass never turns into an unbounded stream of lookups.
+For sources that support it, Darpan re-checks reported-missing records with a direct point lookup and drops the ones that turn out to be present. The result names **which systems each pass rechecked**, so a count that moved is traceable rather than mysterious. A side is looked up only when its missing records are a small share of the records checked against it, 5% unless its connector sets its own. Above that, the run says the read or the pairing needs fixing and looks nothing up; see [Verification pass skipped](/troubleshooting/reconciliation-runs#verification-pass-skipped). A side is never looked up by an ID of another kind, such as an order ID sent to a returns lookup.
 
 ### Structural suppression
 

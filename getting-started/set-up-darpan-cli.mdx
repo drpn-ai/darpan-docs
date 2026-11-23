@@ -102,7 +102,20 @@ The choice is saved on this machine. To use a different tenant for one command, 
 | `darpan guide` | The usual path, limits, and what each role can do. |
 | `darpan help` | Every command. |
 
-Commands print JSON. `darpan api` lists every Darpan method the CLI may call. The CLI reads data, starts and cancels runs, plays audits and re-checks findings, asks a connected system a fresh read-only question, and saves and schedules tenant scripts. It cannot change users, connections, saved runs, or tenant settings.
+Commands print JSON. `darpan api` lists every Darpan method the CLI may call. The CLI reads data, starts and cancels runs, plays audits and re-checks findings, asks a connected system a fresh read-only question, and saves and schedules tenant scripts. Apart from the conclusions and automation sync below, it cannot change users, connections, saved runs, or tenant settings.
+
+### Change a run's conclusions and sync an automation
+
+A Tenant admin or Company editor can also change a run's conclusions and keep an automation in step with its run. These need `darpan` 0.2.4 or later.
+
+| Command | What it does |
+| --- | --- |
+| `darpan conclusions show <savedRunId>` | The run's conclusions, in the shape `conclusions save` takes. |
+| `darpan conclusions save <savedRunId> --file <json>` | Replaces the run's whole conclusion list. It shows what each conclusion gains, loses or changes, and saves only with `--yes`. |
+| `darpan conclusions code --label <text>` | Makes a conclusion name of the tenant's own. |
+| `darpan automation sync <automationId>` | Copies the run's sources and filters onto its automation. It shows both sides' filters first, and writes only with `--yes`. |
+
+Start a save from `conclusions show`, edit the file, then save it: a save replaces every conclusion, so a partial list would drop the rest. `conclusions save` refuses an empty or malformed list. Each change is credited to you in **Config history**, as an edit in the app would be.
 
 ## Use it from Claude Code
 

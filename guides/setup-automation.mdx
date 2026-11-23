@@ -137,6 +137,8 @@ The cost of that choice is drift. So Darpan reports it: open an automation whose
 Sync never re-points an automation at a different run. The saved run an automation was built from is fixed for its lifetime: **an automation's saved run cannot be changed — create a new automation for a different run.** If the saved run has been deleted, sync refuses rather than guessing, and the automation has to be recreated.
 </Note>
 
+From the CLI, `darpan automation sync <automationId>` does the same; see [Set up the Darpan CLI](/getting-started/set-up-darpan-cli#change-a-runs-conclusions-and-sync-an-automation).
+
 Sync when the drift report names a field you care about. Ignore it when it names one you deliberately diverged from — the automation is allowed to differ from its run, and Darpan reports the difference rather than correcting it for you.
 
 ## Troubleshooting
