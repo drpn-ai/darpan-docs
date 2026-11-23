@@ -1,0 +1,54 @@
+---
+title: "Queries"
+description: "Fix a query that is refused, fails to read, passes a limit, or a schedule that stops or does not send."
+---
+
+Most query failures say exactly what went wrong: the run's cell names the field, the limit or the line, and a scheduled run's message sits on the **Last run** fact and in the **Scheduled run** cell. Find the message below, then the fix.
+
+## Writing and running
+
+| Symptom | Cause | Fix |
+| --- | --- | --- |
+| The **Ask** box answers that the data is not kept by any audit, and proposes nothing | A query reads only what audits keep, and no audit keeps that field or record kind. | Add the field to an audit's check, or ask about a field that is kept. Queries never widen what a dataset keeps. |
+| There is no **Ask** box | The agent is off for the tenant, or you have no live AI access there. | Ask a Darpan admin for AI access. You can still write the read and the script by hand. |
+| **Ask** refuses | You passed the hourly message limit or the tenant's daily budget. | Wait, or write the query by hand. |
+| An answer from **Ask** replaced your edits | A proposal fills the read and the script. | Choose **Put back my version**. |
+| **Read failed**: *field* `is no longer kept for dataset` *id*`: no audit reads it now.` | The audit that kept the field changed its source, so the dataset stopped keeping it. | Remove the field from the read, or add it back to an audit. |
+| **Read failed**: `Dataset` *id* `has no kept copy yet.` | The dataset has not read its source yet. | Wait for its first read, then run again. |
+| **Read failed**: `Saved run` *id* `has no finished result yet.` | The saved run has never finished. | Run it once, then run the query. |
+| **Read failed**: *field* `is not a finding field` | An audit findings read names a field a finding does not have. | Use one of the fields the message lists. See [What a query may read](/reference/queries#what-a-query-may-read). |
+| A run or a proposal says the read's `window needs a field.` | The read's `window` has no `field`. | Add one, for example `"window": {"field": "firstFoundDate", "lastDays": 30}`. A dataset windows on its own window field whichever you name. |
+| **Read not allowed**: `Dataset` (or `Audit`) *id* `is not one of this tenant's.` | The id belongs to another tenant, or was copied from another instance. | Use an id from this tenant. |
+| **Read too large**: `Input '`*name*`' has more than 20000 rows` | The input passed the row limit. Darpan never cuts a read silently. | Narrow it with `where` or `window`, or group it with `groupBy` and `measures`. |
+| **Script error** with a line number | The script failed on that line. | Fix that line. Map keys need quotes (`{'summary': ...}`), a list you add to starts as `[...]` and grows with `fn:push`, and methods on values (`x.size()`) are refused: use `size(x)` and the `fn:` functions. |
+| **Script error**: `The result is more than 65536 characters of JSON.` or `The result holds more than 20000 values.` | The whole result, files included, passed its size limit. | Return fewer rows or columns, group the read, or split it into a smaller question. |
+| **Script error** naming units or time | The script did too much work or ran past 10 seconds. | Read fewer rows, or let the read group them instead of the script. |
+| **Result not usable** | The script returned something other than a summary, files and data. | Return `{'summary': ..., 'files': [...]}`, a text, or nothing. |
+| `Scripts are busy right now; try again in a moment.` | Every query slot on the server is taken. | Run it again in a moment. |
+| Saving answers `A query named '`*name*`' already exists.` | Names are unique in a tenant. | Rename it. |
+
+## Schedules
+
+| Symptom | Cause | Fix |
+| --- | --- | --- |
+| A schedule from before 3.4.0 stopped posting | The 3.4.0 upgrade turned every old script deployment into a query schedule, switched off. | Open the query, check its read and script, switch **On schedule** on and choose **Save query**. You become its owner. |
+| A query from before 3.4.0 reads nothing and its description says to check its read | It read a run result. Its rows now arrive flat in `input.differences`. | Point the read at the saved run, adjust the script, run it, then save and schedule it. |
+| Saving answers `Scheduling a query sends the tenant's data out, so it needs tenant-admin access.` | The same rule, from the server. | Ask a Tenant admin. |
+| The schedule popup says `Send it somewhere: an email address or a chat space.` | A schedule needs a recipient. | Add an address, a chat space, or both. |
+| Saving answers `A schedule sends to at most 50 addresses; this one names` *N* | **Email to** and **Cc** together name more than 50. | Send to a group address instead. |
+| Saving answers `Chat space '`*name*`' is switched off.` | The chat space is deactivated. | Switch it on in **Notifications**, or pick another. |
+| Saving or deleting a query answers `This query has a schedule that sends its answer out, so changing or deleting it needs tenant-admin access.` | A query with a schedule is a Tenant admin's to change. | Ask a Tenant admin. Saving it makes them the schedule's owner. |
+| Schedules switched off after a config restore or import | A restore or import that creates or changes a query switches its schedules off, because it needs only edit access and a schedule needs a Tenant admin. | A Tenant admin switches each back on and saves it. |
+| *address* `is not an email address.` | A recipient is not `name@domain.tld`. | Fix it. Separate addresses with commas. |
+| **Send now** is missing from **Preview send** | Only the schedule's owner sends by hand. The popup says who. | Ask the owner, or save the schedule yourself to become its owner. |
+| The **On schedule** switch beside the title cannot be turned on | The query has no schedule yet, or you are not a Tenant admin. A screen reader names which. | Choose **Schedule** on the fact strip, or ask a Tenant admin. |
+| **Last run** reads **Owner can no longer send it**, and the schedule is off | At its run, the owner had left the tenant, was no longer a Tenant admin, or the account was gone or disabled. | A Tenant admin switches it back on and saves it, and so owns it. |
+| **Last run** reads **Held**, **Waiting** or **Skipped (waited too long)** | The server was busy: reconciliation runs were queued or at their cap, the tenant's previous query was still running, the owner was locked out for now, or the instance's scheduled jobs are switched off. A run that waits past an hour is skipped. | Nothing, usually; it runs at its next time. If it keeps happening, move it away from your heavy run times. |
+| **Partly delivered** or **Not delivered** | A delivery failed: the chat space was deleted, switched off or lost its webhook, or the mail server refused. Each delivery fails on its own. | Fix the space in **Notifications**, or the addresses, then preview again. |
+| The email arrives without files and says they were too big to attach | The files passed 20 MB in all. | Narrow or group the query. |
+| A chat space cannot be moved to **Nowhere** for a query schedule | A query schedule always posts somewhere. | Switch the schedule off on its query instead. |
+| A chat space cannot be deleted | A query schedule, an automation or a run subscription still posts to it. | Move them, or deactivate the space. |
+
+## Still stuck
+
+See [Queries](/reference/queries) for every status and limit, or [Queries](/guides/queries) for the workflow.

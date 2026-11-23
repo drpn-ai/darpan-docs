@@ -1,0 +1,104 @@
+---
+title: "Queries"
+description: "Ask a question about your own data, read the answer as a summary and CSV files, and put it on a schedule that emails it."
+---
+
+Every audit already keeps copies of what it reads. A query asks your own question of those copies: which orders sat backordered for three days, which findings are older than a week, what a saved run's newest differences add up to. You ask in plain words, the agent writes the query and runs it before you see it, and a schedule can email the answer every morning.
+
+A query only reads. It never writes to Darpan or to your systems, and it reads only what your audits keep, never a system live.
+
+## Before you start
+
+Confirm:
+
+- You are a Tenant admin or Company editor in the active tenant to write, run and save queries. Anyone with view access sees the list and each query.
+- You are a Tenant admin to schedule a query. A schedule sends the tenant's data out, so only a Tenant admin can set it up, switch it on or send it.
+- For the **Ask** box: the agent is on for your tenant and a Darpan admin has given you AI access, as for the audit agent. Without both the box does not appear. See [AI access](/guides/manage-users-and-access#ai-access).
+- What you want to read is kept. A query reads a dataset's kept fields, a saved run's newest result, or an audit's findings. A field no audit keeps cannot be read.
+
+## Write a query
+
+<Steps>
+<Step title="Open queries">
+
+Open **Tenant Settings** and choose **Open** on **Queries** (in the **Audit** section). Choose **New query**.
+
+</Step>
+<Step title="Ask for it">
+
+Type your question in **Ask** and choose **Ask**. The agent reads what your queries may read, writes the read and the script, and runs them on your data. Its run appears under **Runs** as **Agent's run**, and its reply sits under the box.
+
+When the agent needs to know which dataset, run or audit you mean, it asks one question, often with answers to choose. When the data is not kept by any audit, it says so and proposes nothing.
+
+Ask again to change it: the agent builds on the read and script on the page, your edits included. **Put back my version** restores what its last proposal replaced. Nothing is saved yet.
+
+</Step>
+<Step title="Check the read and the script">
+
+The line above the code says what the query reads, in words, for example "Reads the findings of audit 100010, last 30 days, 3 fields". **Read** shows the read as JSON and **Script** shows the JEXL. Change either, then choose the run button (or press `Cmd/Ctrl+Enter`) to run the draft again. Each run shows its summary, each file with its row count and its first 20 rows, any log lines, and how much work it took.
+
+The functions a script can call are listed under **fn: functions**, which opens [Query functions](https://developers.drpn.ai/tenant-queries/functions).
+
+</Step>
+<Step title="Name and save it">
+
+Select the title to rename **New query**. Names are unique in a tenant. Choose **Save query**.
+
+</Step>
+</Steps>
+
+## Schedule it
+
+<Steps>
+<Step title="Set up the schedule">
+
+Choose **Schedule** or **Sends to** on the fact strip. Answer **Set up the schedule.**:
+
+| Field | What it does |
+| --- | --- |
+| **Daily at** | The time it runs every day, on the tenant's clock (the zone is named beside it). |
+| **Email to** | Any addresses, inside or outside your company, separated by commas. Each gets the summary and the files as CSV. Up to 50 addresses with **Cc**. |
+| **Cc** | Addresses copied on the email. |
+| **Chat space** | A switched-on chat space that gets the summary and which files go by email, never the files. **No chat** sends none. |
+| **On schedule** | Whether it runs by itself. |
+
+A schedule must send somewhere: an email address or a chat space. Choose **Save**.
+
+</Step>
+<Step title="Save the query">
+
+The popup and the **On schedule** switch beside the title change only this page. Choose **Save query** to keep the query and its schedule together. Until then the title shows **• edited**.
+
+</Step>
+<Step title="Preview what it would send">
+
+Choose **Preview send**. It runs the saved query now and says what it would send and where, without sending. Any Tenant admin can preview. Only the schedule's owner sees **Send now**, which sends it once and records the run.
+
+</Step>
+</Steps>
+
+Whoever saves the schedule owns it, and it sends as them: the page says **Sends as** *name*, and lists where it sends in full for everyone who can see the query. At every run Darpan checks the owner is still a member and a Tenant admin of the tenant. If not, the schedule switches itself off and sends nothing.
+
+Once a query has a schedule, only a Tenant admin can change or delete it, and saving it makes that admin the schedule's owner. A config restore or import that creates or changes a query switches its schedules off, for a Tenant admin to switch on again.
+
+A run that returns nothing sends nothing. Every file a schedule emails is logged with the addresses it went to.
+
+## Read the list
+
+The **Queries** list shows each query's name and its read in words, when it runs and where it sends (for example "Daily at 9:00 AM → 2 addresses · ops-daily"), and how its last scheduled run went. A filled dot means on schedule, a hollow one off, and a dashed one that the last scheduled run did not send what it should have. Runs from the query's page never count as its last run.
+
+## Delete a query
+
+Choose the trash icon. The popup asks **Delete** *name*?; choose the trash icon in it to confirm. Its schedule stops with it.
+
+## Queries from before 3.4.0
+
+Tenant scripts became queries in 3.4.0. Each script arrives as a query with the same name and code. Each schedule it had arrives switched off, posting to the same chat space, until a Tenant admin opens it and switches it on. A script that read a run result arrives switched off with a note in its description: its rows now arrive flat in `input.differences`, so check the read and the script, then run it before switching it on.
+
+## Expected result
+
+Your questions are on the **Queries** list, each with its read in words. A scheduled one shows **Daily at** its time and where it sends, and its email arrives with the summary and its files.
+
+## Next step
+
+For statuses, limits and the read format, see [Queries](/reference/queries) in the reference. If a run fails or a schedule stops, see [Queries](/troubleshooting/queries) in troubleshooting.

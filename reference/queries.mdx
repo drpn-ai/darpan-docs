@@ -1,0 +1,123 @@
+---
+title: "Queries"
+description: "What a query may read, the read format, what a script returns, schedules and deliveries, run statuses, and the limits on every run."
+---
+
+A query is a read over what a tenant's audits keep, plus a JEXL script that turns the rows into a summary and CSV files. It runs on the [moqui-jexl](https://github.com/drpn-ai/moqui-jexl) component inside Darpan's server. For the workflow, see [Queries](/guides/queries).
+
+## What a query may read
+
+| Source | Names | Rows |
+| --- | --- | --- |
+| `dataset` | `datasetId` | A tenant's kept copy of a source read, from its current version. Only the fields audits keep; a dataset that keeps whole records allows any field. |
+| `runResult` | `savedRunId` | The differences of a saved run's newest finished result. Each row is the difference's own values (`bucket`, `key`, ...) and its record's data fields, flat. |
+| `auditFindings` | `auditId` | One row per finding of an audit, open ones unless the input sets `includeClosed`. Fields: `statement`, `check`, `recordKey`, `period`, `state`, `headline`, `firstFoundDate`, `lastSeenDate`, `timesSeen`, `expectedAmount`, `actualAmount`, `differenceAmount`, `currencyUomId`, `conclusion`, `closedStamp`. |
+
+A query never reads a system live, never widens what a dataset keeps, and never reads another tenant's dataset, run or audit. Dates reach the script as ISO-8601 text.
+
+## The read
+
+The **Read** tab holds the read as JSON: up to 10 inputs, each `input.<name>` in the script.
+
+```json
+{ "inputs": [
+  { "name": "findings", "source": "auditFindings", "auditId": "100010",
+    "fields": ["recordKey", "headline", "firstFoundDate"],
+    "where": { "field": "differenceAmount", "op": "greater", "value": 0 },
+    "window": { "field": "firstFoundDate", "lastDays": 30 } } ] }
+```
+
+| Key | Meaning |
+| --- | --- |
+| `fields` | The fields each row carries. Read only the ones the script uses. |
+| `where` | `{field, op, value}`, joined with `{"and": [...]}` or `{"or": [...]}`, up to 8 levels. `op`: `equals`, `not-equals`, `less`, `greater`, `less-equals`, `greater-equals`, `in`, `not-in` (up to 1,000 values), `between`, `like`, `not-like`, `is-null`, `is-not-null`. |
+| `window` | The last N days (1 to 3,660), from the start of that day on the tenant's clock. A dataset uses its own window field and audit findings use `firstFoundDate`, whatever field the window names. A saved run's result has no window: it is always the newest result. |
+| `groupBy`, `measures` | Totals instead of rows. A measure is `{"fn": "count" \| "sum" \| "min" \| "max" \| "avg", "field": ..., "as": ...}`. |
+| `orderBy` | Field names; `-field` sorts descending. |
+
+The read in words above the code (for example "Reads dataset 100200, last 30 days, status = BACKORDERED, 2 fields") comes from this JSON.
+
+## What a script returns
+
+A script returns nothing (nothing is sent), or:
+
+```
+{ 'summary': '3 orders are late', 'files': [ { 'name': 'late.csv', 'columns': ['order', 'days'], 'rows': [['SO-1', 3]] } ] }
+```
+
+A bare text or number is a summary. Files are sent as CSV. The script language and its `fn:` functions are on [Query functions](https://developers.drpn.ai/tenant-queries/functions).
+
+## Schedules
+
+| Part | Behaviour |
+| --- | --- |
+| When | **Daily at** a time, on the tenant's clock. A schedule saved with a cron outside the app reads as **Cron** *expression*. |
+| Owner | Whoever saved it, or last saved its query. It reads and sends as them. Only the owner can **Send now**. |
+| Owner check | At every run the owner must be a current member and a Tenant admin of the tenant (or a Darpan admin). Otherwise the run is **Owner can no longer send it** and the schedule switches off. |
+| Who may schedule | A Tenant admin. Writing, running and saving a query needs Tenant admin or Company editor; once it has a schedule, changing or deleting it needs a Tenant admin. |
+| One at a time | A tenant's queries run one after another. Queries wait while reconciliation runs are queued or at their cap, while the server is busy, and on an instance whose scheduled jobs are switched off. |
+| Recipients | Up to 50 email addresses (**Email to** and **Cc** together). A chat space must be the tenant's and switched on. |
+| Restore and import | A config restore or import that creates or changes a query switches its schedules off. |
+| **Preview send** | Runs the saved query now, as you, and says what it would send and where. Nothing is sent or recorded. Any Tenant admin can preview. |
+
+## Deliveries
+
+| Delivery | Sends | Notes |
+| --- | --- | --- |
+| Email | The summary in the body and every file attached as CSV, from Darpan's support address. | Any address. Each file an email carried is logged with its recipients. Past 20 MB of files in all, the email goes without them and says they were too big to attach. |
+| Chat space | The query's name and summary, and which files go by email to how many people. | Never the files. The space must be the tenant's and switched on. |
+
+Each delivery succeeds or fails on its own. Notifications lists a query schedule that posts to chat as one row; moving it needs a Tenant admin, and it cannot be moved to no space (switch it off instead).
+
+## Run statuses
+
+| Status | In the app | Meaning |
+| --- | --- | --- |
+| `OK` | Sent | Ran and delivered. |
+| `NOTHING_TO_SEND` | Nothing to send | The script returned nothing; nothing went out. |
+| `PREVIEW` | Preview | A **Preview send**; nothing went out. |
+| `HELD` | Held | Not run this time: the owner is locked out for now, the tenant's previous query was still running, or every query thread was busy. It runs at its next time. |
+| `WAITING` | Waiting | Due, waiting for a busy server. |
+| `EXPIRED` | Skipped (waited too long) | Waited past an hour and was skipped. |
+| `DISABLED` | Queries are switched off | Queries are switched off on this instance. |
+| `OWNER_LOST` | Owner can no longer send it | The owner left the tenant, is no longer a Tenant admin, or the account is gone or disabled. The schedule switched off. |
+| `READ_ERROR` | Read failed | The read failed: a field no longer kept, no kept copy yet, no finished result, or the read ran past its time. |
+| `READ_NOT_ALLOWED` | Read not allowed | The read names a dataset, run or audit that is not the tenant's, or the owner is not a member. |
+| `READ_TOO_LARGE` | Read too large | An input had more rows (or groups) than the limit. |
+| `SCRIPT_ERROR` | Script error | The script failed or passed a limit; the message names it and the line. |
+| `RESULT_INVALID` | Result not usable | The result did not have the shape above. |
+| `DELIVERY_PARTIAL` | Partly delivered | One delivery failed and another went out. |
+| `DELIVERY_FAILED` | Not delivered | Every delivery failed. |
+| `STUCK` | Stuck | A run did not stop at its time limit. |
+| `SCRIPT_MISSING` | Query missing | The schedule's query is gone. |
+| `NO_INPUT` | No input | The query had no input to run on. |
+
+## Limits
+
+Every query run has these limits. Passing one stops the run with the limit named.
+
+| Limit | Value |
+| --- | --- |
+| Rows per input (groups, for a grouped read) | 20,000 |
+| Time to read | 60 seconds |
+| Time to run the script | 10 seconds |
+| Work per run | 5,000,000 units |
+| Values read in all | 2,000,000 |
+| Script length | 64,000 characters |
+| Text | 65,536 characters |
+| Lists and maps | 20,000 items |
+| The whole result, files included | 65,536 characters as JSON, and 20,000 values |
+| Summary | 4,000 characters |
+| Files | 5 per result |
+| Email attachments | 20 MB in all |
+
+## Access
+
+| Action | Who |
+| --- | --- |
+| See queries and schedules | Anyone with access to the tenant. |
+| Write, run, ask, save, delete a query | Tenant admin, Company editor. A query with a schedule: Tenant admin. **Ask** also needs AI access. |
+| Save, switch on, preview or delete a schedule | Tenant admin. |
+| **Send now** | The schedule's owner. |
+
+The Darpan CLI may call the query and schedule methods with the same rules. See [Auth and access](/reference/auth-and-access).

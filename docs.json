@@ -61,6 +61,7 @@
               "guides/manage-users-and-access",
               "guides/setup-automation",
             "guides/peak-periods-and-sync-pulse",
+            "guides/queries",
               "guides/run-completion-alerts",
               "guides/configure-ai"
             ]
@@ -72,6 +73,7 @@
               "reference/schema-model",
               "reference/composite-matching-keys",
               "reference/reconciliation-runs",
+              "reference/queries",
               "reference/glossary",
               "reference/auth-and-access"
             ]
@@ -84,7 +86,8 @@
               "troubleshooting/connections",
               "troubleshooting/reconciliation-runs",
               "troubleshooting/audits",
-              "troubleshooting/automations-and-alerts"
+              "troubleshooting/automations-and-alerts",
+              "troubleshooting/queries"
             ]
           }
         ]

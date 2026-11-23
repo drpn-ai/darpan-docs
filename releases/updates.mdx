@@ -9,7 +9,7 @@ Version key: headings carry the backend version (`drpn-ai/darpan`); the app (`da
 
 ## v3.4.0 — November 2026
 
-Cut together with app `v4.4.0` and `darpan` CLI `0.2.4`. A minor release: the API contract stays at version `4` and gains 14 methods, for peak periods, the sync pulse and the audit read report. None is removed. The theme: Darpan stays light on your busy days, and every run filters its records the same way.
+Cut together with app `v4.4.0` and `darpan` CLI `0.2.4`. A minor release on API contract version `4`. It adds 25 methods, for peak periods, the sync pulse, the audit read report and queries, and removes the 8 tenant script methods that queries replace. The theme: Darpan stays light on your busy days, every run filters its records the same way, and you can ask your own questions of what your audits keep.
 
 ### Busy days
 
@@ -25,6 +25,12 @@ Cut together with app `v4.4.0` and `darpan` CLI `0.2.4`. A minor release: the AP
 - A found HotWax order or return, or a Shopify return, shows its status and ids in a run's expanded row.
 - A scheduled or audit run reads its saved run's filters as they are now. An automation keeps no copy, so a filter edit needs no **Sync**, and sync no longer reports filter differences. Restoring a config version or importing a bundle from before this release is refused with `AUTOMATION_FILTERS_DIFFER` only when an automation's filters differ from its run's. See [A restore or import is refused](/troubleshooting/automations-and-alerts#a-restore-or-import-is-refused-an-automations-filters-differ-from-its-runs).
 - Conclusions have their own page. The pencil beside **Conclusions** in the **Ruleset Manager** opens it: each conclusion reads as plain lines and edits one line at a time, and **Save conclusions** saves the list once. A condition can test **is less than**. See [Edit a run's conclusions](/guides/review-results#edit-a-runs-conclusions).
+
+### Queries
+
+- Tenant scripts are now queries, under **Tenant Settings** > **Queries**. Type a question in **Ask** and the agent writes a read over what your audits keep (a dataset's kept fields, a saved run's newest result, an audit's findings) and a script, and runs it before you see it. The answer is a summary and up to five CSV files. See [Queries](/guides/queries).
+- A Tenant admin can schedule a query daily. It emails the summary and the files to any address, and can post the summary to a chat space. It sends as whoever saved it, and switches off if that person is no longer a Tenant admin of the tenant. Once a query has a schedule, only a Tenant admin can change it, and a config restore or import that changes it switches its schedules off. Every emailed file is logged with its recipients.
+- Your scripts are moved for you. Each becomes a query with the same name and code, and each schedule arrives switched off, still posting to its chat space, until a Tenant admin switches it on. A script that read a run result arrives switched off too: its rows now arrive flat, so check it before switching it on. See [A schedule from before 3.4.0 stopped posting](/troubleshooting/queries#schedules).
 
 ### Audits
 
@@ -43,14 +49,15 @@ Cut together with app `v4.4.0` and `darpan` CLI `0.2.4`. A minor release: the AP
 
 ### Operators
 
-- Deploy the backend first, then the app, then release `darpan` CLI `0.2.4`. The CLI's new writes are refused until the backend is deployed. The image must carry `moqui-rules`.
+- Deploy the backend first, then the app, then release `darpan` CLI `0.2.4`. The CLI's new writes are refused until the backend is deployed. The image must carry `moqui-rules` and `moqui-jexl`: `darpan` 3.4.0 does not start without `moqui-jexl`.
 - Load this release's upgrade data with the deploy, not after. It carries each connector's built-in filters: without them, a run on that source fails with "Load the upgrade data, then run again." It also carries the peak period and sync pulse access rows (without them, saves say not authorized), the sync pulse job and statuses, the welcome email's password line, two conclusion names and three connectors' status fields.
 - The first extract clean-up after the deploy deletes every manual run's extracts and lookup answers older than 7 days, for every tenant. Download any you still need before deploying.
-- Right after loading the upgrade data, run the pending migrations. `AUTOMATION_FILTER_TABLE` drops the table that held automations' own filter copies. Until it runs, saving, syncing or deleting an automation that still has rows there fails on a foreign key. Scheduled runs are unaffected. See "Upgrading to 3.4.0" in [Self-host in production](https://developers.drpn.ai/self-host/production).
+- Right after loading the upgrade data, run the pending migrations. `TENANT_SCRIPTS_TO_QUERIES` copies every tenant script into a query and every deployment into a schedule, switched off, and removes the old scripts' five-minute job; it has no dry run, keeps the old rows and is safe to run twice. Until it runs, no old scheduled script posts. `AUTOMATION_FILTER_TABLE` drops the table that held automations' own filter copies. Until it runs, saving, syncing or deleting an automation that still has rows there fails on a foreign key. Scheduled runs are unaffected. See "Upgrading to 3.4.0" in [Self-host in production](https://developers.drpn.ai/self-host/production).
 - Sync pulse samples are kept 30 days by the daily retention job. Make sure that job is running.
 - Users created before this release have no kept password. For anyone who still needs one, reset the password and send the welcome again.
 - `add#TenantMember` answers `welcomeSent` and `welcomeWithPassword` instead of `welcomeQueued`, and waits for the mail server.
 - Darpan emails carry a Message-ID on the sending domain (`support@drpn.ai`, or `DARPAN_MAIL_FROM`) instead of the server's host name.
+- A scheduled query's email comes from `jexl_email_from`, which defaults to `DARPAN_MAIL_FROM` or `support@drpn.ai`. Set it to an address your mail server may send from. An instance with `scheduled_job_check_time` `0` holds query schedules too.
 
 ## v3.3.2 — November 2026
 
