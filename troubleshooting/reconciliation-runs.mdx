@@ -81,7 +81,7 @@ Check:
 - Identifiers use the same formatting.
 - The selected schema reads the intended columns.
 - Both sides cover the same business period. **Month to Date** reads the 1st of yesterday's month through yesterday, so a run started on the 1st reads the whole previous month.
-- Repeated keys. A key that repeats on either side is left out of the compare on both sides, so its records count as duplicates rather than matches. If a source legitimately has several rows per key, use a [composite matching key](/reference/composite-matching-keys).
+- Repeated keys. A key that repeats on either side is left out of the compare on both sides, so its records count as duplicates rather than matches. If a source legitimately has several rows per key, use a [composite matching key](/reference/composite-matching-keys). If the repeats are expected, for example one return record per resolution, a conclusion rule with the outcome Hide can explain them: hidden repeated-key rows leave the difference count, and the run's repeated-key warning goes away once every repeat is hidden. A repeat no rule explains still warns.
 
 ## Difference count is higher than expected
 
