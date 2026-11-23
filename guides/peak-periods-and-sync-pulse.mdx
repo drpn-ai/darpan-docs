@@ -1,0 +1,118 @@
+---
+title: "Peak periods and sync pulse"
+description: "Name your busy days so Darpan reads lighter and runs at better times, and watch orders reach NetSuite every few hours instead of once a day."
+---
+
+A sale week is the worst time for a daily check to lean on HotWax and NetSuite, and the worst time to learn the next morning that orders stopped syncing. Two Tenant Settings rows handle both. A peak period tells Darpan when your systems are busy, so it moves runs and reads more lightly. A sync pulse watches one daily check's orders every few hours and names the ones still waiting past the time you allow.
+
+Darpan never decides on its own that a day is busy. Nothing changes until you save a period or a pair.
+
+## Before you start
+
+Confirm:
+
+- You are a Tenant Admin in the active tenant. Anyone else sees both pages but cannot change them.
+- The tenant time zone is set. Peak dates, peak hours and run times are read on the tenant's clock. See [Manage tenant settings](/guides/manage-tenant-settings#timezones-and-how-dates-resolve).
+- For a sync pulse: a daily check that compares HotWax orders with another system, reads one day (**Previous Day**), and pairs orders by one plain key field on both sides.
+
+## Add a peak period
+
+<Steps>
+<Step title="Open peak periods">
+
+Open **Tenant Settings** and choose **Set up** (or **Open**) on **Peak periods**. Choose the plus (**Add peak period**).
+
+</Step>
+<Step title="Name it and set its dates">
+
+Select the title to rename **New peak period**. Choose **Dates** and answer **When is the peak?** with a start and end date. Choose **Save peak period**.
+
+Two periods cannot overlap. Run times can be added once the dates are saved.
+
+</Step>
+<Step title="Set what the period changes">
+
+Choose a fact on the strip to change it. Each opens a popup with **Save**.
+
+| Fact | Question | What it does |
+| --- | --- | --- |
+| **Peak hours** | **When are the systems busiest?** | A scheduled run, or a retry, that would start between **From** and **To** waits until they end. **Clear** removes them. |
+| **HotWax reads** | **How much of the HotWax read budget can Darpan use?** | **Normal**, or **10%**, **25%**, **50%** or **75%**. Darpan's HotWax reads slow to stay inside that share. |
+| **NetSuite reads** | **How many NetSuite requests at once?** | **Parallel**, or **One at a time** for every NetSuite read of the tenant. |
+
+</Step>
+<Step title="Move a run">
+
+Under **Run times**, choose the plus (**Move another run**). Answer **When should it run in this period?**: pick the **Run** (an automation or an audit), **On** (**Every day** or one date of the period) and **At**, then choose **Save run time**. Moving an audit moves every check it runs.
+
+A moved run reads the same window it always does. Only its start changes.
+
+</Step>
+</Steps>
+
+{/* TODO-328: the period end date follow-up is still landing; describe it here once it is on darpan-ui main. */}
+
+**Peak period on** beside the name switches a period off without deleting it. The trash icon deletes it, and its runs go back to their normal times.
+
+### What you see during a period
+
+- **Waits for peak hours** on the period's page lists each scheduled run peak hours would hold, with the time it will start.
+- An automation's next run shows the moved start, with **moved for** *period* under it.
+- **Run audit** or the run button on an automation still starts the run inside peak hours. A notice says **Peak hours until** *time*.
+
+## Watch orders with a sync pulse
+
+A sync pair attaches a pulse to one daily check. Every few hours the pulse reads the orders HotWax created in that check's day, asks the other system for each by its key, and keeps a count of the orders still waiting there.
+
+<Steps>
+<Step title="Add a sync pair">
+
+Open **Tenant Settings** and choose **Set up** (or **Open**) on **Sync pulse**. Choose the plus (**Add sync pair**).
+
+</Step>
+<Step title="Pick the check and its upstream side">
+
+Choose **Run** and answer **Which daily check does it watch?**. Then choose **Upstream side** and answer **Which side do orders reach first?** with the HotWax side.
+
+</Step>
+<Step title="Set how often and how long">
+
+| Fact | Question | Choices |
+| --- | --- | --- |
+| **Every** | **How often should it pulse?** | Every 1, 2, 3, 4 or 6 hours, or off. |
+| **Allowance** | **How long may an order wait?** | 15 minutes to 48 hours. |
+| **Chat space** | **Where should it post?** | One of the tenant's chat spaces, or **None**. |
+| **Hourly summary** | **Post a summary every hour?** | On or off. |
+
+Choose **Save sync pair**.
+
+</Step>
+</Steps>
+
+The allowance also moves the daily check. A check with a sync pair never starts before the end of the day it reads plus the allowance, so it does not report orders that are still inside it.
+
+### Read a sync pair
+
+| Part | Shows |
+| --- | --- |
+| **Waiting**, **Oldest**, **Past allowance** | How many orders the last pulse found waiting, how long the oldest has waited, and how many are past the allowance. |
+| **Today** | Two charts by hour on the tenant's clock: **Oldest waiting, hours** and **Waiting, orders**. A gap means no pulse ran then. |
+| **Past allowance** | Each order past the allowance: **Order**, **Created**, **Waiting**, and its id in the other system. **in run** *id* opens the daily check run that reported it. |
+
+{/* TODO-328: two follow-ups are still landing. The "in run" link will follow the window that read the order, and the pair will show a caught-up count. Describe both here once they are on darpan-ui main. */}
+
+The pulse posts to the chat space when orders first go past the allowance, and again when none are left. An order closes when it reaches the other system. It also closes, without counting as synced, when it is cancelled or grows older than the allowance plus a day. When the last pulse failed, the facts say **last pulse failed** *time*.
+
+In the daily check's result, an order the pulse had already flagged reads **flagged by sync pulse** *time*. The link opens its sync pair.
+
+### Pulse during a peak period
+
+When a tenant has sync pairs, a peak period's page adds **Sync lag allowance** and **Sync pulse**, one row per pair with its **Normal** value and **This period**. Choose a row to answer **How long can an order wait in this period?** or **How often should the pulse check in this period?**. **Normal** keeps the pair's own value.
+
+## Expected result
+
+Your busy days are on the **Peak periods** list, with **On now** or **Starts in** *N* **days** beside each. Each watched daily check has a pair on the **Sync pulse** list, and its chat space hears about orders past the allowance within one pulse.
+
+## Next step
+
+If a save is refused or a run started later than its time, see [Peak periods and sync pulse](/troubleshooting/automations-and-alerts#peak-periods-and-sync-pulse) in troubleshooting.

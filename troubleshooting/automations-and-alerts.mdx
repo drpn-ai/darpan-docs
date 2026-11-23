@@ -36,6 +36,14 @@ When the automation asks **Which saved run should this automation use?**, it poi
 
 A scheduled execution that fails for a transient reason, such as a source timing out, is retried automatically. When the retries run out, the execution is marked dead-lettered (`AUT_STAT_DEAD_LETTER`), a failure alert is sent naming the last error, and no further retries happen for that execution. Fix the cause, then wait for the next scheduled run, or re-drive the execution through the API with `reprocess#AutomationExecution`.
 
+**Check whether it started late on purpose**
+
+A run can start after its scheduled time and still be on track. Its next run says **moved for** *period* when a peak period moved it. A run that would start in a peak period's peak hours waits until they end, and the period's page lists it under **Waits for peak hours**. A daily check with a sync pair never starts before the end of the day it reads plus the pair's allowance. Its read window does not change in any of these cases. See [Peak periods and sync pulse](/guides/peak-periods-and-sync-pulse).
+
+**Check whether it failed without a retry**
+
+A side whose filters cannot run fails at once and is not retried, because every retry would fail the same way. The run's error names the side. See [A side cannot be filtered](/troubleshooting/reconciliation-runs#a-side-cannot-be-filtered).
+
 **Run it now to watch it**
 
 The run button on the automation dashboard starts the automation immediately and opens the live run view, which advances stage by stage. If the run fails, the live view shows the full error text.
@@ -97,6 +105,26 @@ A pinned zone that does not match the tenant's business day does more than shift
 The automation's schedule shows the zone it runs in. Check that first, rather than converting the schedule hours to compensate. To correct it, edit the automation and pick the right **Timezone** on the schedule card. See [Set up an automation](/guides/setup-automation#timezone).
 
 A weekly automation whose window crosses a month boundary fires once. Only a window longer than 28 days is split at month boundaries.
+
+## Peak periods and sync pulse
+
+A peak period or sync pair refuses a save that would not work, and says why. Fix the named field and save again.
+
+| Darpan says | What to do |
+| --- | --- |
+| "Dates are required." or "The end date is before the start date." | Choose **Dates** and pick both, the start first. |
+| "Overlaps *name* (*dates*)." | Two peak periods cannot overlap. Change these dates or the other period's. |
+| "Set both peak-hour times, or neither." | Pick **From** and **To**, or choose **Clear**. |
+| "Peak hours cannot start and end at the same time." | Pick different times. |
+| "That date is outside this period." | A run time's **On** must fall inside the period's dates. |
+| "Choose a daily check." | The sync pair's **Run** must be a check that reads one day (**Previous Day**), and **Upstream side** must be set. |
+| "That run already has a sync pair." | Each run has one pair. Open the existing one from the **Sync pulse** list. |
+| "A pulse needs HotWax as the upstream side." | Set **Upstream side** to the HotWax side, or turn the pulse off. |
+| "A pulse needs a check that pairs orders by one plain key field on both sides." | The check pairs by a composite or normalized key. Turn the pulse off, or pick a check keyed on one field. |
+| "A pulse needs a check that reads a day, not one that reads by status." | Pick a check that reads a date window. |
+| "Allowance must be 15 minutes to 48 hours." or "Pulse must be every 1, 2, 3, 4 or 6 hours, or off." | Pick one of the offered values. |
+
+When a pair's facts say **last pulse failed** *time*, the pulse could not read one of the systems. The next pulse tries again on its own. If it keeps failing, check the connection in [Connections](/troubleshooting/connections).
 
 ## Slack alerts specifically
 
