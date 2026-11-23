@@ -7,9 +7,9 @@ Darpan releases from newest to oldest, with product and operator changes that af
 
 Version key: headings carry the backend version (`drpn-ai/darpan`); the app (`darpan-ui`) has its own tags, named in each entry: `v2.x` alongside backend `v1.x`, `v3.x` from backend `v2.0.0`, and `v4.x` from backend `v3.0.0`. Backend and app tags are cut together for major and minor releases. A patch can be backend-only or carry an app tag too, as `v1.5.1` did with app `v2.6.1`.
 
-## v3.4.0 — November 2026
+## v3.4.1 — November 2026
 
-Cut together with app `v4.4.0` and `darpan` CLI `0.2.4`; app `v4.4.1` is the build to deploy. A minor release that moves the API contract to version `5`, because methods are removed. It adds 25 methods, for peak periods, the sync pulse, the audit read report and queries, and removes the 8 tenant script methods that queries replace. The theme: Darpan stays light on your busy days, every run filters its records the same way, and you can ask your own questions of what your audits keep.
+Cut together with app `v4.4.0` and `darpan` CLI `0.2.4`; `darpan` 3.4.1, app `v4.4.2` and CLI `0.2.5` are the builds to deploy. 3.4.1 gives automations back their own copy of the filters. A minor release that moves the API contract to version `5`, because methods are removed. It adds 25 methods, for peak periods, the sync pulse, the audit read report and queries, and removes the 8 tenant script methods that queries replace. The theme: Darpan stays light on your busy days, every run filters its records the same way, and you can ask your own questions of what your audits keep.
 
 ### Busy days
 
@@ -23,7 +23,7 @@ Cut together with app `v4.4.0` and `darpan` CLI `0.2.4`; app `v4.4.1` is the bui
 - A run no longer warns about keys on more than one record when a conclusion rule hides every repeated-key row; a repeat no rule explains still warns. See [Repeated keys](/troubleshooting/reconciliation-runs).
 - Lookups are a last resort. A side is looked up only when its missing records are at most 5% of the records checked against it, and never by an ID of another kind.
 - A found HotWax order or return, or a Shopify return, shows its status and ids in a run's expanded row.
-- A scheduled or audit run reads its saved run's filters as they are now. An automation keeps no copy, so a filter edit needs no **Sync**, and sync no longer reports filter differences. Restoring a config version or importing a bundle from before this release is refused with `AUTOMATION_FILTERS_DIFFER` only when an automation's filters differ from its run's. See [A restore or import is refused](/troubleshooting/automations-and-alerts#a-restore-or-import-is-refused-an-automations-filters-differ-from-its-runs).
+- An automation runs on its own copy of its saved run's filters, as it does its sources. A filter edit on the run reaches the automation's scheduled and audit runs only after **Sync**, and the automation names the side whose filters differ (3.4.1; 3.4.0 had automations read the run's filters live). A config bundle or version saved on 3.4.0 carries no automation filters: importing or restoring it gives each automation its run's filters. See [Keep an automation in step with its run](/guides/setup-automation#keep-an-automation-in-step-with-its-run).
 - Conclusions have their own page. The pencil beside **Conclusions** in the **Ruleset Manager** opens it: each conclusion reads as plain lines and edits one line at a time, and **Save conclusions** saves the list once. A condition can test **is less than**. See [Edit a run's conclusions](/guides/review-results#edit-a-runs-conclusions).
 
 ### Queries
@@ -49,10 +49,11 @@ Cut together with app `v4.4.0` and `darpan` CLI `0.2.4`; app `v4.4.1` is the bui
 
 ### Operators
 
-- Deploy the backend first, then the app, then release `darpan` CLI `0.2.4`. The CLI's new writes are refused until the backend is deployed. The image must carry `moqui-rules` and `moqui-jexl`: `darpan` 3.4.0 does not start without `moqui-jexl`.
+- Deploy the backend first, then the app, then release `darpan` CLI `0.2.5`. The CLI's new writes are refused until the backend is deployed. The image must carry `moqui-rules` and `moqui-jexl`: `darpan` 3.4.0 does not start without `moqui-jexl`.
 - Load this release's upgrade data with the deploy, not after. It carries each connector's built-in filters: without them, a run on that source fails with "Load the upgrade data, then run again." It also carries the peak period and sync pulse access rows (without them, saves say not authorized), the sync pulse job and statuses, the welcome email's password line, two conclusion names and three connectors' status fields.
 - The first extract clean-up after the deploy deletes every manual run's extracts and lookup answers older than 7 days, for every tenant. Download any you still need before deploying.
-- Right after loading the upgrade data, run the pending migrations. `TENANT_SCRIPTS_TO_QUERIES` copies every tenant script into a query and every deployment into a schedule, switched off, and removes the old scripts' five-minute job; it has no dry run, keeps the old rows and is safe to run twice. Until it runs, no old scheduled script posts. `AUTOMATION_FILTER_TABLE` drops the table that held automations' own filter copies. Until it runs, saving, syncing or deleting an automation that still has rows there fails on a foreign key. Scheduled runs are unaffected. See "Upgrading to 3.4.0" in [Self-host in production](https://developers.drpn.ai/self-host/production).
+- Right after loading the upgrade data, run the pending migrations. `TENANT_SCRIPTS_TO_QUERIES` copies every tenant script into a query and every deployment into a schedule, switched off, and removes the old scripts' five-minute job; it has no dry run, keeps the old rows and is safe to run twice. Until it runs, no old scheduled script posts. On an instance that ran 3.4.0, `AUTOMATION_FILTER_COPY` (3.4.1) gives each automation back its own filters, copied from its run's; it has a dry run and is safe to run twice. Until it runs, those automations run unfiltered. Upgrading from before 3.4.0 straight to 3.4.1, it writes nothing and the automations keep the filters they have. See "Upgrading to 3.4" in [Self-host in production](https://developers.drpn.ai/self-host/production).
+- Rolling back from 3.4.1 to 3.4.0 after `AUTOMATION_FILTER_COPY` has run: delete the rows of `RECONCILIATION_AUTOMATION_SOURCE_FILTER` first. 3.4.0 does not clear them, so saving, syncing or deleting an automation would fail on their foreign key.
 - Sync pulse samples are kept 30 days by the daily retention job. Make sure that job is running.
 - Users created before this release have no kept password. For anyone who still needs one, reset the password and send the welcome again.
 - `add#TenantMember` answers `welcomeSent` and `welcomeWithPassword` instead of `welcomeQueued`, and waits for the mail server.

@@ -127,13 +127,13 @@ To stop it running for a while and keep it on the list, set it **Inactive** inst
 
 ## Keep an automation in step with its run
 
-An automation is a **snapshot** of a saved run, not a live pointer at one. It copies the compare scope, the input mode and both source definitions at the moment you create it. Editing those on the run afterwards does not change the automation — which is deliberate, since a nightly job silently changing shape because someone edited a run during the day is worse than one that stays put.
+An automation is a **snapshot** of a saved run, not a live pointer at one. It copies the compare scope, the input mode, both source definitions and each side's filters at the moment you create it. Editing those on the run afterwards does not change the automation — which is deliberate, since a nightly job silently changing shape because someone edited a run during the day is worse than one that stays put.
 
 The cost of that choice is drift. So Darpan reports it: open an automation whose saved run has moved on and it names the fields that no longer match.
 
-**Sync** re-derives the snapshot from the saved run. It overwrites the compare scope, the input mode and both source definitions. It preserves everything the run cannot supply — the name, the schedule, the window, the chat space, the active status, and the SFTP server, path and pattern.
+**Sync** re-derives the snapshot from the saved run. It overwrites the compare scope, the input mode, both source definitions and the filters. It preserves everything the run cannot supply — the name, the schedule, the window, the chat space, the active status, and the SFTP server, path and pattern.
 
-Filters are not part of the snapshot. Every run of an automation reads its saved run's filters as they are when it starts, so a filter you add or remove on the run reaches the next scheduled run without a sync.
+Filters are part of the snapshot. A filter you add or remove on the run reaches the automation's scheduled runs only after **Sync**. The automation names the side whose filters differ.
 
 <Note>
 Sync never re-points an automation at a different run. The saved run an automation was built from is fixed for its lifetime: **an automation's saved run cannot be changed — create a new automation for a different run.** If the saved run has been deleted, sync refuses rather than guessing, and the automation has to be recreated.

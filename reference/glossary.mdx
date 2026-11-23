@@ -11,7 +11,7 @@ The terms below are the ones the app puts on screen, defined the way Darpan uses
 | AI access | Permission to use the audit agent in one tenant. A Darpan admin grants it per user, for a period and with a spend limit; it pauses when spend reaches the limit. The agent must also be on for the tenant. |
 | Ask Darpan | Search-first navigation for app destinations and selected records. Opens with `Cmd/Ctrl+K` or from Tara. |
 | Audit | A run type that asks whether what must be true is still true. An audit holds a tenant's statements and the checks that test them, runs every check on its one schedule, and keeps each finding open until a later run clears it. See [Audits](/guides/audits). |
-| Automation | A schedule that runs a saved run unattended. It runs its own copy of the saved run's sources, taken when the automation was created or last synced, and the saved run's filters as they are when it runs. |
+| Automation | A schedule that runs a saved run unattended. It runs its own copy of the saved run's sources and filters, taken when the automation was created or last synced. |
 | Cause | On an audit finding, the one thing holding the record up (**Stuck on**), read from the systems themselves, with the fix and who owns it (**Do this**). |
 | Chat space | A named destination for messages: one Google Chat webhook or one Slack channel, set up in tenant settings. Automations, query schedules, audit run updates and your own notification default post to chat spaces. |
 | Check | One comparison that tests an audit statement. **Ran** means every read was complete. **Partial** means it found what it could and closed nothing, so open findings stay open. |
