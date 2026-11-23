@@ -69,6 +69,8 @@ A step's `stageSequence` is stored when the step is written, so older runs keep 
 
 Every run applies each side's filters after the read and before `COMPARE`, on manual, scheduled, retried and audit runs alike. A record a filter leaves out is set aside: it is not compared, it is counted, and a conclusion condition can test that it **was set aside**.
 
+A scheduled or audit run reads its saved run's filters as they are when it starts. An automation keeps no copy of them.
+
 A side's filters are its own exclusions plus the ones its source applies by itself:
 
 | Source | Set aside by itself | Field |

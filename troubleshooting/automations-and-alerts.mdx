@@ -92,9 +92,22 @@ Choosing your own default space in **User Settings** and using **Notify me** on 
 
 An automation is a snapshot of a saved run taken when the automation was created, not a live pointer at it. Editing the run afterwards leaves the automation as it was.
 
-Darpan reports the drift, naming the fields that differ. Use **Sync** to re-derive the snapshot from the run — it overwrites the compare scope, input mode, source definitions and exclusion filters, and preserves the name, schedule, window, chat space, active status and SFTP details.
+Darpan reports the drift, naming the fields that differ. Use **Sync** to re-derive the snapshot from the run — it overwrites the compare scope, input mode and source definitions, and preserves the name, schedule, window, chat space, active status and SFTP details.
+
+Filters never drift. An automation reads its run's filters each time it runs, so a filter edit on the run needs no sync and is not reported.
 
 If **Sync** is refused, the saved run no longer exists and the automation has to be recreated. An automation can never be pointed at a different run; that is fixed for its lifetime.
+
+## A restore or import is refused: an automation's filters differ from its run's
+
+Restoring a version in **Config history**, or importing a config bundle, is refused with "*automation* keeps its own *side* filters, which differ from its run's. Automations now read their run's filters: sync the automation with its run at the source and export again." The code is `AUTOMATION_FILTERS_DIFFER`. Nothing is written.
+
+The version or bundle was saved before Darpan 3.4.0, when an automation kept its own copy of its run's filters. Automations now read their run's filters. Where the old copy matches the run, Darpan drops it and the restore goes ahead. Where it differs, taking the run's filters would change what that automation reads, so Darpan refuses instead.
+
+To fix it:
+
+- For a bundle: export it again. On an instance still before 3.4.0, sync the automation with its run first.
+- For a config version: restore a version saved from 3.4.0 on, which carries no automation filters. If you need what the older version held, set those filters on the run itself: the automation reads them from its next run.
 
 ## A schedule fires at the wrong hour, or covers the wrong day
 
