@@ -21,7 +21,7 @@ Confirm:
 <Steps>
 <Step title="Open queries">
 
-Open **Tenant Settings** and choose **Open** on **Queries** (in the **Audit** section). Choose **New query**.
+Choose **Queries** on the Dashboard, or type `Queries` in Cmd+K. Choose **New Query**.
 
 </Step>
 <Step title="Ask for it">
@@ -33,11 +33,27 @@ When the agent needs to know which dataset, run or audit you mean, it asks one q
 Ask again to change it: the agent builds on the read and script on the page, your edits included. **Put back my version** restores what its last proposal replaced. Nothing is saved yet.
 
 </Step>
-<Step title="Check the read and the script">
+<Step title="Check the data, the script and the result">
 
-The line above the code says what the query reads, in words, for example "Reads the findings of audit 100010, last 30 days, 3 fields". **Read** shows the read as JSON and **Script** shows the JEXL. Change either, then choose the run button (or press `Cmd/Ctrl+Enter`) to run the draft again. Each run shows its summary, each file with its row count and its first 20 rows, any log lines, and how much work it took.
+The page reads top to bottom: **1 Data**, **2 Script**, **3 Result**.
 
-The functions a script can call are listed under **fn: functions**, which opens [Query functions](https://developers.drpn.ai/tenant-queries/functions).
+**Data** says what the query reads, one sentence per input, for example "Open findings of" an audit, "The latest result of" a saved run, or "Records of" a dataset, with its window, conditions and fields. Select any part of the sentence to change that input in the **Data** popup, or choose the plus icon (**Add data**) to add one:
+
+| In the popup | What it sets |
+| --- | --- |
+| **Audit findings**, **A run's result** or **Kept records** | What it reads: what an audit found, a saved run's newest differences, or a system's records an audit keeps. |
+| **Audit**, **Saved run** or **Dataset** | Which one, picked by name. |
+| **last days** | Only rows from the last N days. Leave it empty for any time. |
+| **Only** | Conditions a row must meet. |
+| **Closed findings too** | For audit findings: closed ones as well as open. |
+| **Keep** | The fields the script gets. |
+| **The script calls it** | The input's name, as `input.`*name* in the script. |
+
+Choose **Save** to put it in the read. The code icon beside **Data** (**Read as JSON**) shows the read as JSON; an input with or-conditions, groups, measures or an order opens only there. The trash icon on an input removes it.
+
+**Script** holds the JEXL. The functions a script can call are listed under **fn: functions**, which opens [Query functions](https://developers.drpn.ai/tenant-queries/functions).
+
+Choose the run button in **Result** (or press `Cmd/Ctrl+Enter`) to run the draft. Each run shows its summary, each file with its row count and its first 20 rows, any log lines, and how much work it took.
 
 </Step>
 <Step title="Name and save it">
@@ -72,7 +88,7 @@ The popup and the **On schedule** switch beside the title change only this page.
 </Step>
 <Step title="Preview what it would send">
 
-Choose **Preview send**. It runs the saved query now and says what it would send and where, without sending. Any Tenant admin can preview. Only the schedule's owner sees **Send now**, which sends it once and records the run.
+Choose **Preview send** (the eye icon in **Result**). It runs the saved query now and says what it would send and where, without sending. Any Tenant admin can preview. Only the schedule's owner sees **Send now**, which sends it once and records the run.
 
 </Step>
 </Steps>
@@ -83,13 +99,17 @@ Once a query has a schedule, only a Tenant admin can change or delete it, and sa
 
 A run that returns nothing sends nothing. Every file a schedule emails is logged with the addresses it went to.
 
-## Read the list
+## Find and pin queries
 
-The **Queries** list shows each query's name and its read in words, when it runs and where it sends (for example "Daily at 9:00 AM → 2 addresses · ops-daily"), and how its last scheduled run went. A filled dot means on schedule, a hollow one off, and a dashed one that the last scheduled run did not send what it should have. Runs from the query's page never count as its last run.
+The **Queries** page is laid out like the Dashboard. **Pinned Queries** come first: drag a query's tile there to pin it, or out to unpin it. Pins are your own and kept per tenant, so pins in one tenant leave the others alone.
+
+The other queries follow as tiles grouped by what they read: **Audit findings**, **Run results**, **Kept records**, and **Script only** for a query that reads nothing. Each heading carries its count, and a long group shows six tiles and **more**. Open a query to see its schedule, where it sends and how its last scheduled run went, on the fact strip. Runs from the query's page never count as its last run.
+
+Links to the old **Tenant Settings** queries pages still open the same query.
 
 ## Delete a query
 
-Choose the trash icon. The popup asks **Delete** *name*?; choose the trash icon in it to confirm. Its schedule stops with it.
+Choose the trash icon beside **Save query**. The popup asks **Delete** *name*?; choose the trash icon in it to confirm. Its schedule stops with it.
 
 ## Queries from before 3.4.0
 
@@ -97,7 +117,7 @@ Tenant scripts became queries in 3.4.0. Each script arrives as a query with the 
 
 ## Expected result
 
-Your questions are on the **Queries** list, each with its read in words. A scheduled one shows **Daily at** its time and where it sends, and its email arrives with the summary and its files.
+Your questions are on the **Queries** page, the ones you use most pinned at the top. A scheduled one shows **Daily at** its time and where it sends, and its email arrives with the summary and its files.
 
 ## Next step
 

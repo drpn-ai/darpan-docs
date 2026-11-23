@@ -3,7 +3,7 @@ title: "Manage tenant settings"
 description: "Set the shared tenant timezone, register the Google Chat or Slack spaces runs report to, and find config history and tenant scripts."
 ---
 
-Two settings define how your tenant behaves for everyone on it: the shared timezone and the chat spaces runs report to. Neither takes long to configure — but getting both right before your first automated run saves your team from reading timestamps in the wrong zone and having to open the app to find out whether a sync failed. Tenant Settings also links to config history and queries, and the Notifications page holds the streaks space.
+Two settings define how your tenant behaves for everyone on it: the shared timezone and the chat spaces runs report to. Neither takes long to configure — but getting both right before your first automated run saves your team from reading timestamps in the wrong zone and having to open the app to find out whether a sync failed. Tenant Settings also links to config history, and the Notifications page holds the streaks space.
 
 <Note>
 Confirm the active tenant before saving. Tenant settings apply to the selected tenant, not every tenant you can access.
@@ -25,7 +25,6 @@ Confirm:
 | **Chat** | **Notifications** | The named Google Chat or Slack spaces runs report to, and what posts to each, including streaks. Choose **Open**. | View and edit |
 | **Time** | **Timezone** | The tenant's default date and time interpretation for workflows, schedules, and date windows. | View and edit |
 | **Audit** | **Config history** | Saved versions of the tenant's config, and restoring one. | View and restore |
-| **Audit** | **Queries** | Questions about the tenant's own data, answered from what its audits keep, and emailed or posted on a schedule. See [Queries](/guides/queries). | View and edit |
 | **Audit** | **Peak periods** | Busy days that move runs, hold them out of peak hours, and limit Darpan's HotWax and NetSuite reads. See [Peak periods and sync pulse](/guides/peak-periods-and-sync-pulse). | View and edit |
 | **Audit** | **Sync pulse** | Daily checks whose HotWax orders are watched every few hours, with a time an order may wait. See [Peak periods and sync pulse](/guides/peak-periods-and-sync-pulse#watch-orders-with-a-sync-pulse). | View and edit |
 | **AI** | **Provider** | Stored AI provider settings. No run reads them; see [AI provider settings](/guides/configure-ai). | Not shown; Darpan admins only |
@@ -102,7 +101,7 @@ Choose an older version to **Restore** it. Restoring and keeping a version need 
 
 ## Queries
 
-**Audit** > **Queries** holds the tenant's queries: a read over what its audits keep and a JEXL script that answers a question, which a schedule can email every day. Tenant scripts became queries in 3.4.0. See [Queries](/guides/queries).
+Queries have their own page since 3.4.3: **Queries** on the Dashboard, or in Cmd+K. A query is a read over what the tenant's audits keep and a JEXL script that answers a question, which a schedule can email every day. Tenant scripts became queries in 3.4.0. See [Queries](/guides/queries).
 
 ## Share a source configuration with another tenant
 

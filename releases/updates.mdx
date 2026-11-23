@@ -7,9 +7,9 @@ Darpan releases from newest to oldest, with product and operator changes that af
 
 Version key: headings carry the backend version (`drpn-ai/darpan`); the app (`darpan-ui`) has its own tags, named in each entry: `v2.x` alongside backend `v1.x`, `v3.x` from backend `v2.0.0`, and `v4.x` from backend `v3.0.0`. Backend and app tags are cut together for major and minor releases. A patch can be backend-only or carry an app tag too, as `v1.5.1` did with app `v2.6.1`.
 
-## v3.4.2 — November 2026
+## v3.4.3 — November 2026
 
-Cut together with app `v4.4.0` and `darpan` CLI `0.2.4`; `darpan` 3.4.2, app `v4.4.2` and CLI `0.2.5` are the builds to deploy. 3.4.1 gives automations back their own copy of the filters; 3.4.2 makes **Run now** read both sides in the run's own tenant and checks every unmatched exchange. A minor release that moves the API contract to version `5`, because methods are removed. It adds 25 methods, for peak periods, the sync pulse, the audit read report and queries, and removes the 8 tenant script methods that queries replace. The theme: Darpan stays light on your busy days, every run filters its records the same way, and you can ask your own questions of what your audits keep.
+Cut together with app `v4.4.0` and `darpan` CLI `0.2.4`; `darpan` 3.4.3, app `v4.4.3` and CLI `0.2.5` are the builds to deploy. 3.4.1 gives automations back their own copy of the filters; 3.4.2 makes **Run now** read both sides in the run's own tenant and checks every unmatched exchange; 3.4.3 gives queries their own page and lets a NetSuite order line carry its order's backorder. A minor release that moves the API contract to version `5`, because methods are removed. It adds 25 methods, for peak periods, the sync pulse, the audit read report and queries (and 3.4.3 one more, for pinned queries), and removes the 8 tenant script methods that queries replace. The theme: Darpan stays light on your busy days, every run filters its records the same way, and you can ask your own questions of what your audits keep.
 
 ### Busy days
 
@@ -30,13 +30,16 @@ Cut together with app `v4.4.0` and `darpan` CLI `0.2.4`; `darpan` 3.4.2, app `v4
 
 ### Queries
 
-- Tenant scripts are now queries, under **Tenant Settings** > **Queries**. Type a question in **Ask** and the agent writes a read over what your audits keep (a dataset's kept fields, a saved run's newest result, an audit's findings) and a script, and runs it before you see it. The answer is a summary and up to five CSV files. See [Queries](/guides/queries).
+- Tenant scripts are now queries. Type a question in **Ask** and the agent writes a read over what your audits keep (a dataset's kept fields, a saved run's newest result, an audit's findings) and a script, and runs it before you see it. The answer is a summary and up to five CSV files. See [Queries](/guides/queries).
+- Queries have their own page (3.4.3): **Queries** on the Dashboard, or Cmd+K. Like the Dashboard, it shows your **Pinned Queries** first (drag a query there; pins are yours, per tenant), then the rest grouped by what they read. Tenant Settings no longer lists them, and old links still open the same query.
+- A query reads top to bottom (3.4.3): **Data**, **Script**, **Result**. **Data** says in a sentence what it reads; select it to pick an audit's findings, a run's result or kept records by name in the **Data** popup, with the days, conditions and fields to keep. The read's JSON is one icon away.
 - A Tenant admin can schedule a query daily. It emails the summary and the files to any address, and can post the summary to a chat space. It sends as whoever saved it, and switches off if that person is no longer a Tenant admin of the tenant. Once a query has a schedule, only a Tenant admin can change it, and a config restore or import that changes it switches its schedules off. Every emailed file is logged with its recipients.
 - Your scripts are moved for you. Each becomes a query with the same name and code, and each schedule arrives switched off, still posting to its chat space, until a Tenant admin switches it on. A script that read a run result arrives switched off too: its rows now arrive flat, so check it before switching it on. See [A schedule from before 3.4.0 stopped posting](/troubleshooting/queries#schedules).
 
 ### Audits
 
 - A HotWax order NetSuite lacks that was less than a day old when read is named **On its way to NetSuite**: expected, not a finding. Past that, an exchange whose return already has its RMA and credit memo is named **Exchange not sent, return credited**.
+- A NetSuite sales order line can carry its order's totals (3.4.3): a query over sales order lines may ask, on every line, for a sum or list over all the order's lines, such as the backordered quantity and the SKUs on backorder. A conclusion can then name one store backorder once for the order instead of three causes across its lines.
 - A check on no statement does not run. An import or restore that takes a check off its last statement retires it, so it no longer reads your systems every morning for nothing.
 - The update after each run says how often the run read your systems, and how many reads could cost less.
 
@@ -51,7 +54,7 @@ Cut together with app `v4.4.0` and `darpan` CLI `0.2.4`; `darpan` 3.4.2, app `v4
 
 ### Operators
 
-- Deploy the backend first, then the app, then release `darpan` CLI `0.2.5`. The CLI's new writes are refused until the backend is deployed. The image must carry `moqui-rules` and `moqui-jexl`: `darpan` 3.4.0 does not start without `moqui-jexl`.
+- Deploy the backend first, then the app, then release `darpan` CLI `0.2.5`. 3.4.3 needs `netsuite-darpan` `v0.7.1` in the image; it has no upgrade data or migration. The CLI's new writes are refused until the backend is deployed. The image must carry `moqui-rules` and `moqui-jexl`: `darpan` 3.4.0 does not start without `moqui-jexl`.
 - Load this release's upgrade data with the deploy, not after. It carries each connector's built-in filters: without them, a run on that source fails with "Load the upgrade data, then run again." It also carries the peak period and sync pulse access rows (without them, saves say not authorized), the sync pulse job and statuses, the welcome email's password line, two conclusion names and three connectors' status fields.
 - The first extract clean-up after the deploy deletes every manual run's extracts and lookup answers older than 7 days, for every tenant. Download any you still need before deploying.
 - Right after loading the upgrade data, run the pending migrations. `TENANT_SCRIPTS_TO_QUERIES` copies every tenant script into a query and every deployment into a schedule, switched off, and removes the old scripts' five-minute job; it has no dry run, keeps the old rows and is safe to run twice. Until it runs, no old scheduled script posts. On an instance that ran 3.4.0, `AUTOMATION_FILTER_COPY` (3.4.1) gives each automation back its own filters, copied from its run's; it has a dry run and is safe to run twice. Until it runs, those automations run unfiltered. Upgrading from before 3.4.0 straight to 3.4.1, it writes nothing and the automations keep the filters they have. See "Upgrading to 3.4" in [Self-host in production](https://developers.drpn.ai/self-host/production).

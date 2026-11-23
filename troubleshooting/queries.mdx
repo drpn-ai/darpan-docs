@@ -13,6 +13,9 @@ Most query failures say exactly what went wrong: the run's cell names the field,
 | There is no **Ask** box | The agent is off for the tenant, or you have no live AI access there. | Ask a Darpan admin for AI access. You can still write the read and the script by hand. |
 | **Ask** refuses | You passed the hourly message limit or the tenant's daily budget. | Wait, or write the query by hand. |
 | An answer from **Ask** replaced your edits | A proposal fills the read and the script. | Choose **Put back my version**. |
+| An input under **Data** says **Change it in the JSON: it has** ... | The input uses something the **Data** popup does not edit: or-conditions, groups, measures or an order. | Choose the code icon (**Read as JSON**) beside **Data** and change the read there. |
+| **Data** shows the read as JSON with an error instead of sentences | The read JSON does not parse, or has no `inputs` list. | Fix the JSON shown; the sentences come back when it parses. |
+| A query dragged to **Pinned Queries** springs back | The pin did not save: the server is older than 3.4.3, or no tenant is active. | Reload the page once the server is on 3.4.3, and check the active tenant. |
 | **Read failed**: *field* `is no longer kept for dataset` *id*`: no audit reads it now.` | The audit that kept the field changed its source, so the dataset stopped keeping it. | Remove the field from the read, or add it back to an audit. |
 | **Read failed**: `Dataset` *id* `has no kept copy yet.` | The dataset has not read its source yet. | Wait for its first read, then run again. |
 | **Read failed**: `Saved run` *id* `has no finished result yet.` | The saved run has never finished. | Run it once, then run the query. |
