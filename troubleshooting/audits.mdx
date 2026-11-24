@@ -11,6 +11,7 @@ For how audits work, see [Audits](/guides/audits).
 
 - **Daily is off.** A new audit's schedule starts off, set to 06:00 in the tenant's time zone. Open the gear (**Audit settings**) and turn **Daily schedule** on.
 - **Its automations were changed one by one.** The audit owns its schedule. The automations behind its checks show **Set by audit** *name* under **Schedule** and follow the audit's **Daily schedule**, time, and timezone. Change the schedule in **Audit settings**, not on an automation.
+- **It is not due yet.** Before the audit's scheduled time, the page shows yesterday's morning, the last one that was due. Today's shows once the scheduled time passes or a check runs today.
 - **The run is waiting.** Audit runs wait in a queue when the instance is busy. **Run health** shows **Queued**, or **Queued · retry, attempt** *N* when a failed run is trying again. A queued run starts on its own. See [the run queue](/reference/reconciliation-runs#run-queue).
 
 To run it now, choose the play icon (**Run audit**) beside the audit's name.

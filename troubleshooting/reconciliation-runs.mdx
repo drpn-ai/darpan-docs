@@ -62,10 +62,12 @@ A scheduled run that fails this way is not retried, because a retry would fail t
 
 The **Verifying differences** step can say a side was not looked up:
 
-- "Verification pass skipped for *side*: *N* of *M* records are reported missing there, above the *P*% a lookup is for. The read or the pairing needs fixing; nothing was looked up." *P* is 5 unless the source's connector sets its own.
+- "Verification pass skipped for *side*: *N* of *M* records are reported missing there, above the *P*% a lookup is for. The read or the pairing needs fixing; nothing was looked up." *P* is 5 unless the source's connector sets its own. Only an audit's checks skip this way.
 - "Verification pass skipped for *side*: the run did not say how many records were checked against it, so *N* missing difference(s) were not looked up."
 
 A lookup is for the few records an export missed. When many are reported missing, the read or the key is wrong, and a record-by-record lookup would hide that. Check that both sides read the same days and that the primary IDs hold the same values, then run again. The reported differences stay as found.
+
+Any other run, manual or scheduled, looks every one of them up and says so in a note instead: "Verification pass: the read left *N* of *M* records missing in *side*, above the *P*% a read should leave; all were looked up. The read or the pairing needs fixing." The result is corrected by the lookups; the note says the read itself should have covered those records.
 
 ## Wrong window or setup, mid-run
 

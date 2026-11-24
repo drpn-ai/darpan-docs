@@ -44,9 +44,9 @@ A run advances through stages in a fixed order. The current stage is shown on th
 | 3 | `EXTRACT_FILE2` | Extracting *system* | Extract records from the second source. |
 | 4 | `RECHECK` | Re-checking older findings | Read an audit's older open findings again by key on each side, before the compare judges them. |
 | 5 | `COMPARE` | Comparing records | Match records and apply rules. |
-| 6 | `VERIFY_MISSING` | Verifying differences | Point-lookup recheck of missing-record differences against lookup-capable sources. |
-| 7 | `VERIFY_EXCHANGE` | Verifying exchange pairs | Recheck of exchange pairs: one system's exchanges are looked up in the other. |
-| 8 | `VERIFY_RETURNS` | Verifying returns | Return-presence grading of both missing directions. |
+| 6 | `VERIFY_RETURNS` | Verifying returns | Return-presence grading of both missing directions, before any lookup. |
+| 7 | `VERIFY_MISSING` | Verifying differences | Point-lookup recheck of missing-record differences against lookup-capable sources. |
+| 8 | `VERIFY_EXCHANGE` | Verifying exchange pairs | Recheck of exchange pairs: one system's exchanges are looked up in the other. |
 | 9 | `CONCLUDE` | Drawing conclusions | Name each verified finding with the run's conclusion rules. |
 | 10 | `WRITE_OUTPUT` | Writing results | Write the reviewable result, after verification has corrected it. |
 | 11 | `NOTIFY` | Sending notifications | Deliver run-completion alerts. |
@@ -58,12 +58,12 @@ Some stages are conditional:
 - A file-upload side records no extract step, and a run that checks one system never opens `EXTRACT_FILE2`.
 - `RECHECK` opens only on an audit window that has older open findings.
 - A run with nothing to recheck, or no source that supports a point lookup, records no verification step. When verification is switched off or cannot run, the run records a `VERIFY_MISSING` step that states the reason.
-- `VERIFY_MISSING` looks a side up only when its missing records are at most 5% of the records checked against it (a connector can set its own share), and only by the ID kind its lookup answers. Above that share, the step says so and looks nothing up.
+- `VERIFY_MISSING` looks up every missing record, by the ID kind the side's lookup answers. When they are more than 5% of the records checked against a side (a connector can set its own share), the run adds a note saying the read or the pairing needs fixing. On an audit's check, above that share the step says so and looks nothing up.
 - Only a run whose scope has conclusion rules records `CONCLUDE`.
 
 A HotWax order read asks for every field the run's rules and conclusion rules read, on a manual run and a scheduled one, whatever the run's filters.
 
-A step's `stageSequence` is stored when the step is written, so older runs keep the numbers they were recorded with. Runs recorded before 2.0.0 use a single `VERIFY` stage at 5, with `WRITE_OUTPUT` at 6 and `NOTIFY` at 7. Runs recorded before `RECHECK` existed number `COMPARE` through `NOTIFY` one lower than the table above (4 through 10). Anything that reads `stageCode` or `stageSequence` must expect all three sets.
+A step's `stageSequence` is stored when the step is written, so older runs keep the numbers they were recorded with. Runs recorded before 2.0.0 use a single `VERIFY` stage at 5, with `WRITE_OUTPUT` at 6 and `NOTIFY` at 7. Runs recorded before `RECHECK` existed number `COMPARE` through `NOTIFY` one lower than the table above (4 through 10). Runs recorded before 3.4.4 number `VERIFY_MISSING` 6, `VERIFY_EXCHANGE` 7 and `VERIFY_RETURNS` 8. Anything that reads `stageCode` or `stageSequence` must expect all four sets.
 
 ## Filters and set-aside records
 

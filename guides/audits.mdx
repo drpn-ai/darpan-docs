@@ -91,7 +91,7 @@ The audit owns its schedule. The automations behind its checks show **Set by aud
 
 A statement turned off is left out of the next run, and its findings so far stay on record.
 
-The update after each run is an email with a CSV per rule, plus a short message in the chosen chat space. Both say how many times the run read your systems and over how many connections, and how many of those reads could cost less. The Darpan team reviews those. Its links to the report name the tenant, so opening one switches the app into that tenant first. Only a Tenant Admin can change **After each run** and **Posts to**; for everyone else they read as plain text and do not open. For chat spaces, see [Run completion alerts](/guides/run-completion-alerts).
+The update after each run is an email with a CSV per rule, plus a short message in the chosen chat space. Both say how many times the run read your systems and over how many connections, and how many of those reads could cost less. The Darpan team reviews those. In the email, findings no cause names yet are listed under **No cause named yet**, with **Know why? Explain them to the agent**: it opens the statement on the audit page with the **Agent** tab, for people who have the agent (see [The audit agent](#the-audit-agent)). Its links to the report name the tenant, so opening one switches the app into that tenant first. Only a Tenant Admin can change **After each run** and **Posts to**; for everyone else they read as plain text and do not open. For chat spaces, see [Run completion alerts](/guides/run-completion-alerts).
 
 When the chosen chat space can no longer take the message, the page says so under the audit's name:
 
@@ -103,7 +103,7 @@ Pick another space, or fix the space in **Tenant Settings** under **Notification
 
 ## Read the audit page
 
-Home lists each audit under **Audit**, first. Under the audit's name, one line gives the run type, the dates the report covers and read, and today's movement: new, fixed today, and the oldest open finding. On a monthly audit, a period picker beside the name offers the report's month and the two before it.
+Home lists each audit under **Audit**, first. The page opens on the last morning that was due: yesterday's until the audit's scheduled time, then today's. A check that already ran today, or an audit with **Daily schedule** off, opens on today. Under the audit's name, one line gives the run type, the dates the report covers and read, and today's movement: new, fixed today, and the oldest open finding. On a monthly audit, a period picker beside the name offers the report's month and the two before it.
 
 | Toolbar | Does |
 | --- | --- |
@@ -178,6 +178,8 @@ The same report and findings are also available read-only over GraphQL:
 - [`auditReport`](https://developers.drpn.ai/graphql/queries/audit-report): an audit's report for one morning.
 - [`auditFinding`](https://developers.drpn.ai/graphql/queries/audit-finding): one finding with its records, evidence, fix, and history.
 - [`findings`](https://developers.drpn.ai/graphql/queries/findings) and [Search syntax](https://developers.drpn.ai/graphql/search-syntax): every finding, filtered.
+
+Each statement and finding there carries a priority (`P0`, `P1`, `P2` or `KNOWN`), and the report counts open findings at each level. The app does not show priorities yet.
 
 ## Next step
 

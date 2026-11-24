@@ -50,9 +50,9 @@ A run moves through a fixed sequence of stages, and the stage it is on tells you
 | **Extracting** *second system* | Pulling records from the second source. |
 | **Re-checking older findings** | Reading an audit's older open findings again on each side, before the compare judges them. |
 | **Comparing records** | Matching records and applying rules. |
-| **Verifying differences** | Rechecking missing records against sources that support point lookups, so an export timing skew is not reported as a real difference. Shown as **Verifying** *system*'s diffs when it names the system it rechecked. |
+| **Verifying returns** | Grading returns reported missing on either side, before any lookup. Shown as **Verifying** *system*'s returns. |
+| **Verifying differences** | Looking up missing records in sources that support point lookups, so an export timing skew is not reported as a real difference. Shown as **Verifying** *system*'s diffs when it names the system it rechecked. |
 | **Verifying exchange pairs** | Looking up one system's exchanges in the other. Shown as **Verifying** *system*'s exchange pairs. |
-| **Verifying returns** | Grading returns reported missing on either side. Shown as **Verifying** *system*'s returns. |
 | **Drawing conclusions** | Naming each verified finding with the run's conclusion rules. |
 | **Writing results** | Writing the result you will review, after verification has corrected it. |
 | **Sending notifications** | Sending run-completion alerts. |

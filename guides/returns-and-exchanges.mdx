@@ -51,7 +51,7 @@ Several kinds of one-sided record are expected, not gaps. Darpan removes them be
 | Cancelled-item refund | A refund for lines that were never shipped is booked as an item cancellation, not a return. |
 | Return on an older order | See [Returns on orders older than 60 days](#returns-on-orders-older-than-60-days). |
 
-Records still reported missing in HotWax are then checked one by one with a point lookup, by Shopify refund ID and Shopify return ID. Records found that way are dropped. See [Verification passes](/guides/review-results#verification-passes).
+Darpan applies these rules before any lookup, so the 5% share a lookup is measured against counts only the records they could not explain. Records still reported missing are then checked one by one with a point lookup, by Shopify refund ID and Shopify return ID. A refund is found by its own ID even on an order older than Shopify's 60-day read limit. Records found that way are dropped. See [Verification passes](/guides/review-results#verification-passes).
 
 <Note>
 A rule only removes a record when the record's own data proves it. Where the evidence is incomplete, the record stays reported.
