@@ -69,7 +69,7 @@ What a check can find is set by its run. A NetSuite side can read a SuiteQL quer
 
 Choose the play icon (**Run audit**) beside the audit's name, answer **Which days should this run look at?** with **Previous Day**, **Previous Week**, **Month to Date**, or **Custom Dates**, then choose **Run**. **Previous Week** reads the seven days ending yesterday. **Month to Date** reads from the 1st of the month through yesterday; on the 1st, the whole previous month. Days before the earliest day the audit can record, and days after today, are not offered.
 
-Every check runs in the background. While they run, **Run health** shows **Running now**, each system's read with its record count, and **Findings arrive as each check finishes.**
+Every check runs in the background. While they run, **Run health** shows **Running now**, each system's read with its record count against about how many it read last time, when it last moved and its rate per minute, and **Findings arrive as each check finishes.** During a peak period it also says how lightly each system is read.
 
 ## Audit settings
 
@@ -81,7 +81,7 @@ Choose the gear (**Audit settings**) beside the audit's name. The page shows the
 | **Schedule** | **Daily schedule** on or off beside the name, and **Daily at** a time and **Timezone** in the **Schedule** popup. One schedule covers every check. |
 | **After each run** | The update sent when a run ends, on or off. The line under the switch says how many people with access to the tenant get it. **Also send to** adds email addresses. |
 | **Posts to** | The **Chat space** that gets a summary card, or **None**. |
-| **Statements** | Each statement's wording and a switch that turns it off. Open a statement to change it or choose **Add check**; **New statement** is here too. |
+| **Statements** | Each statement's wording, its priority (**P0 today** to **Known owned**; choose it to change how soon a broken statement must be fixed), and a switch that turns it off. Open a statement to change it or choose **Add check**; its causes are listed there, each with its own priority or **Same as** the statement. **New statement** is here too. |
 
 <Note>
 A new audit's schedule is off, set to 06:00 in the tenant's time zone. The audit does not run on its own until you turn **Daily schedule** on.
@@ -114,9 +114,11 @@ Home lists each audit under **Audit**, first. The page opens on the last morning
 
 Below the toolbar, the board drills down from left to right, with the path above it (audit › category › statement › finding). On a phone it shows one column at a time.
 
+The first column's head switches the board between **Record type** and **Priority**. The app remembers your pick; a link that says which it shows opens that way without changing what you picked.
+
 | Column | Shows |
 | --- | --- |
-| Categories | **Run health** first, then each category with its count. |
+| Categories | **Run health** first. By **Record type**, each category with its count and how many sit at its most urgent level (**2 at P1**). By **Priority**, the levels instead: **P0 today**, **P1 this week**, **P2 later**, **Known owned**, each with its open findings; choosing one lists only the statements and findings at that level. |
 | **Statements** | Each statement in the category, with its count. |
 | **Findings** | The statement's findings, each with its state and age, grouped under their cause. A cause's heading folds its group. An order sits under the cause holding it up, with its other causes named beneath it. |
 | Detail | The open finding. With none open, the statement: each check's status (**Ran**, **Partial**, **Not run**), how many records each system read, **Matched by**, and **Read**, then its counts. |
@@ -125,7 +127,7 @@ Below the toolbar, the board drills down from left to right, with the path above
 
 An order with findings under several statements counts once, under its earliest statement. Its later findings are listed with it under **Also on this order**, each named by its item, and the statement's counts say how many sit **under an earlier step**.
 
-A finding reads verdict first. Its state (**Open** or **Fixed**) and statement come first, then what is wrong, **Stuck on** (what holds it up), and **Do this** (the fix, with its owner). Under that, one card per system and order shows each record's id and status. An order lists its **Lines**, and the details a person searches by follow: customer, dates, channel, totals. An order opens on the line that holds it up, or else on its first open line, so an order listed as **Open** opens as **Open** even when another of its lines was fixed that day. **Evidence** shows only when no conclusion explains the finding. **History** lists when it was found, still open, fixed, or reopened.
+A finding opens on its basics: each compared system's status, amount and day, with **None** for a system that has no record of it. Then it reads verdict first. Its state (**Open** or **Fixed**) and statement come first, then a line saying where its priority came from (**P0 from R11**, or **Known set on** a cause), then what is wrong, **Stuck on** (what holds it up), and **Do this** (the fix, with its owner). Under that, one card per system and order shows each record's id and status. An order lists its **Lines**, and the details a person searches by follow: customer, dates, channel, totals. An order opens on the line that holds it up, or else on its first open line, so an order listed as **Open** opens as **Open** even when another of its lines was fixed that day. **Evidence** shows only when no conclusion explains the finding. **History** lists when it was found, still open, fixed, or reopened.
 
 | Export | Where | Saves |
 | --- | --- | --- |
@@ -179,7 +181,7 @@ The same report and findings are also available read-only over GraphQL:
 - [`auditFinding`](https://developers.drpn.ai/graphql/queries/audit-finding): one finding with its records, evidence, fix, and history.
 - [`findings`](https://developers.drpn.ai/graphql/queries/findings) and [Search syntax](https://developers.drpn.ai/graphql/search-syntax): every finding, filtered.
 
-Each statement and finding there carries a priority (`P0`, `P1`, `P2` or `KNOWN`), and the report counts open findings at each level. The app does not show priorities yet.
+Each statement and finding there carries a priority (`P0`, `P1`, `P2` or `KNOWN`), and the report counts open findings at each level, as the board does by **Priority**.
 
 ## Next step
 
