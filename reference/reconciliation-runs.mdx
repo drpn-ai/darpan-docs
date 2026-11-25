@@ -22,14 +22,14 @@ Every run has one of three types, chosen when you create it.
 | Pending | `AUT_STAT_PENDING` | The run record exists but processing has not started or completed. |
 | Running | `AUT_STAT_RUNNING` | Darpan is processing inputs. |
 | Succeeded | `AUT_STAT_SUCCESS` | Processing finished and output is ready to review. |
-| No data | `AUT_STAT_NO_DATA` | Processing finished but no input data was available. |
+| No data | `AUT_STAT_NO_DATA` | Processing finished but no input data was available. From 3.4.6, when one side read records and the other read none, or kept none after its filters, an automation run did not really run: Darpan is alerted, and its audit checks are **Not run**. |
 | Failed | `AUT_STAT_FAILED` | Processing stopped before producing expected output. |
 | Skipped duplicate | `AUT_STAT_SKIP_DUP` | This window was already processed, so the run was skipped. |
 | Cancelled | `AUT_STAT_CANCELLED` | You stopped the run with **Cancel run** before it finished. Work completed before the stop is discarded. |
-| Dead-lettered | `AUT_STAT_DEAD_LETTER` | Automation executions only. A scheduled execution failed transiently, used up its retries, and was given up on. A failure alert is sent. |
+| Dead-lettered | `AUT_STAT_DEAD_LETTER` | Automation executions only. A scheduled execution failed transiently, used up its retries, and was given up on. Darpan is alerted, and the automation's chat space is told it did not run. |
 | Not run | `AUT_STAT_NOT_RUN` | Lifecycle runs only. A question above this one failed or was switched off, so this one was not asked. |
 
-Pending and Running are the active statuses. Succeeded, No data, Failed, Skipped duplicate and Cancelled are the terminal statuses for a run: a run in any of them is finished, will not change status again, and triggers run-completion alerts. Dead-lettered is also final, but it is recorded on the automation execution rather than on a run result. Not run is final for the lifecycle question that carries it.
+Pending and Running are the active statuses. Succeeded, No data, Failed, Skipped duplicate and Cancelled are the terminal statuses for a run: a run in any of them is finished, will not change status again, and triggers run-completion alerts. An automation run that fails, or reads nothing on one side, sends one plain line instead of its error; see [When an automation run does not run](/guides/run-completion-alerts#when-an-automation-run-does-not-run). Dead-lettered is also final, but it is recorded on the automation execution rather than on a run result. Not run is final for the lifecycle question that carries it.
 
 A failed run of a saved run offers **Retry from** *step*, named after the step that failed (**Retry** when no single step is marked failed). The retry is a new run over the same window that reuses what the failed run already read. It is refused when the saved run was edited after the failed run started, or when the failed run did not finish reading either side.
 

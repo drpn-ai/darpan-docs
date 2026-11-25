@@ -93,7 +93,7 @@ The audit owns its schedule. The automations behind its checks show **Set by aud
 
 A statement turned off is left out of the next run, and its findings so far stay on record.
 
-The update after each run is an email with a CSV per rule, plus a short message in the chosen chat space. Both say how many times the run read your systems and over how many connections, and how many of those reads could cost less. The Darpan team reviews those. In the email, findings no cause names yet are listed under **No cause named yet**, with **Know why? Explain them to the agent**: it opens the statement on the audit page with the **Agent** tab, for people who have the agent (see [The audit agent](#the-audit-agent)). Its links to the report name the tenant, so opening one switches the app into that tenant first. Only a Tenant Admin can change **After each run** and **Posts to**; for everyone else they read as plain text and do not open. For chat spaces, see [Run completion alerts](/guides/run-completion-alerts).
+The update after each run is an email with a CSV per rule, plus a short message in the chosen chat space. Both say how many times the run read your systems and over how many connections, and how many of those reads could cost less. The Darpan team reviews those. In the email, findings no cause names yet are listed under **No cause named yet**, with **Know why? Explain them to the agent**: it opens the statement on the audit page with the **Agent** tab, for people who have the agent (see [The audit agent](#the-audit-agent)). When a check did not run, or ran only in part, the update names it and says Darpan has been alerted and is working on a fix. Its links to the report name the tenant, so opening one switches the app into that tenant first. Only a Tenant Admin can change **After each run** and **Posts to**; for everyone else they read as plain text and do not open. For chat spaces, see [Run completion alerts](/guides/run-completion-alerts).
 
 When the chosen chat space can no longer take the message, the page says so under the audit's name:
 
@@ -129,7 +129,7 @@ The first column's head switches the board between **Record type** and **Priorit
 
 An order with findings under several statements counts once, under its earliest statement. Its later findings are listed with it under **Also on this order**, each named by its item, and the statement's counts say how many sit **under an earlier step**.
 
-A finding opens on its basics: each compared system's status, amount and day, with **None** for a system that has no record of it. Then it reads verdict first. Its state (**Open** or **Fixed**) and statement come first, then a line saying where its priority came from (**P0 from R11**, or **Known set on** a cause), then what is wrong, **Stuck on** (what holds it up), and **Do this** (the fix, with its owner). Under that, one card per system and order shows each record's id and status. An order lists its **Lines**, and the details a person searches by follow: customer, dates, channel, totals. An order opens on the line that holds it up, or else on its first open line, so an order listed as **Open** opens as **Open** even when another of its lines was fixed that day. **Evidence** shows only when no conclusion explains the finding. **History** lists when it was found, still open, fixed, or reopened.
+A finding opens on its basics: each compared system's status with its payment status beside it, such as Completed · Settled, then the amount and the day, with **None** for a system that has no record of it. A payment status shows when that system's read gave one. Then it reads verdict first. Its state (**Open** or **Fixed**) and statement come first, then a line saying where its priority came from (**P0 from R11**, or **Known set on** a cause), then what is wrong, **Stuck on** (what holds it up), and **Do this** (the fix, with its owner). Under that, one card per system and order shows each record's id and status. An order lists its **Lines**, and the details a person searches by follow: customer, dates, channel, totals. An order opens on the line that holds it up, or else on its first open line, so an order listed as **Open** opens as **Open** even when another of its lines was fixed that day. **Evidence** shows only when no conclusion explains the finding. **History** lists when it was found, still open, fixed, or reopened.
 
 | Export | Where | Saves |
 | --- | --- | --- |
@@ -147,6 +147,8 @@ If Darpan says the check has no automation yet, run the audit once first.
 ## How findings close
 
 A fix counts when a check sees it, not when someone says so. Each morning run re-checks open findings by key and reads the month so far, so a finding fixed in its own system closes on the next run. There is no control that marks a finding fixed by hand.
+
+A check that reads HotWax orders by order date also reads, each morning, the orders whose items were approved, completed or cancelled since its last read, when they were placed in the period. So an order completed days after it was placed is seen completed, and its other systems are read for it by key. An order placed before the period stays out.
 
 ## Orders on their way to NetSuite
 

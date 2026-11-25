@@ -28,9 +28,13 @@ On today's report, choose **Retry from last read** on the check. It runs again f
 | "Check *code* has no run on *date* to retry from; play the audit instead." | That morning's run never read anything for this check. Choose **Run audit**. |
 | "… did not finish reading *system*, so there is no complete extract to retry from; run it again instead." | A read stopped part way, so there is nothing complete to retry from. Choose **Run audit**. |
 
+A check is **Not run** when one side of its run read no records, or kept none after its filters, while the other side read some. Its reason says which, for example "The *side* side read no records." or "The *side* side kept 0 of *N* records." Nothing closes that morning, and Darpan is alerted. Check that side's connection and filters, then play the audit again.
+
 A check marked **Partial** ran over a read that was not complete, so it may have missed records. Play the audit again once the system is reachable.
 
 When **Partial** says "Older findings were not re-checked:" and a reason, the check could not read its older open findings again by key. They keep the day they were last checked until a read can reach them. A HotWax returns side matched on the return's Shopify order id is read this way from 3.4.5, so its older findings are re-checked each morning.
+
+When **Partial** says "Records changed since the last read were not re-read:" and a reason, the check could not read the HotWax orders that changed since its last read. Orders completed after they were placed may not show as completed until a later run reads them.
 
 ## A check stopped running after an import
 

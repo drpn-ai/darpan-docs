@@ -34,7 +34,7 @@ When the automation asks **Which saved run should this automation use?**, it poi
 
 **Check whether the automation gave up**
 
-A scheduled execution that fails for a transient reason, such as a source timing out, is retried automatically. When the retries run out, the execution is marked dead-lettered (`AUT_STAT_DEAD_LETTER`), a failure alert is sent naming the last error, and no further retries happen for that execution. Fix the cause, then wait for the next scheduled run, or re-drive the execution through the API with `reprocess#AutomationExecution`.
+A scheduled execution that fails for a transient reason, such as a source timing out, is retried automatically. When the retries run out, the execution is marked dead-lettered (`AUT_STAT_DEAD_LETTER`), the Darpan team is alerted with the last error, and no further retries happen for that execution. The automation's chat space gets one line saying it did not run. See [When an automation run does not run](/guides/run-completion-alerts#when-an-automation-run-does-not-run). Fix the cause, then wait for the next scheduled run, or re-drive the execution through the API with `reprocess#AutomationExecution`.
 
 **Check whether it started late on purpose**
 
@@ -67,6 +67,7 @@ Notification delivery is best-effort. A run never fails because an alert could n
 | Symptom | What to check |
 | --- | --- |
 | No message arrives after a run | Confirm something routes the run to a space: the automation is linked to one, or you subscribed with **Notify me**. Then confirm the space is active, still has its delivery target (a webhook, or a Slack channel), and belongs to the run's tenant. |
+| The message says only "*name* did not run this morning. Darpan has been alerted and is working on a fix." | The run failed, or one side read or kept no records while the other read some. From 3.4.6 the error goes to the Darpan team, not to chat. Open the run from the automation to read a failed run's error. |
 | One automation's alerts stopped, others still arrive | Its linked space was deactivated or lost its delivery target. Darpan logs a warning naming the dropped space. Relink the automation or reactivate the space. |
 | **Notify me** does not subscribe | You have no default chat space set. Set one in **User Settings**, then subscribe again. |
 | Alerts arrived for older runs but not this one | Subscriptions cover a single run and are cleared once it finishes. Subscribe again on the new run. |

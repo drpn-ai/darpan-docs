@@ -17,8 +17,20 @@ Alerts are built around a **registry of named chat spaces** for the tenant. A sp
 A run never fails because an alert could not be sent. If a webhook is unreachable or a Slack channel rejects the post, the result is still saved and viewable in the app. Each run notifies at most once, even if several stages report completion.
 
 <Note>
-Alerts fire on every final state, not only success. A failed run, a cancelled run, and a run that found no data all produce a message — which is the point, since silence used to be indistinguishable from success.
+Alerts fire on final states, not only success, since silence used to be indistinguishable from success. An automation run that does not run is the exception: it sends one plain line, and its error goes to the Darpan team. See [When an automation run does not run](#when-an-automation-run-does-not-run).
 </Note>
+
+## When an automation run does not run
+
+From 3.4.6, an automation run that does not run never posts its error to your chat spaces. That covers a run that fails, one that gives up after its retries, one whose rules could not run, and one where a side read no records, or kept none after its filters, while the other side read some. The error goes to the Darpan team, which is alerted and works on the fix. Your spaces get one plain line instead:
+
+"*name* did not run this morning. Darpan has been alerted and is working on a fix."
+
+- The automation's chat space gets it for a scheduled run, once that day, however many times the run fails.
+- **Notify me** gets it on any run, scheduled or started by hand.
+- An automation behind an audit's checks posts nothing here. The audit's update after the run says which checks did not run. See [Audit settings](/guides/audits#audit-settings).
+
+A failed run's page still shows its full error. An automation run where both sides read nothing is a quiet day, not an error, and posts nothing.
 
 ## What the alert says
 
@@ -46,7 +58,7 @@ The verdict names the situation:
 
 | Situation | What the message leads with |
 | --- | --- |
-| The run failed | The failure, first. |
+| A run you started from a saved run failed | The failure, first. An automation run that fails sends one plain line instead. |
 | The run finished with warnings | That it completed but hit problems worth reading. |
 | Nothing missing, nothing mismatched | A clean run, stated plainly. |
 | Nothing missing, values disagree | Value drift — the records line up, the data does not. |
@@ -194,6 +206,7 @@ The one change worth making afterwards is renaming **Default space** to somethin
 | Symptom | What to check |
 | --- | --- |
 | No message arrives after a run | Confirm the space is active and still deliverable, the automation is linked to it, and the run reached a final state. |
+| The message says only that the run did not run | The run failed, or one side read or kept nothing. Its error went to the Darpan team. Open the run to read the error. |
 | An automation's alerts stopped, but others still arrive | The linked space was deactivated or lost its destination. Darpan logs a warning naming the dropped space; relink the automation or reactivate the space. |
 | **Notify me** does not subscribe | You have no default chat space set. Set one in **User Settings**. |
 | A Google Chat save is rejected | The webhook URL must be `https` on `chat.googleapis.com`, target a space messages endpoint, and include `key` and `token` query parameters. |
