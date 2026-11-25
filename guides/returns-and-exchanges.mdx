@@ -73,7 +73,7 @@ A paired Shopify return is dropped, and the HotWax return is dropped once every 
 
 An exchange in Shopify becomes a separate exchange order in HotWax, carrying the same Shopify order ID as the original. A run on HotWax **Orders** sets exchange orders aside before the compare, so they do not show up as extra orders in an orders run.
 
-To compare exchange orders too, turn on **Keep exchange orders** when you set up the HotWax side. It is the last card, **Which options should … use?**, and it is off by default. A check that every order HotWax approves reaches NetSuite uses it, so a missing exchange order is reported there once. The **Exchange order** field still tells them apart on the rules board.
+To compare exchange orders too, turn on **Keep exchange orders** when you set up the HotWax side. It is the last card, **Which options should … use?**, and it is off by default. On a run you already made, switch it in **Read options** on the run's **Ruleset Manager**; the switch saves the run at once. An automation reads the change after **Sync**. A check that every order HotWax approves reaches NetSuite uses it, so a missing exchange order is reported there once. The **Exchange order** field still tells them apart on the rules board.
 
 When an orders run compares **Shopify orders** with **HotWax orders**, Darpan also runs an exchange presence check:
 
