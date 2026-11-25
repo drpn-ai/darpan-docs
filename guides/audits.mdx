@@ -11,7 +11,7 @@ An audit is a run type. It holds statements, such as "every fulfilled order is i
 
 Confirm:
 
-- To create an audit or change its settings, you are a Tenant admin or Company editor in the active tenant. To run it, retry a check, or resolve a finding, a Tenant user can too. Anyone with access to the tenant can read it.
+- To create an audit or change its settings, you are a Tenant admin or Company editor in the active tenant. To run it, retry a check, resolve a finding, or re-check all findings, a Tenant user can too. Anyone with access to the tenant can read it, acknowledge a finding, and send Darpan feedback on one.
 - The runs your checks will read exist, or the connections they need do. See [Set up a reconciliation run](/guides/setup-reconciliation-run).
 
 ## Create an audit
@@ -105,11 +105,11 @@ Pick another space, or fix the space in **Tenant Settings** under **Notification
 
 ## Read the audit page
 
-Home lists each audit under **Audit**, first. The page opens on the last morning that was due: yesterday's until the audit's scheduled time, then today's. A check that already ran today, or an audit with **Daily schedule** off, opens on today. Under the audit's name, one line gives the run type, the dates the report covers and read, and today's movement: new, fixed today, and the oldest open finding. On a monthly audit, a period picker beside the name offers the report's month and the two before it.
+Home lists each audit under **Audit**, first. The page opens on the last morning that was due: yesterday's until the audit's scheduled time, then today's. A check that already ran today, or an audit with **Daily schedule** off, opens on today. Beside the audit's name, the circular-arrow icon (**Re-check all findings**) re-checks every open finding of the report's period now; see [Re-check all findings](#re-check-all-findings). Under the audit's name, one line gives the run type, the dates the report covers and read, and today's movement: new, fixed today, and the oldest open finding. On a monthly audit, a period picker beside the name offers the report's month and the two before it.
 
 | Toolbar | Does |
 | --- | --- |
-| **open**, **all**, **not checked** | Counts that filter the board. **open** and **all** count findings; **not checked** counts statements no check has run for. |
+| **open**, **acknowledged**, **all**, **not checked** | Counts that filter the board. **open** counts findings no one has acknowledged, **acknowledged** only those someone has, and **all** both; **not checked** counts statements no check has run for. |
 | **Order or record id** | Searches findings. |
 | **Any cause** | Keeps findings with one cause. |
 | **Any age** | Keeps findings at least **1 day+**, **7 days+**, or **30 days+** old. |
@@ -122,7 +122,7 @@ The first column's head switches the board between **Record type** and **Priorit
 | --- | --- |
 | Categories | **Run health** first. By **Record type**, each category with its count and how many sit at its most urgent level (**2 at P1**). By **Priority**, the levels instead: **P0 today**, **P1 this week**, **P2 later**, **Known owned**, each with its open findings; choosing one lists only the statements and findings at that level. |
 | **Statements** | Each statement in the category, with its count. |
-| **Findings** | The statement's findings, each with its state and age, grouped under their cause. A cause's heading folds its group. An order sits under the cause holding it up, with its other causes named beneath it. |
+| **Findings** | The statement's findings, each with its state and age, grouped under their cause. A cause's heading folds its group. An order sits under the cause holding it up, with its other causes named beneath it. An acknowledged finding reads **Acknowledged**, with who acknowledged it, when, and the first line of the note. |
 | Detail | The open finding. With none open, the statement: each check's status (**Ran**, **Partial**, **Not run**), how many records each system read, **Matched by**, and **Read**, then its counts. |
 
 **Run health** says how many checks ran, which statements are **Not covered** by any check, and what each system read. On today's report, a check that did not run offers **Retry from last read**: it runs again from what that morning already read, and no system is read again. **Retry** *N* **not run** retries them all.
@@ -146,9 +146,70 @@ You fixed the record and would rather not wait for the next run. **Resolve findi
 
 If Darpan says the check has no automation yet, run the audit once first.
 
+## Re-check all findings
+
+A system caught up after the morning check, and many findings are fixed at once: a batch of store fulfillments reached NetSuite an hour late, say. Resolving them one by one would read your systems once per finding. **Re-check all findings** reads them all in one go instead.
+
+Choose the circular-arrow icon (**Re-check all findings**):
+
+- **Beside the audit's name**, it re-checks every open finding of the report's period.
+- **At the head of the Findings column**, it re-checks the open findings of the statement you have open.
+
+Darpan reads each check's open findings again by key, once per check, from each system. Every finding fixed since the morning check closes, and the rest stay open with today's cause. The page waits for the result, up to 5 minutes, then says what happened and reloads:
+
+| Darpan says | Meaning |
+| --- | --- |
+| **Re-checked 26. 20 closed, 6 still open.** | Every finding was read again. 20 are fixed and closed; 6 still have a problem. |
+| **Re-checked 26. All 26 closed.** | Every finding was fixed. |
+| **Nothing open to re-check.** | The audit, or the statement, has no open finding in this period. |
+| **Nothing to re-check until the audit has run once.** | The checks behind these findings have never run. Choose **Run audit** once, then try again. |
+| ***N* closed so far. The rest are still being checked.** | The reads took longer than 5 minutes. The rest close on their own when their reads finish; reload the page later. |
+
+Like **Resolve finding**, a re-check does not count as a check run: **Run health** does not change, and the next morning's check reads as it would have. Findings whose check has never run are skipped. One finding at a time stays available from the CLI as `darpan findings recheck`; re-checking all findings is in the app only.
+
+## Acknowledge a finding
+
+Some findings you handle outside Darpan: you called the store, you raised it with the warehouse, it is waiting on a refund that goes out Friday. Acknowledging the finding takes it off your **open** list with a note that says why, so the next person does not chase it again. It does not close the finding. Only a check that sees the record fixed does that.
+
+<Steps>
+<Step title="Open the finding">
+
+On the audit page, open a finding that is **Open**.
+
+</Step>
+<Step title="Acknowledge it">
+
+Choose the eye icon (**Acknowledge**) in the finding's head. Type a note on why it is known, up to 4,000 characters. **Remind me in 5 days if still open** is on by default; turn it off to keep the finding acknowledged until a check sees it fixed. Choose **Acknowledge**.
+
+</Step>
+</Steps>
+
+The finding now reads **Acknowledged** and moves from **open** to **acknowledged**. A card at the top of the finding shows who acknowledged it, when, and the note. **History** lists each acknowledgement, change and reopen.
+
+One acknowledgement covers the whole row: every open line of the order under that statement, and the later-step findings listed with it under **Also on this order**. A line of the same order that breaks later brings the row back to **open**, because it is a new problem.
+
+| To | Do this |
+| --- | --- |
+| Change the note or the reminder | Choose the pencil (**Edit acknowledgement**) on the card, change them, and choose **Save**. |
+| Put the finding back on **open** | Choose **Reopen** on the card. |
+
+When the reminder is on and the finding is still open after the reminder day, it is back under **open**, and the card says, for example, **Acknowledged 5 days ago by Sam R., still open**. Acknowledge it again to start a fresh reminder. When a check sees the finding fixed, it closes as any finding does, and the acknowledgement stays in **History**. A finding that is fixed and later found again is plainly open; the old acknowledgement does not carry over.
+
+The update after each run and the digest count acknowledged findings on their own line, not as open. The split shows on the latest morning's report; an earlier morning's report shows its findings without it.
+
+If Darpan refuses an acknowledgement, see [An acknowledgement is refused](/troubleshooting/audits#an-acknowledgement-is-refused).
+
+## Send Darpan feedback on a finding
+
+A finding looks wrong, its cause does not fit, or you know why it happened and Darpan does not. Tell Darpan from the finding itself, so your words arrive with the record they are about.
+
+Choose the speech-bubble icon (**Feedback**) in the finding's head. A small count on it says how many notes your team sent on the same statement and cause in the last 2 weeks. The popup lists them under **Sent in the last 2 weeks on this statement and cause**, newest first, each with who sent it, the record, and the day, so you can see whether someone already asked. Type your note in the box and choose **Send**.
+
+Your note joins the list, and the Darpan team gets it with the finding attached. You get an email saying it arrived. A person at Darpan replies by email, as the line under the box says (**Darpan replies by email**); replies are never shown in the app. A finding no cause names yet groups its notes by statement alone.
+
 ## How findings close
 
-A fix counts when a check sees it, not when someone says so. Each morning run re-checks open findings by key and reads the month so far, so a finding fixed in its own system closes on the next run. There is no control that marks a finding fixed by hand.
+A fix counts when a check sees it, not when someone says so. Each morning run re-checks open findings by key and reads the month so far, so a finding fixed in its own system closes on the next run. To close fixed findings before then, see [Re-check all findings](#re-check-all-findings). There is no control that marks a finding fixed by hand, and acknowledging one does not close it.
 
 A check that reads HotWax orders by order date also reads, each morning, the orders whose items were approved, completed or cancelled since its last read, when they were placed in the period. So an order completed days after it was placed is seen completed, and its other systems are read for it by key. An order placed before the period stays out.
 
@@ -174,7 +235,7 @@ Each draft shows **Before the change** and **After the change**. Choose **Approv
 
 ## Digests
 
-Separate from the update after each run, an audit can send a daily or weekly digest to a chat space, by email, or both, at a set time in the tenant's time zone. A daily digest gives what is open, new today, and fixed today; a weekly digest compares where things stand with a week before. When a check did not run, or ran only in part, the digest names its statement and says Darpan has been alerted and is working on a fix, as the update after each run does. It does not give the reason.
+Separate from the update after each run, an audit can send a daily or weekly digest to a chat space, by email, or both, at a set time in the tenant's time zone. A daily digest gives what is open, new today, and fixed today; a weekly digest compares where things stand with a week before. Acknowledged findings are counted on their own line; a weekly digest counts them with the open ones on both sides of its comparison, so a week of acknowledging does not read as fixing. When a check did not run, or ran only in part, the digest names its statement and says Darpan has been alerted and is working on a fix, as the update after each run does. It does not give the reason.
 
 Digests are set up by a Darpan admin; there is no screen for them in the app.
 

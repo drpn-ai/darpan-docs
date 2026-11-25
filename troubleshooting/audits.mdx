@@ -1,6 +1,6 @@
 ---
 title: "Audits and findings"
-description: "Troubleshoot audits that did not run, checks that did not run, findings that stay open or are missing, and updates that did not arrive."
+description: "Troubleshoot audits that did not run, checks that did not run, findings that stay open or are missing, refused acknowledgements and re-checks, and updates that did not arrive."
 ---
 
 When an audit looks wrong, the cause is usually one of a few things: the schedule is off, a check did not run, or a finding is listed somewhere you did not expect. The audit page keeps the evidence for each, and most fixes take one choice. Find your symptom below.
@@ -60,14 +60,43 @@ To check one finding now, open it and choose **Resolve finding**. Darpan reads t
 
 There is no control that marks a finding fixed by hand. Resolve does not count as a check run, so **Run health** does not change.
 
+When many findings were fixed after the morning check, choose **Re-check all findings** instead: beside the audit's name for the whole period, or at the head of the **Findings** column for one statement. It reads each check's open findings once, by key.
+
+| Darpan says | Meaning |
+| --- | --- |
+| **Re-checked** *N*. *X* **closed,** *Y* **still open.** | Every finding was read again. The ones still open still have the problem; read each one's cause. |
+| **Nothing open to re-check.** | No finding is open in this period, or under this statement. |
+| **Nothing to re-check until the audit has run once.** | The checks behind these findings have never run. Choose **Run audit** once, then try again. |
+| *N* **closed so far. The rest are still being checked.** | The reads took longer than the 5 minutes the page waits. They finish on their own; reload the page later. |
+| **The re-check did not start. Try again.** | Choose the icon again. If it keeps failing, use **Resolve finding** on the findings that matter most. |
+
+**Re-check all findings** is in the app only. From the CLI, re-check one finding at a time with `darpan findings recheck`.
+
 ## A finding you expected is not listed
 
 - **It is listed under an earlier statement.** An order with findings under several statements counts once, under its earliest statement. Open that finding and look under **Also on this order**. The later statement's counts say how many sit **under an earlier step**.
-- **The board is filtered.** **open** lists only statements with open findings, and **not checked** only statements whose checks did not run. Choose **all** to list every statement.
+- **The board is filtered.** **open** lists only statements with open findings no one has acknowledged, **acknowledged** only those someone has, and **not checked** only statements whose checks did not run. Choose **all** to list every statement.
+- **Someone acknowledged it.** An acknowledged finding leaves **open** and is listed under **acknowledged**, with who acknowledged it and the note. Choose **Reopen** on its card to put it back. See [Acknowledge a finding](/guides/audits#acknowledge-a-finding).
 - **The statement is turned off.** A statement turned off in **Audit settings** is left out of runs. Its earlier findings stay on record.
 - **The check has not run for that day.** See [A check did not run](#a-check-did-not-run).
 
-A new finding is **Open** from the run that finds it. Findings are either **Open** or **Fixed**; there is no waiting period before one is listed.
+A new finding is **Open** from the run that finds it. Findings are either **Open** or **Fixed**; there is no waiting period before one is listed. **Acknowledged** is not a third state: an acknowledged finding is still open, set aside with a note.
+
+## An acknowledged finding is back on open
+
+- **Its reminder day came.** With **Remind me in 5 days if still open** on, a finding still open after that day is back under **open**, and its card says, for example, **Acknowledged 5 days ago by Sam R., still open**. Acknowledge it again to start a fresh reminder, or fix it.
+- **Another line of the order broke.** An acknowledgement covers the lines that were open when it was made. A line of the same order that breaks later is a new problem, so the row is back under **open**.
+- **It was fixed and found again.** An acknowledgement does not carry over a fix. A finding that closes and is found again on a later morning is plainly open.
+
+## An acknowledgement is refused
+
+| Darpan says | What to do |
+| --- | --- |
+| "Only an open finding can be acknowledged" | A check closed the finding after you opened it. Reload the page. |
+| "Add a note" | An acknowledgement needs a note saying why the finding is known. |
+| "Keep the note under 4,000 characters" | Shorten the note. The same limit applies to feedback. |
+| **Reopen did not go through. Try again.** | Choose **Reopen** again. |
+| **The note did not send. Try again.** | Your feedback did not reach Darpan. Choose **Send** again. |
 
 ## A cause is not listed under a statement
 
@@ -87,9 +116,9 @@ A link in the update after a run names the tenant it belongs to, and opening it 
 
 The **Agent** tab appears only when the agent is on for your tenant, you are a Tenant admin or Company editor there, and a Darpan admin has given you AI access. A Tenant user or Company view only member does not get the tab, and a call to the agent is refused with "Only editors and tenant admins can talk to the agent." Ask a Darpan admin for the role or the access you are missing. See [Auth and access](/reference/auth-and-access#ai-access).
 
-## Play, Retry or Resolve is missing
+## Play, Retry, Resolve or Re-check all is missing
 
-Running an audit, retrying a check, and **Resolve finding** need a role that can run in the tenant: Tenant user, Company editor or Tenant admin. A Company view only member reads the audit without them.
+Running an audit, retrying a check, **Resolve finding** and **Re-check all findings** need a role that can run in the tenant: Tenant user, Company editor or Tenant admin. A Company view only member reads the audit without them, and can still acknowledge a finding and send Darpan feedback on one.
 
 ## Saving an audit is refused
 

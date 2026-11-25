@@ -7,6 +7,7 @@ The terms below are the ones the app puts on screen, defined the way Darpan uses
 
 | Term | Meaning |
 | --- | --- |
+| Acknowledged | An open audit finding someone set aside with a note saying why it is known. It leaves the **open** list for **acknowledged** but stays open: only a check that sees it fixed closes it. With a reminder, it is back on **open** if still open after the reminder day. See [Acknowledge a finding](/guides/audits#acknowledge-a-finding). |
 | Active tenant | The tenant whose records your reads and writes are scoped to. It is stored on your user account, so switching it in one tab switches it in every tab. |
 | AI access | Permission to use the audit agent in one tenant. A Darpan admin grants it per user, for a period and with a spend limit; it pauses when spend reaches the limit. The agent must also be on for the tenant. |
 | Ask Darpan | Search-first navigation for app destinations and selected records. Opens with `Cmd/Ctrl+K` or from Tara. |
@@ -24,7 +25,7 @@ The terms below are the ones the app puts on screen, defined the way Darpan uses
 | Darpan admin | A user who administers Darpan itself rather than one tenant. See [Auth and access](/reference/auth-and-access#roles). |
 | Duplicate | A key that repeats within one source. Every record under the repeated key is a finding, and the key is left out of the compare on both sides. |
 | Exclusion filter | A condition on a source that leaves records out of a run before comparison: either the listed values (**Exclude these values**) or everything but them (**Only these values**). |
-| Finding | A record a run reports for attention: a difference in a Sync run, a row a one-system check returns, or a record that stopped at a place marked as a finding in a lifecycle. In an audit, a finding is one record breaking one statement. It is **Open** until a complete check stops reporting it, then **Fixed**. |
+| Finding | A record a run reports for attention: a difference in a Sync run, a row a one-system check returns, or a record that stopped at a place marked as a finding in a lifecycle. In an audit, a finding is one record breaking one statement. It is **Open** until a complete check stops reporting it, then **Fixed**. An open finding can be **Acknowledged**, which takes it off the **open** list without closing it. |
 | Generated output | Files or records produced by a workflow or run. |
 | JSON-RPC | Backend request format sent to `/rpc/json`. |
 | Extract | The raw records a run read from a source, saved as a file. Deleted 7 days after the run; results and findings stay. |
