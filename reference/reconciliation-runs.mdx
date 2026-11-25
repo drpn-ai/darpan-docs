@@ -75,7 +75,7 @@ A side's filters are its own exclusions plus the ones its source applies by itse
 
 | Source | Set aside by itself | Field |
 | --- | --- | --- |
-| HotWax orders | Exchange orders. | **Exchange order** (`isExchangeOrder`) |
+| HotWax orders | Exchange orders, unless the side's read options keep them (**Keep exchange orders**). | **Exchange order** (`isExchangeOrder`) |
 | HotWax returns | Cancelled returns, and returns with neither a Shopify refund ID nor a Shopify return ID, unless the side's read options keep them. | **Return class** (`omsReturnClass`) |
 | NetSuite sales lines | A line with no HotWax line ID, such as a store-credit payment line. | `nsUnkeyedLine` |
 

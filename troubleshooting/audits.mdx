@@ -30,6 +30,8 @@ On today's report, choose **Retry from last read** on the check. It runs again f
 
 A check marked **Partial** ran over a read that was not complete, so it may have missed records. Play the audit again once the system is reachable.
 
+When **Partial** says "Older findings were not re-checked:" and a reason, the check could not read its older open findings again by key. They keep the day they were last checked until a read can reach them. A HotWax returns side matched on the return's Shopify order id is read this way from 3.4.5, so its older findings are re-checked each morning.
+
 ## A check stopped running after an import
 
 A check that an import or a restored config version took off its last statement no longer runs. Before this release it kept running every morning, recorded nothing, and logged "Audit check *id* tests no statement". Now it is skipped, its automation runs any other checks it carries, and nothing is lost: it had no statement to report a finding to.
@@ -62,6 +64,10 @@ There is no control that marks a finding fixed by hand. Resolve does not count a
 - **The check has not run for that day.** See [A check did not run](#a-check-did-not-run).
 
 A new finding is **Open** from the run that finds it. Findings are either **Open** or **Fixed**; there is no waiting period before one is listed.
+
+## A cause is not listed under a statement
+
+**Audit settings** list under a statement only the causes its checks can reach. When several statements' checks share one run, a cause for missing records shows under the statement whose check looks for missing records, and a rule's cause under the statement that checks field mismatches. To set a cause's priority, open the statement that lists it. A priority saved earlier on a cause the statement cannot reach still shows there, so you can set it back to **Same as**.
 
 ## The update after a run did not arrive
 
