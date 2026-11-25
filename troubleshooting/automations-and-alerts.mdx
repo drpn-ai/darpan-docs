@@ -68,6 +68,7 @@ Notification delivery is best-effort. A run never fails because an alert could n
 | --- | --- |
 | No message arrives after a run | Confirm something routes the run to a space: the automation is linked to one, or you subscribed with **Notify me**. Then confirm the space is active, still has its delivery target (a webhook, or a Slack channel), and belongs to the run's tenant. |
 | The message says only "*name* did not run this morning. Darpan has been alerted and is working on a fix." | The run failed, or one side read or kept no records while the other read some. From 3.4.6 the error goes to the Darpan team, not to chat. Open the run from the automation to read a failed run's error. |
+| The message says only "*name* did not finish. Darpan has been alerted and is working on a fix." | A saved run you started by hand failed, or its rules could not run. From 3.4.7 the error goes to the Darpan team, not to chat. Open the run to read its error. |
 | One automation's alerts stopped, others still arrive | Its linked space was deactivated or lost its delivery target. Darpan logs a warning naming the dropped space. Relink the automation or reactivate the space. |
 | **Notify me** does not subscribe | You have no default chat space set. Set one in **User Settings**, then subscribe again. |
 | Alerts arrived for older runs but not this one | Subscriptions cover a single run and are cleared once it finishes. Subscribe again on the new run. |
