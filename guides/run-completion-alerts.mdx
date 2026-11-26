@@ -22,13 +22,12 @@ Alerts fire on final states, not only success, since silence used to be indistin
 
 ## When an automation run does not run
 
-From 3.4.6, an automation run that does not run never posts its error to your chat spaces. That covers a run that fails, one that gives up after its retries, one whose rules could not run, and one where a side read no records, or kept none after its filters, while the other side read some. The error goes to the Darpan team, which is alerted and works on the fix. Your spaces get one plain line instead:
+From 3.4.6, an automation run that does not run never posts its error to your chat spaces, and from 3.5.1 no error or warning reaches a client chat room at all. That covers a run that fails, one that gives up after its retries, one whose rules could not run, and one where a side read no records, or kept none after its filters, while the other side read some. The error goes to the Darpan team, which is alerted and works on the fix. A **Notify me** space gets one plain line instead:
 
 "*name* did not run this morning. Darpan has been alerted and is working on a fix."
 
-- The automation's chat space gets it for a scheduled run, once that day, however many times the run fails.
-- **Notify me** gets it on any run, scheduled or started by hand.
-- An automation behind an audit's checks posts nothing here. The audit's update after the run says which checks did not run. See [Audit settings](/guides/audits#audit-settings).
+- From 3.5.1 the automation's own chat space is never posted a run error; only **Notify me** gets the line, on any run, scheduled or started by hand.
+- An automation behind an audit's checks posts nothing here. The audit update's email says which checks did not run; its chat card does not. See [Audit settings](/guides/audits#audit-settings).
 
 A failed run's page still shows its full error. An automation run where both sides read nothing is a quiet day, not an error, and posts nothing.
 

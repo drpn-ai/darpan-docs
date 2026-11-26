@@ -9,7 +9,7 @@ Version key: headings carry the backend version (`drpn-ai/darpan`); the app (`da
 
 ## v3.5.1 — November 2026
 
-Cut with app `v4.4.15` and `darpan` CLI `0.6.0`; `darpan` 3.5.1 is the build to deploy. 3.5.1 lets a sync pulse watch Shopify → HotWax orders. A minor release that moves the API contract to version `6`, because the order lookup's catalog methods are removed. The theme: look up any id from what Darpan already holds, without calling your systems.
+Cut with app `v4.4.15` and `darpan` CLI `0.6.0`; `darpan` 3.5.1 is the build to deploy. 3.5.1 lets a sync pulse watch Shopify → HotWax orders and keeps errors and warnings out of your chat rooms. A minor release that moves the API contract to version `6`, because the order lookup's catalog methods are removed. The theme: look up any id from what Darpan already holds, without calling your systems.
 
 ### Look up any id
 
@@ -21,13 +21,14 @@ Cut with app `v4.4.15` and `darpan` CLI `0.6.0`; `darpan` 3.5.1 is the build to 
 
 ### Audits
 
+- Errors and warnings go to the Darpan team's alerts room, never your chat room (3.5.1). The audit update's chat card and the digest's chat message no longer say a check did not run; the email still does. An automation's own chat space is no longer posted a run error; **Notify me** still is. The update after a run goes out once a morning, after every due check has run, not again as late checks finish.
 - Acknowledging a finding no longer needs a note (app `v4.4.15`): leave the box empty and choose **Acknowledge**. The card then shows who and when.
 - A play can run only the checks you name, through the API (`run#Audit` `checks`).
 
 ### Operators
 
 - 3.5.0 moves `darpan`, `darpan-hotwax` `v1.4.0`, `shopify-darpan` `v0.12.0` and `netsuite-darpan` `v0.8.0` together: the system components carry the index's sources. Its upgrade data (4 records, loaded on boot) adds the tenant filters of the ID index tables and the nightly index job, which arrives paused. Run the pending migrations after the deploy (the acknowledgement note becomes optional), then deploy app `v4.4.15`. CLI `0.5.0`'s `lookup --all` and catalog commands stop working; CLI `0.6.0` replaces them.
-- 3.5.1 moves `darpan` alone, on 3.5.0's other pins. Its upgrade data (4 records, loaded on boot) marks HotWax orders and Shopify orders as the systems a pulse can read upstream and rewords two mascot lines. There is no migration of its own.
+- 3.5.1 moves `darpan` alone, on 3.5.0's other pins. Its upgrade data (4 records, loaded on boot) marks HotWax orders and Shopify orders as the systems a pulse can read upstream and rewords two mascot lines; its alerts change (DAR-BE-378) adds no data. There is no migration of its own.
 
 ## v3.4.16 — November 2026
 
