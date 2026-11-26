@@ -58,7 +58,7 @@ CLI access is set per user, per tenant, and is off by default. A user asks for i
 - When a role requires two-factor and the user has not set it up, CLI calls are refused with "Two-factor is required for this account. Set it up in the Darpan app, then run darpan login again."
 - **Revoke** in **CLI sessions** ends one sign-in; a password change ends all of them.
 - Admin CLI: `darpan-admin` signs in by browser approval. It prints a link and an 8-character code; the person opens the link in the Darpan app, types the code from the terminal, and approves with a fresh passkey or authenticator code. Only a super admin can approve an admin sign-in. It lasts 12 hours, is kept between commands until it ends or `darpan-admin logout` is run, and is the only CLI sign-in that can call `admin.*`. A tenant CLI sign-in is refused there with "... is not available to the Darpan CLI; use the app."
-- Reach: a CLI sign-in can call only `/rpc/json` and `/rest/s1/graphql`, and on `/rpc/json` only the methods the CLI allows: reads that return no credentials, run starters, and queries and their schedules.
+- Reach: a CLI sign-in can call only `/rpc/json` and `/rest/s1/graphql`. On `/rpc/json` it reaches every tenant method the person's role allows in the app (3.4.11 and later), and each method checks that role itself. A view-only member is refused a change by the method, as in the app. Out of reach: connection credentials (their saves and deletes, sharing, and any read that returns a password, token, key, webhook URL, username or certificate id), sign-in, two-factor, passkeys and CLI access, Shopify and Slack installs, every `admin.*` method, and the audit agent's chat. Changing which endpoints a connection reads needs edit access (3.4.11 and later).
 
 ## Two-factor
 

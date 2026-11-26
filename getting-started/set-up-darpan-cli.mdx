@@ -102,7 +102,7 @@ The choice is saved on this machine. To use a different tenant for one command, 
 | `darpan guide` | The usual path, limits, and what each role can do. |
 | `darpan help` | Every command. |
 
-Commands print JSON. `darpan api` lists every Darpan method the CLI may call. The CLI reads data, starts and cancels runs, plays audits and re-checks findings, asks a connected system a fresh read-only question, and writes, runs and schedules queries. Apart from the conclusions and automation sync below, it cannot change users, connections, saved runs, or tenant settings.
+Commands print JSON. The CLI can do anything your role lets you do in the app, and the server checks your role on every call. It reads data, starts and cancels runs, plays audits and re-checks findings, and asks a connected system a fresh read-only question. With `darpan` 0.3.0 or later, it also makes the changes your role allows. Connection passwords, tokens and keys, sign-in, two-factor, passkeys, CLI access, and Shopify or Slack installs stay in the app. A secret given to an AI assistant is kept in its transcript.
 
 ### Change a run's conclusions and sync an automation
 
@@ -113,9 +113,21 @@ A Tenant admin or Company editor can also change a run's conclusions and keep an
 | `darpan conclusions show <savedRunId>` | The run's conclusions, in the shape `conclusions save` takes. |
 | `darpan conclusions save <savedRunId> --file <json>` | Replaces the run's whole conclusion list. It shows what each conclusion gains, loses or changes, and saves only with `--yes`. |
 | `darpan conclusions code --label <text>` | Makes a conclusion name of the tenant's own. |
-| `darpan automation sync <automationId>` | Copies the run's sources onto its automation. It shows whether the automation is in sync and which parts would change, and writes only with `--yes`. Filters are not copied: the automation reads its run's. |
+| `darpan automation sync <automationId>` | Copies the run's source setup and filters onto its automation. It shows whether the automation is in sync, which parts would change, and both sides' filters, and writes only with `--yes`. |
 
 Start a save from `conclusions show`, edit the file, then save it: a save replaces every conclusion, so a partial list would drop the rest. `conclusions save` refuses an empty or malformed list. Each change is credited to you in **Config history**, as an edit in the app would be.
+
+### Make other changes
+
+Any other change goes through `darpan call`. `darpan api` lists every method, and `writes: true` marks the ones that change something. `darpan call` sends those only with `--yes`. Without it, the CLI sends nothing and lists the method's inputs.
+
+| Command | What it does |
+| --- | --- |
+| `darpan call <method> --params <json> --yes` | Makes one change: a run, an automation, an audit and its statements, a peak period, a sync pair, a notification route, a query and its schedule, a finding's acknowledgement, or an audit agent proposal. |
+| `darpan config restore <versionId>` | Shows what restoring an earlier version from **Config history** would change, and its plan hash. |
+| `darpan config restore <versionId> --yes --plan <hash>` | Restores exactly that plan. If the config changed since the preview, nothing is written; preview it again. |
+
+Read the current record first and check what will change before you pass `--yes`. Each change is credited to you in **Config history**, as an edit in the app would be. `darpan` 0.3.0 drops `darpan scripts`, `script` and `deploy`. Use `darpan call` for queries and their schedules.
 
 ## Use it from Claude Code
 
@@ -151,6 +163,8 @@ The CLI keeps its key in `~/.config/darpan`. Signing out removes it.
 | **The sign-in code expired before it was approved.** | The 10 minutes ran out, or the CLI is not on for you in that tenant. Check **User settings** → **CLI sessions**, then run `darpan login` again. |
 | **You are not signed in.** | Run `darpan login`. |
 | **Your CLI session has expired.** | The sign-in reached its 7 days, or your access ended. Run `darpan login`; if it fails, ask for access again. |
+| "&lt;method&gt; changes something; nothing was sent." | That method changes your tenant's data. Check the change, then run the same command with `--yes`. |
+| "&lt;method&gt; is not available to the Darpan CLI." | Connection credentials, sign-in and installs stay in the app. Make that change there. |
 | "Two-factor is required for this account. Set it up in the Darpan app, then run darpan login again." | Your role requires two-factor. Set it up in the app (see [Two-factor sign-in](/guides/two-factor)), then run `darpan login`. |
 
 ## Next step
