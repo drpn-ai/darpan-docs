@@ -80,6 +80,7 @@ Cut together with app `v4.4.0` and `darpan` CLI `0.2.4`; `darpan` 3.4.12, app `v
 
 ### CLI
 
+- `darpan` 0.4.0 lets a Tenant admin or Company editor explain a finding to Claude and file it, with the findings like it, under a new cause (`cause add`), or mark a cause as expected (`cause expect`). Claude proposes; `change show` gives the before and after and how many findings move; nothing changes until `change apply`. Needs `darpan` 3.4.12. See [Set up the Darpan CLI](/getting-started/set-up-darpan-cli#explain-a-finding-or-mark-a-cause-expected).
 - `darpan` 0.3.0 makes any change your role allows through `darpan call --yes`, and restores a **Config history** version with `darpan config restore`. It drops `darpan scripts`, `script` and `deploy`, which stopped working when queries replaced tenant scripts; `darpan call` reaches the query methods.
 - `darpan` 0.2.4 shows and saves a run's conclusions, makes a conclusion name, and syncs an automation with its run, for a Tenant admin or Company editor. Each write previews first and saves only with `--yes`. See [Set up the Darpan CLI](/getting-started/set-up-darpan-cli#change-a-runs-conclusions-and-sync-an-automation).
 

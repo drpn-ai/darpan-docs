@@ -117,6 +117,22 @@ A Tenant admin or Company editor can also change a run's conclusions and keep an
 
 Start a save from `conclusions show`, edit the file, then save it: a save replaces every conclusion, so a partial list would drop the rest. `conclusions save` refuses an empty or malformed list. Each change is credited to you in **Config history**, as an edit in the app would be.
 
+### Explain a finding, or mark a cause expected
+
+With `darpan` 0.4.0 or later, a Tenant admin or Company editor can tell Claude why a finding happened ("the order isn't paid yet, the payment preference is missing") and have it filed, together with the findings like it. Claude proposes the change; nothing changes until you say yes.
+
+| Command | What it does |
+| --- | --- |
+| `darpan findings lookalikes <id>` | How many of the check's other findings share this one's cause, with a few examples. |
+| `darpan cause add --run <savedRunId> --code <code> --when "<field> <OPERATOR> [value]" --words "..."` | Proposes a cause: findings that meet the conditions get it. Make a new code first with `darpan conclusions code --label`. |
+| `darpan cause expect --audit <auditId> --check <checkCode> --codes <codes> --words "..."` | Proposes marking causes as expected, so their findings leave the list. |
+| `darpan change show <id>` | The proposal: before and after, how many findings it would move, and any values to confirm. |
+| `darpan change apply <id> --yes --plan <hash> [--confirm ...]` | Makes the change exactly as shown. It is kept in **Config history**, credited to you. |
+| `darpan change revert <id>` | Proposes putting back what an applied change did; show it and apply it the same way. |
+| `darpan findings recheck --audit <auditId> --period <period> --statement <code>` | Re-checks every open finding of a statement, so the findings move under the new cause. |
+
+`--words` is what you said, as you said it. Any value in a proposal that is not already in the finding or the audit's setup is listed in `change show`; you see each one, and Claude names it back with `--confirm` before the change is made. If the setup changed since the proposal was planned, run `darpan change plan <id>` and look at it again.
+
 ### Make other changes
 
 Any other change goes through `darpan call`. `darpan api` lists every method, and `writes: true` marks the ones that change something. `darpan call` sends those only with `--yes`. Without it, the CLI sends nothing and lists the method's inputs.
