@@ -101,7 +101,7 @@ The allowance also moves the daily check. A check with a sync pair never starts 
 
 **in run** opens the daily check whose window read the order, not simply the latest run. When the last open order closes, the caught-up post counts every order the episode flagged, not only the last pulse's.
 
-The pulse posts to the chat space when orders first go past the allowance, and again when none are left. An order closes when it reaches the other system. It also closes, without counting as synced, when it is cancelled or grows older than the allowance plus a day. When the last pulse failed, the facts say **last pulse failed** *time*.
+The pulse posts to the chat space when orders first go past the allowance, and again when none are left. A pulse that does not finish never posts there; the Darpan team hears of it. An order closes when it reaches the other system. It also closes, without counting as synced, when it is cancelled or grows older than the allowance plus a day. When the last pulse failed, the facts say **last pulse failed** *time*.
 
 In the daily check's result, an order the pulse had already flagged reads **flagged by sync pulse** *time*. The link opens its sync pair.
 
