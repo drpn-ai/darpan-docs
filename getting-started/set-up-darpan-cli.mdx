@@ -119,20 +119,19 @@ Start a save from `conclusions show`, edit the file, then save it: a save replac
 
 ### Look up any order
 
-With `darpan` 0.5.0 or later, `darpan lookup <id>` finds an order from any id you have: a Shopify order id, a HotWax order id or name (with or without `#`), or a NetSuite sales order number, internal id, external id or reference. It then follows the order through every connected system and store:
+With `darpan` 0.6.0 or later and Darpan 3.5.0 or later, `darpan lookup <id>` finds an id in what Darpan already holds: a Shopify order id or name, a refund or return id, a HotWax order or return id (with or without `#`), or a NetSuite number, in any spelling. It answers from Darpan's ID index, built from every run and kept copy Darpan reads, and calls none of your connected systems. It shows:
 
-- **HotWax**: the order with its payment preferences and ship groups, its items, and its returns.
-- **Shopify**: the order with its lines and transactions.
-- **NetSuite**: the sales order with its fulfillments, invoices, return authorizations and credit memos.
+- The records that carry the id in each system, and the records they connect to, such as a HotWax order's Shopify order or a NetSuite sales order's fulfillments.
+- The open findings on any of them, including findings on an order's lines.
 
-It also lists the order's open findings, including findings on its lines. Every read is a fresh, read-only query on your own connections, up to 30 per lookup. The answer says which store each record came from, and what it could not read and why.
+An id no Darpan run has read yet comes back as not seen: **No Darpan run has read this id yet.** To read fresh data, re-check the finding or the statement. The index holds identifiers only, never customer details or order contents.
 
 | Command | What it does |
 | --- | --- |
-| `darpan lookup <id>` | Order facts: statuses, dates, amounts, lines, SKUs, payments and shipments. |
-| `darpan lookup <id> --all` | Every field, customer name included. Use it only when you need it: whatever the CLI prints is kept in your AI assistant's conversation. |
+| `darpan lookup <id>` | The records that carry the id, how they connect, and their open findings. |
+| `darpan lookup --status` | Whether the ID index is current for each kept copy, and says which ones it is behind. |
 
-A lookup needs the User, Company editor or Tenant admin role, because it queries your connected systems. How your NetSuite orders link to Shopify and HotWax differs from tenant to tenant; a Tenant admin or Company editor can add your own links with `darpan call facade.LookupFacadeServices.save#TenantLookupLink --yes`.
+A lookup needs view access in the tenant. `darpan lookup --all` is gone in 0.6.0: a lookup never reads your systems, so there is no fuller read to ask for.
 
 ### Explain a finding, or mark a cause expected
 
