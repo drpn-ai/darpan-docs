@@ -96,7 +96,7 @@ The allowance also moves the daily check. A check with a sync pair never starts 
 | Part | Shows |
 | --- | --- |
 | **Waiting**, **Oldest**, **Past allowance** | How many orders the last pulse found waiting, how long the oldest has waited, and how many are past the allowance. |
-| **Today** | Two charts by hour on the tenant's clock: **Oldest waiting, hours** and **Waiting, orders**. A gap means no pulse ran then. |
+| **Today** | Two charts by hour on the tenant's clock: **Oldest waiting, hours** and **Waiting, orders**. A gap means no pulse ran then. From 3.5.3 a pulse never waits behind your audit's runs; the next pulse reads far enough back to see every order a missed one would have. |
 | **Past allowance** | Each order past the allowance: **Order**, **Created**, **Waiting**, and its id in the other system. **in run** *id* opens the daily check run that reported it. |
 
 **in run** opens the daily check whose window read the order, not simply the latest run. When the last open order closes, the caught-up post counts every order the episode flagged, not only the last pulse's.

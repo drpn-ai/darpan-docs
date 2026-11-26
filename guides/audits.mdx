@@ -213,6 +213,8 @@ A fix counts when a check sees it, not when someone says so. Each morning run re
 
 A check that reads HotWax orders by order date also reads, each morning, the orders whose items were approved, completed or cancelled since its last read, when they were placed in the period. So an order completed days after it was placed is seen completed, and its other systems are read for it by key. An order placed before the period stays out.
 
+A daily NetSuite check that reads only NetSuite, and whose query Darpan can read by change, reads what could have moved since its last complete read instead of the month to date: the records changed or dated since then, plus its open findings by key (3.5.3). The checks of one morning that read the same thing share one read. A check whose query also asks HotWax stays on the whole month until it is set up for reading by change.
+
 ## Orders on their way to NetSuite
 
 On a check that looks for HotWax orders missing from NetSuite, an order that was less than 24 hours old when read is named **On its way to NetSuite**. It is expected, so no statement counts it, and the next run looks at it again. HotWax sends most orders within hours and the rest in a daily catch-up.
