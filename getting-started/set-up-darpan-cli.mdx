@@ -117,6 +117,23 @@ A Tenant admin or Company editor can also change a run's conclusions and keep an
 
 Start a save from `conclusions show`, edit the file, then save it: a save replaces every conclusion, so a partial list would drop the rest. `conclusions save` refuses an empty or malformed list. Each change is credited to you in **Config history**, as an edit in the app would be.
 
+### Look up any order
+
+With `darpan` 0.5.0 or later, `darpan lookup <id>` finds an order from any id you have: a Shopify order id, a HotWax order id or name (with or without `#`), or a NetSuite sales order number, internal id, external id or reference. It then follows the order through every connected system and store:
+
+- **HotWax**: the order with its payment preferences and ship groups, its items, and its returns.
+- **Shopify**: the order with its lines and transactions.
+- **NetSuite**: the sales order with its fulfillments, invoices, return authorizations and credit memos.
+
+It also lists the order's open findings, including findings on its lines. Every read is a fresh, read-only query on your own connections, up to 30 per lookup. The answer says which store each record came from, and what it could not read and why.
+
+| Command | What it does |
+| --- | --- |
+| `darpan lookup <id>` | Order facts: statuses, dates, amounts, lines, SKUs, payments and shipments. |
+| `darpan lookup <id> --all` | Every field, customer name included. Use it only when you need it: whatever the CLI prints is kept in your AI assistant's conversation. |
+
+A lookup needs the User, Company editor or Tenant admin role, because it queries your connected systems. How your NetSuite orders link to Shopify and HotWax differs from tenant to tenant; a Tenant admin or Company editor can add your own links with `darpan call facade.LookupFacadeServices.save#TenantLookupLink --yes`.
+
 ### Explain a finding, or mark a cause expected
 
 With `darpan` 0.4.0 or later, a Tenant admin or Company editor can tell Claude why a finding happened ("the order isn't paid yet, the payment preference is missing") and have it filed, together with the findings like it. Claude proposes the change; nothing changes until you say yes.
