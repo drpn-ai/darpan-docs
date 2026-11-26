@@ -13,7 +13,7 @@ Confirm:
 
 - You are a Tenant Admin in the active tenant. Anyone else sees both pages but cannot change them.
 - The tenant time zone is set. Peak dates, peak hours and run times are read on the tenant's clock. See [Manage tenant settings](/guides/manage-tenant-settings#timezones-and-how-dates-resolve).
-- For a sync pulse: a daily check that compares HotWax orders with another system, reads one day (**Previous Day**), and pairs orders by one plain key field on both sides.
+- For a sync pulse: a daily check whose upstream side is HotWax orders or Shopify orders, that reads one day (**Previous Day**) and pairs orders by one plain key field on both sides. A Shopify → HotWax check and a HotWax → NetSuite check both qualify.
 
 ## Add a peak period
 
@@ -62,7 +62,7 @@ While a period changes a pair, the pair's allowance and pulse popups say so, for
 
 ## Watch orders with a sync pulse
 
-A sync pair attaches a pulse to one daily check. Every few hours the pulse reads the orders HotWax created in that check's day, asks the other system for each by its key, and keeps a count of the orders still waiting there.
+A sync pair attaches a pulse to one daily check. Every few hours the pulse reads the orders the upstream system (HotWax or Shopify) created in that check's day, asks the other system for each by its key, and keeps a count of the orders still waiting there.
 
 <Steps>
 <Step title="Add a sync pair">
@@ -72,7 +72,7 @@ Open **Tenant Settings** and choose **Set up** (or **Open**) on **Sync pulse**. 
 </Step>
 <Step title="Pick the check and its upstream side">
 
-Choose **Run** and answer **Which daily check does it watch?**. Then choose **Upstream side** and answer **Which side do orders reach first?** with the HotWax side.
+Choose **Run** and answer **Which daily check does it watch?**. Then choose **Upstream side** and answer **Which side do orders reach first?** with the HotWax or Shopify side: Shopify on a Shopify → HotWax check, HotWax on a HotWax → NetSuite check.
 
 </Step>
 <Step title="Set how often and how long">
