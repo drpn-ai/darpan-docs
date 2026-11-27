@@ -7,9 +7,9 @@ Darpan releases from newest to oldest, with product and operator changes that af
 
 Version key: headings carry the backend version (`drpn-ai/darpan`); the app (`darpan-ui`) has its own tags, named in each entry: `v2.x` alongside backend `v1.x`, `v3.x` from backend `v2.0.0`, and `v4.x` from backend `v3.0.0`. Backend and app tags are cut together for major and minor releases. A patch can be backend-only or carry an app tag too, as `v1.5.1` did with app `v2.6.1`.
 
-## v3.5.7 — November 2026
+## v3.5.8 — November 2026
 
-Cut with app `v4.4.15` and `darpan` CLI `0.6.0`; `darpan` 3.5.7 is the build to deploy. 3.5.1 lets a sync pulse watch Shopify → HotWax orders and keeps errors and warnings out of your chat rooms. A minor release that moves the API contract to version `6`, because the order lookup's catalog methods are removed. The theme: look up any id from what Darpan already holds, without calling your systems.
+Cut with app `v4.4.15` and `darpan` CLI `0.6.0`; `darpan` 3.5.8 is the build to deploy. 3.5.1 lets a sync pulse watch Shopify → HotWax orders and keeps errors and warnings out of your chat rooms. A minor release that moves the API contract to version `6`, because the order lookup's catalog methods are removed. The theme: look up any id from what Darpan already holds, without calling your systems.
 
 ### Look up any id
 
@@ -28,6 +28,7 @@ Cut with app `v4.4.15` and `darpan` CLI `0.6.0`; `darpan` 3.5.7 is the build to 
 ### Operators
 
 - 3.5.0 moves `darpan`, `darpan-hotwax` `v1.4.0`, `shopify-darpan` `v0.12.0` and `netsuite-darpan` `v0.8.0` together: the system components carry the index's sources. Its upgrade data (4 records, loaded on boot) adds the tenant filters of the ID index tables and the nightly index job, which arrives paused. Run the pending migrations after the deploy (the acknowledgement note becomes optional), then deploy app `v4.4.15`. CLI `0.5.0`'s `lookup --all` and catalog commands stop working; CLI `0.6.0` replaces them.
+- 3.5.8 is 3.5.7 deployed with three more changes: a store-scoped check on a day its store sold nothing is a quiet day, not "did not run" (a side that keeps nothing alerts from the second day in a row); chat card headers carry no logo; and `remove#AuditCheck` (on the CLI) takes a check out of an audit, refused while it has open findings. 3.5.7 was cut and never deployed.
 - 3.5.7 makes chat posts cards: a peak period's start names only the pairs checked in it, a sync pulse's past-allowance and caught-up posts carry **Open the pulse**, and an audit update is its card alone. A scheduled check that reads nothing on both sides says "nothing to compare" instead of staying silent. A pulse on a database endpoint reads its order times again. Its upgrade data (loaded on boot) is the mascot's words for the new Tenant Settings and one email copy block.
 - 3.5.6 sends a run's short link in chat cards, emails and error cards (`/runs/<saved run>/<run>`), and its upgrade data (loaded on boot) brings the mascot's words for the run, Starting and Pulses pages. The ID index's working copy of a tenant's ids is readable by its owner only.
 - 3.5.5 fixes runs and sync pulses that now and then failed with a missing-file error. No upgrade data.
