@@ -103,6 +103,8 @@ The allowance also moves the daily check. A check with a sync pair never starts 
 
 The pulse posts to the chat space when orders first go past the allowance, and again when none are left. A pulse that does not finish never posts there; the Darpan team hears of it. An order closes when it reaches the other system. It also closes, without counting as synced, when it is cancelled or grows older than the allowance plus a day. When the last pulse failed, the facts say **last pulse failed** *time*.
 
+When a peak period starts, each chat space gets a card naming its pairs that are checked during the period, such as **HotWax → NetSuite · hourly · late after 6h**. Pairs the period only gives a longer allowance are left out, and a period that checks none of a space's pairs posts nothing there. When the period ends, a short message says so; it adds **Normal settings are back** only when no other period follows.
+
 In the daily check's result, an order the pulse had already flagged reads **flagged by sync pulse** *time*. The link opens its sync pair.
 
 ### Pulse during a peak period
