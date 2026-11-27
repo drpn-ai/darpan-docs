@@ -22,7 +22,7 @@ Every run has one of three types, chosen when you create it.
 | Pending | `AUT_STAT_PENDING` | The run record exists but processing has not started or completed. |
 | Running | `AUT_STAT_RUNNING` | Darpan is processing inputs. |
 | Succeeded | `AUT_STAT_SUCCESS` | Processing finished and output is ready to review. |
-| No data | `AUT_STAT_NO_DATA` | Processing finished but no input data was available. From 3.4.6, when one side read records and the other read none, or kept none after its filters, an automation run did not really run: Darpan is alerted, and its audit checks are **Not run**. When both sides read none, it is a quiet day: the run's chat spaces get one line saying there was nothing to compare. |
+| No data | `AUT_STAT_NO_DATA` | Processing finished but no input data was available. From 3.4.6, when one side kept records and the other read none, or kept none after its filters, an automation run did not really run: Darpan is alerted, and its audit checks are **Not run**. A quiet day is when both sides read none, when one read none and the other kept none, or when a side kept none the morning after it kept some (the second morning in a row is an error). On a quiet day the run's chat spaces get one line saying there was nothing to compare, and its audit checks close nothing. |
 | Failed | `AUT_STAT_FAILED` | Processing stopped before producing expected output. |
 | Skipped duplicate | `AUT_STAT_SKIP_DUP` | This window was already processed, so the run was skipped. |
 | Cancelled | `AUT_STAT_CANCELLED` | You stopped the run with **Cancel run** before it finished. Work completed before the stop is discarded. |

@@ -28,7 +28,14 @@ On today's report, choose **Retry from last read** on the check. It runs again f
 | "Check *code* has no run on *date* to retry from; play the audit instead." | That morning's run never read anything for this check. Choose **Run audit**. |
 | "… did not finish reading *system*, so there is no complete extract to retry from; run it again instead." | A read stopped part way, so there is nothing complete to retry from. Choose **Run audit**. |
 
-A check is **Not run** when one side of its run read no records, or kept none after its filters, while the other side read some. Its reason says which, for example "The *side* side read no records." or "The *side* side kept 0 of *N* records." Nothing closes that morning, and Darpan is alerted. Check that side's connection and filters, then play the audit again.
+A check is **Not run** when one side of its run read no records, or kept none after its filters, while the other side kept some. Its reason says which, for example "The *side* side read no records." or "The *side* side kept 0 of *N* records." Nothing closes that morning, and Darpan is alerted. Check that side's connection and filters, then play the audit again.
+
+A check for one store often reads the other system for every store and keeps that store's records with its filters. On a day the store sells nothing, that check runs with nothing to compare instead:
+
+- One side read no records and the other kept none after its filters.
+- A side kept none the morning after it kept some. On the second morning in a row it is **Not run**.
+
+Nothing closes on such a morning.
 
 A check marked **Partial** ran over a read that was not complete, so it may have missed records. Play the audit again once the system is reachable.
 
