@@ -29,7 +29,13 @@ From 3.4.6, an automation run that does not run never posts its error to your ch
 - From 3.5.1 the automation's own chat space is never posted a run error; only **Notify me** gets the line, on any run, scheduled or started by hand.
 - An automation behind an audit's checks posts nothing here. The audit update's email says which checks did not run; its chat card does not. See [Audit settings](/guides/audits#audit-settings).
 
-A failed run's page still shows its full error. An automation run where both sides read nothing is a quiet day, not an error, and posts nothing.
+A failed run's page still shows its full error.
+
+An automation run where both sides read nothing is a quiet day, not an error. It posts one plain line where a finished run posts, the automation's chat space and each **Notify me** space, once:
+
+"*name* · *day*: nothing to compare (*system* 0, *system* 0)"
+
+The day is the run's window in the automation's time zone, for example "Daily Return Reconciliation · Nov 26: nothing to compare (HotWax 0, Shopify 0)". A run that rechecks findings by key posts nothing.
 
 ## When a saved run you started fails
 
