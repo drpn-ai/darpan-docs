@@ -1,35 +1,10 @@
 ---
 title: "AI provider settings"
-description: "What the AI provider settings store, and what they do not do yet."
+description: "Why Tenant Settings no longer has an AI section, and where Darpan's AI features are turned on."
 ---
 
-Tenant Settings has an **AI Configuration** section. It stores AI provider settings. No Darpan feature reads these settings yet: schema inference, matching, rules, and results all work without them, and saving a provider changes nothing about how a run behaves.
-
-This page describes what the section stores, so the record is accurate if you keep one.
+Tenant Settings used to have an **AI** section that stored an AI provider, model and key. No Darpan feature read those settings, so the section is gone from the app after app 4.4.19. Nothing about how a run behaves changes.
 
 <Note>
-The AI features Darpan does have take a separate path. The audit agent, and the lines Claude writes in an audit's update after each run, are turned on per tenant by a Darpan admin, and the agent answers only users a Darpan admin has given AI access with a spend limit. Neither reads the settings on this page. See [The audit agent](/guides/audits#the-audit-agent) and [AI access](/guides/manage-users-and-access#ai-access).
+The AI features Darpan does have take a separate path. The audit agent, and the lines Claude writes in an audit's update after each run, are turned on per tenant by a Darpan admin, and the agent answers only users a Darpan admin has given AI access with a spend limit. Neither read the old settings. See [The audit agent](/guides/audits#the-audit-agent) and [AI access](/guides/manage-users-and-access#ai-access).
 </Note>
-
-## Who can edit it
-
-Only a Darpan admin can view or change the section; the exact groups are in [Auth and access](/reference/auth-and-access#roles). Tenant Admins do not see the **AI** section at this screen.
-
-## What is stored
-
-From **Ask Darpan**, open **Open Tenant Settings**, then choose the pencil on the **Provider** row under **AI**.
-
-| Field | Notes |
-| --- | --- |
-| **Provider** | **OpenAI** or **Gemini**. One provider is the selected one at a time. |
-| **Enabled** | **Yes** or **No**. |
-| **Model** | The model name, for example `gpt-4.1-mini`. |
-| **Timeout (seconds)** | Request timeout for the provider. |
-| **Base URL** | The provider's API base URL. Only `api.openai.com` and `generativelanguage.googleapis.com` are accepted; leave it blank to keep the provider default. |
-| **API Key** | The raw provider key. On edit the field reads **API Key (leave blank to keep existing)**; leave it blank to keep the stored key. |
-
-The same settings are available through `facade.SettingsFacadeServices.get#LlmSettings` and `save#LlmSettings`.
-
-## Safety
-
-The API key is a live credential. Use a key scoped for this purpose, and do not paste one you would not want stored. Because nothing uses the settings yet, leaving the section unconfigured costs nothing.

@@ -1,9 +1,9 @@
 ---
 title: "Manage tenant settings"
-description: "Set the shared tenant timezone, register the Google Chat or Slack spaces runs report to, and find config history and tenant scripts."
+description: "Set the shared tenant timezone, register the Google Chat or Slack spaces runs report to, and find peak periods and the sync pulse."
 ---
 
-Two settings define how your tenant behaves for everyone on it: the shared timezone and the chat spaces runs report to. Neither takes long to configure — but getting both right before your first automated run saves your team from reading timestamps in the wrong zone and having to open the app to find out whether a sync failed. Tenant Settings also links to config history, and the Notifications page holds the streaks space.
+Two settings define how your tenant behaves for everyone on it: the shared timezone and the chat spaces runs report to. Neither takes long to configure — but getting both right before your first automated run saves your team from reading timestamps in the wrong zone and having to open the app to find out whether a sync failed. Tenant Settings also opens peak periods and the sync pulse, and the Notifications page holds the streaks space.
 
 <Note>
 Confirm the active tenant before saving. Tenant settings apply to the selected tenant, not every tenant you can access.
@@ -20,14 +20,14 @@ Confirm:
 
 ## What Tenant Settings controls
 
-| Section | Row | Use it for | Tenant Admin access |
+The page opens with the tenant's name and two facts; choose a fact to change it. Below them, **Schedule** holds two rows; choose a row to open its page.
+
+| Where | Setting | Use it for | Tenant Admin access |
 | --- | --- | --- | --- |
-| **Chat** | **Notifications** | The named Google Chat or Slack spaces runs report to, and what posts to each, including streaks. Choose **Open**. | View and edit |
-| **Time** | **Timezone** | The tenant's default date and time interpretation for workflows, schedules, and date windows. | View and edit |
-| **Audit** | **Config history** | Saved versions of the tenant's config, and restoring one. | View and restore |
-| **Audit** | **Peak periods** | Busy days that move runs, hold them out of peak hours, and limit Darpan's HotWax and NetSuite reads. See [Peak periods and sync pulse](/guides/peak-periods-and-sync-pulse). | View and edit |
-| **Audit** | **Sync pulse** | Daily checks whose HotWax orders are watched every few hours, with a time an order may wait. See [Peak periods and sync pulse](/guides/peak-periods-and-sync-pulse#watch-orders-with-a-sync-pulse). | View and edit |
-| **AI** | **Provider** | Stored AI provider settings. No run reads them; see [AI provider settings](/guides/configure-ai). | Not shown; Darpan admins only |
+| Header | **Timezone** | The tenant's default date and time interpretation for workflows, schedules, and date windows. | View and edit |
+| Header | **Notifications** | The named Google Chat or Slack spaces runs report to, and what posts to each, including streaks. | View and edit |
+| **Schedule** | **Peak periods** | Busy days that move runs, hold them out of peak hours, and limit Darpan's HotWax and NetSuite reads. The row names the period on now, or the next one and when it starts. See [Peak periods and sync pulse](/guides/peak-periods-and-sync-pulse). | View and edit |
+| **Schedule** | **Sync pulse** | Daily checks whose HotWax orders are watched every few hours, with a time an order may wait. The row counts the pairs that pulse. See [Peak periods and sync pulse](/guides/peak-periods-and-sync-pulse#watch-orders-with-a-sync-pulse). | View and edit |
 
 ## Steps
 
@@ -46,7 +46,7 @@ Open **Ask Darpan** again. Search for **Open Tenant Settings** and open the resu
 </Step>
 <Step title="Set the timezone">
 
-In **Time**, choose the pencil on the **Timezone** row (**Change tenant timezone**).
+Choose **Timezone** in the header.
 
 Select the timezone for the tenant and save. Use the timezone that operators expect for schedules, date windows, and review timestamps.
 
@@ -57,7 +57,7 @@ Changing it does not move existing automations. Each automation keeps the zone i
 </Step>
 <Step title="Register chat spaces">
 
-In **Chat**, choose **Open** on the **Notifications** row.
+Choose **Notifications** in the header.
 
 The page is a grid. Each column is a chat space, with its chat product (Google Chat or Slack); each row is something that posts, and its dot marks the space it posts to. Choose **Add space** and answer one question per card. For **A Slack channel**, pick the channel. For **A Google Chat space**, paste its webhook URL and give it a name that is unique within the tenant. Darpan validates a webhook URL on save, and the last cards let you pick what posts to the new space and **Send test**.
 
@@ -95,7 +95,7 @@ Times in the app carry no zone code. Rest on one and Tara names its zone and off
 
 ## Config history
 
-**Audit** > **Config history** lists versions of the tenant's config. A version is kept a minute after an audit, check, run or connection changes. **Keep a version now** saves one at once.
+Config history lists versions of the tenant's audit config, every audit together. Open it from an audit's settings: the clock beside the back arrow. It is not on Tenant Settings, since a tenant with no audits has nothing to version. A version is kept a minute after an audit, check, run or connection changes. **Keep a version now** saves one at once.
 
 Choose an older version to **Restore** it. Restoring and keeping a version need tenant edit access; others can read the list.
 
@@ -116,4 +116,3 @@ Sharing is set on the connection itself, not in Tenant Settings. Open the Shopif
 | A space is registered but no message arrives | Confirm the space is active and still has a webhook, and that an automation is linked to it or someone subscribed with **Notify me**. Registering a space does not by itself route any run to it. |
 | A space cannot be deleted | An automation, a query schedule or an active run subscription still references it. Deactivate it instead. |
 | Timestamps differ between two people on the same tenant | The tenant has no timezone set, so each person's **User Settings** timezone applies. Set the tenant timezone. |
-| You do not see an **AI** section | AI provider settings are shown to Darpan admins only. No run reads them; see [AI provider settings](/guides/configure-ai). |
