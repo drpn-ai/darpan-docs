@@ -331,9 +331,9 @@ Cut together with app `v4.0.3`, `darpan-hotwax v1.0.1`, `shopify-darpan v0.9.1`,
 
 - Roll back as a set. To `v3.0.2` with app `v4.0.2`: findings that moved with their check stay under their new statement and read as ordinary open findings. To `v3.0.0` with app `v4.0.1` and `darpan-agent v0.1.1`: the new column stays unread, and runs reading the item count or ship groups find those fields empty. To `v3.0.0` with app `v4.0.0` and `darpan-agent v0.1.0`: the agent then reads only `ANTHROPIC_API_KEY`, so set one or turn the agent off. To `v2.1.12` with app `v3.1.4` and the `v2.1` connectors: the migrations do not reverse, so findings stay open or fixed and each audit keeps the one schedule it was given. The new tables stay and are not read.
 
-## v2.1.7 — October 2026
+## v2.1.12 — November 2026
 
-Cut together with `darpan-hotwax v0.10.4`, `netsuite-darpan v0.4.3` and `shopify-darpan v0.8.5`, with app `v3.1.3`, `database-darpan v0.2.2` and `moqui-gql v0.1.1`. One section covers the 2.1 line: `v2.1.0` (October 26, with app `v3.1.0`, `darpan-hotwax v0.10.0`, `netsuite-darpan v0.4.0`, `shopify-darpan v0.8.0` and `moqui-gql v0.1.0`) and the `v2.1.1` (October 27), `v2.1.2` with app `v3.1.2`, `v2.1.3` and `v2.1.4` (October 28), `v2.1.5` (October 29) and `v2.1.6` (October 30, with app `v3.1.3` and `shopify-darpan v0.8.5`) and `v2.1.7` (October 30) patches. A minor line: the API contract only gains methods, and the components deploy together.
+Cut together with `darpan-hotwax v0.10.4`, `netsuite-darpan v0.4.3` and `shopify-darpan v0.8.5`, with app `v3.1.4`, `database-darpan v0.2.2` and `moqui-gql v0.1.1`. One section covers the 2.1 line: `v2.1.0` (October 26, with app `v3.1.0`, `darpan-hotwax v0.10.0`, `netsuite-darpan v0.4.0`, `shopify-darpan v0.8.0` and `moqui-gql v0.1.0`) and the `v2.1.1` (October 27), `v2.1.2` with app `v3.1.2`, `v2.1.3` and `v2.1.4` (October 28), `v2.1.5` (October 29) and `v2.1.6` (October 30, with app `v3.1.3` and `shopify-darpan v0.8.5`) `v2.1.7`, `v2.1.8` and `v2.1.9` (October 30, with app `v3.1.4`), `v2.1.10` and `v2.1.11` (October 31) and `v2.1.12` (November 2) patches. A minor line: the API contract only gains methods, and the components deploy together.
 
 **Product**
 
@@ -357,6 +357,10 @@ Cut together with `darpan-hotwax v0.10.4`, `netsuite-darpan v0.4.3` and `shopify
 - **Retry from the failed step.** A failed run offers **Retry from** the step it stopped at. The retry is a new run over the same days that reuses what the failed run already read, so a long HotWax read is not repeated. It declines, and says why, if the run's setup changed since it started.
 - **Repeated keys are findings.** When one system holds more than one record under a key, each record shows on the run page under **Duplicates**, the key is left out of the compare on both sides, and the run finishes with the rest of its results.
 - **Month-long Shopify reads.** Shopify order reads stream to disk as they arrive, so a month of orders reads in steady memory.
+- **Month-long compares.** A run over a month of orders, about 125,000 on each side, reaches its results instead of stopping at "Comparing records". The compare reads each extract one record per line and puts a bounded number of pairs through the rules at a time.
+- **A rule difference shows both records.** A row on the run page names the rule's field with each system's value, then the record from each system, as a missing record's row does.
+- **Reasons read an order's items.** A reason can ask whether all or any of an order's items are in a status or at a facility. A run's lookups are set from the app with its reasons, and a reason saves on a run set up before compare modes existed.
+- **Play the month that just ended.** An audit's run page offers **Previous Month**, and its findings are recorded in that month's report. Days that cross two months run once per month. A month ended before that still cannot be played. An audit's first play runs its checks the first time.
 - **Edit run** offers every endpoint of a side's system family. After **Run**, the live view opens at once. **Home** lists audits first, after the pins.
 
 **Operators**
@@ -364,6 +368,7 @@ Cut together with `darpan-hotwax v0.10.4`, `netsuite-darpan v0.4.3` and `shopify
 - All components deploy together.
 - Every run waits its turn in one queue: up to 8 at once, 5 per tenant, tenants taking turns, held while memory is short. A played run runs in its audit's tenant.
 - Search and run lists read each result's summary, not the whole document.
+- The compare writes a `<extract>.records.jsonl` beside each JSON extract it reads. It is derived and goes with the run's files.
 - A scheduled run's extracts report how many records they have read, and Cancel run stops an automation mid-extract.
 - A failed extract fails its run and is retried, rather than reporting the window as empty. A HotWax orders page that answers 429, 502, 503 or 504 is retried on its own, and so is a transient HotWax GraphQL failure.
 - A run that failed after its reads finished can run again over the same window from the files it already read, without reading the source systems again.
@@ -374,19 +379,19 @@ Cut together with `darpan-hotwax v0.10.4`, `netsuite-darpan v0.4.3` and `shopify
 
 **API**
 
-- Contract version stays `3`: 32 methods are added across the line (26 in `v2.1.0`, 4 in `v2.1.1`, 2 in `v2.1.2`) and none is removed. `v2.1.6` adds one optional parameter, `retryFromRunResultId`, to `run#SavedRunDiff`.
+- Contract version stays `3`: 32 methods are added across the line (26 in `v2.1.0`, 4 in `v2.1.1`, 2 in `v2.1.2`) and none is removed. `v2.1.6` adds one optional parameter, `retryFromRunResultId`, to `run#SavedRunDiff`. `v2.1.11` adds one optional parameter, `lookups`, to `save#RunConclusions` (replaced when given, an empty list clears them); a lookup's `parameters` carry only `keepRecordFields`. From `v2.1.12`, `get#AuditSettings.playableFrom` is the first day of the period just ended (the tenant's go-live when later), and `run#Audit` accepts days in that period.
 - GraphQL: read-only `auditReport`, `auditFinding` and `findings` (search, sort, paging), for agent keys that can be labelled, expired, listed, disabled and rotated. Tenant administrators mint keys for the tenant they are signed into.
 
 **Upgrade**
 
 - Start the new image first: it creates the new tables and columns.
-- Load the seed records with `./gradlew loadDarpanUpgradeData`, then `run#PendingMigrations`: 103 records from `v2.0.0`, the 5 of `v2.1.1` from `v2.1.0`, the 3 of `v2.1.2` from `v2.1.1`, the 1 of `v2.1.3` from `v2.1.2`, none for `v2.1.4`, the 14 of `v2.1.5` from `v2.1.4`, and none for `v2.1.6` or `v2.1.7`. `run#PendingMigrations` then folds every automation's history into its stored streak once.
+- Load the seed records with `./gradlew loadDarpanUpgradeData`, then `run#PendingMigrations`: 103 records from `v2.0.0`, the 5 of `v2.1.1` from `v2.1.0`, the 3 of `v2.1.2` from `v2.1.1`, the 1 of `v2.1.3` from `v2.1.2`, none for `v2.1.4`, the 14 of `v2.1.5` from `v2.1.4`, and none for `v2.1.6` through `v2.1.12`. `run#PendingMigrations` then folds every automation's history into its stored streak once.
 - Audit catalogues and checks are tenant configuration: load them per tenant, one file at a time, with `DARPAN_UPGRADE_DATA_TYPES=darpan-tenant-config` and `DARPAN_UPGRADE_DATA_LOCATION=component://darpan/data/<file>`.
 - Play each audit once from its page to create its automations, then schedule and enable them.
 
 **Rollback**
 
-- Roll back as a set. To `v2.1.6`: nothing to undo; a repeated key then stops a ruled compare again. To `v2.1.5` (app `v3.1.2`): nothing to undo. To `v2.1.4`: remove any rule on Shopify `transactionIds` first. To `v2.1.2`: remove any **Sales channel** filter on a HotWax GraphQL read first. To `v2.1.1` (app `v3.1.1`): remove any "all in" or "contains all" rule first, and leave the `AUTOMATION_STREAKS` migration unrun. To `v2.1.0` (app `v3.1.0`): delete the `DARPAN_SCOPE_AUTOMATION_STREAK_BADGE`, `DARPAN_SCOPE_TENANT_STREAK_QUEST` and `DARPAN_SCOPE_TENANT_STREAK_FACT` entity filters first. To `v2.0.0` (app `v3.0.0` and the `v2.0.0` connectors): delete the 12 audit tenant-filter rows and the four filters of `v2.1.1`.
+- Roll back as a set. To `v2.1.11`: a month that has ended can no longer be played; findings a play already recorded stay in that month's report. To `v2.1.10`: a first play runs nothing (**Run now** on the audit's automation works around it), and saved lookups that attach every record under a key read one record. To `v2.1.9`: a reason fails to save on a run whose compare scope has no mode (set its `scopeMode` to `COMPARE`). To `v2.1.8` or `v2.1.7` (app `v3.1.3`): a month-wide compare runs out of memory again; the `.records.jsonl` files left beside extracts are inert. To `v2.1.6`: nothing to undo; a repeated key then stops a ruled compare again. To `v2.1.5` (app `v3.1.2`): nothing to undo. To `v2.1.4`: remove any rule on Shopify `transactionIds` first. To `v2.1.2`: remove any **Sales channel** filter on a HotWax GraphQL read first. To `v2.1.1` (app `v3.1.1`): remove any "all in" or "contains all" rule first, and leave the `AUTOMATION_STREAKS` migration unrun. To `v2.1.0` (app `v3.1.0`): delete the `DARPAN_SCOPE_AUTOMATION_STREAK_BADGE`, `DARPAN_SCOPE_TENANT_STREAK_QUEST` and `DARPAN_SCOPE_TENANT_STREAK_FACT` entity filters first. To `v2.0.0` (app `v3.0.0` and the `v2.0.0` connectors): delete the 12 audit tenant-filter rows and the four filters of `v2.1.1`.
 
 ## v2.0.0 — October 2026
 
